@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "fonts": "node scripts/fonts.mjs"
   },
   "dependencies": {
     "react": "19.3",

@@ -29,3 +29,4 @@ Arbeite im Ordner des Tools und lies dessen `AGENTS.md`, nicht die anderer Tools
 
 ## Befehle
 `npm install`, `npm run dev:startseite`, `npm run build`
+Für das Social Studio: `npm run fonts` holt Braveold aus dem privaten Repo (Zugriff nötig).
