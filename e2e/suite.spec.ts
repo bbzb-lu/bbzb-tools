@@ -37,7 +37,11 @@ test('Unterpfad ohne Schrägstrich und Neuladen laden vollständig', async ({ pa
   for (const t of tools) {
     const failed: string[] = [];
     page.on('requestfailed', (r) => failed.push(r.url()));
+    page.on('response', (r) => {
+      if (r.status() >= 400) failed.push(`${r.status()} ${r.url()}`);
+    });
     await page.goto(t.pfad.slice(0, -1));
+    await expect(page).toHaveURL(new RegExp(`${t.pfad}$`));
     await page.waitForLoadState('networkidle'); // sonst bricht reload laufende Schrift-Anfragen ab (ERR_ABORTED)
     await page.reload();
     await page.waitForLoadState('networkidle');
@@ -45,4 +49,8 @@ test('Unterpfad ohne Schrägstrich und Neuladen laden vollständig', async ({ pa
     expect(await page.evaluate(async () => (await document.fonts.load('16px "Host Grotesk"')).length)).toBeGreaterThan(0);
     expect(failed).toEqual([]);
   }
+});
+
+test('unbekannter Pfad liefert 404', async ({ request }) => {
+  expect((await request.get('/gibt-es-nicht/')).status()).toBe(404);
 });
