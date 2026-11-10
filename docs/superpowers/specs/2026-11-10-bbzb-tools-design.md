@@ -54,7 +54,7 @@ Am BBZB Luzern entstehen laufend kleine Webtools, die Mitarbeitenden und Lehrper
 - GitHub Actions bei jedem Pull Request und Push: Typecheck, Lint, Vitest und Live-Build auf Linux, Playwright (Edge) aller Apps auf Windows. Ändert sich etwas in `packages/`, laufen die Tests aller Tools.
 - Der Test-Build (`--mode test`, mit Testhaken) wird nie deployt. `scripts/check-live-build.mjs` prüft den Live-Build vor dem Deploy und in jedem Pull Request.
 - Nach Merge auf `main` und grünen Tests geht die Seite automatisch live. Das Schulnetz, das wrangler blockiert, spielt keine Rolle mehr. Claude fragt Alexej vor dem Merge, nicht mehr vor dem Deploy.
-- Beitragende sind Mitglieder von `bbzb-lu` und pushen Branches ins Repo, keine Forks. So hat jeder Pull Request Zugriff auf Braveold und alle Pixel-Tests laufen. Pull Requests aus Forks laufen ohne die Tests, die Braveold brauchen, und werden nur nach einem Lauf auf einem Branch im Repo gemergt. Kein `pull_request_target` (Entscheid Claude).
+- Beitragende sind Mitglieder von `bbzb-lu` und pushen Branches ins Repo, keine Forks. So hat jeder Pull Request Zugriff auf Braveold und alle Pixel-Tests laufen. Pull Requests aus Forks scheitern in der CI (kein Zugriff auf Braveold) und werden nur nach einem Lauf auf einem Branch im Repo gemergt. Kein `pull_request_target` (Entscheid Claude).
 - Die Embeds bekommen ihre bestehenden Prüfskripte (`verify.js`, beide SharePoint-Grössen) im selben Lauf.
 
 ## Arbeitsweise für Mitarbeitende und Agenten

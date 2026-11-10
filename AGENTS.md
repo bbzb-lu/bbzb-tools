@@ -31,3 +31,5 @@ Arbeite im Ordner des Tools und lies dessen `AGENTS.md`, nicht die anderer Tools
 `npm install`, `npm run dev:startseite`, `npm run build`
 Neues Tool: `npm run neues-tool -- <id> "<Name>"`, danach Satz und Vorschaubild in der Startseite ersetzen (`apps/startseite/AGENTS.md`).
 Für das Social Studio: `npm run fonts` holt Braveold aus dem privaten Repo (Zugriff nötig).
+Ohne Zugriff auf Braveold scheitern einzelne Studio-Tests. Dann nur das eigene Tool testen: `npx vitest --project <id> run` und `npx playwright test --project <id>` (id wie in `apps/startseite/src/tools.ts`).
+`npm run test:e2e` braucht die Testvideos: `sh apps/social-studio/scripts/make-test-videos.sh` (braucht ffmpeg).

@@ -8,7 +8,7 @@ Startseite (`/`) mit den Kacheln aller Tools und Seite «Datenschutz» (`/datens
 - `tools.ts` bleibt reine Daten ohne Importe, die e2e-Tests lesen die Datei in Node. Das Skript sucht das Ende der Liste `tools`, ihre Form also beibehalten.
 
 ## Datenschutz
-Bekommt ein Tool eine Ausnahme (z. B. lädt es KI-Modelle von einer fremden Adresse), ersetzt du in `src/Datenschutz.tsx` den Satz unter «Ausnahmen» durch einen Satz zu diesem Tool.
+Bekommt ein Tool eine Ausnahme (z. B. lädt es KI-Modelle von einer fremden Adresse), ergänzt du in `src/Datenschutz.tsx` unter «Ausnahmen» einen Satz zu diesem Tool und passt den Absatz «Nachprüfen» an.
 
 ## Gestaltung
 Nur Variablen aus `packages/ui/src/theme.ts`, eckig, Fokusring aus `base.css`. Eigene Regeln in `src/start.css`.

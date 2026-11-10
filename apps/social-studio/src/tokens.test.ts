@@ -25,7 +25,7 @@ it('Titel und Kommentar wie PSD', () => {
   expect(textStyles.titel.lineHeight).toBe(0.86);
   expect(textStyles.titel.lineHeight).toBeCloseTo(titel.examples[0].leading / titel.examples[0].size, 2);
   expect(textStyles.titel.defaultSize).toBe(titel.examples[1].size);
-  expect(fileOf(textStyles.kommentar.family)).toBe(base(kommentar.file));
+  expect(fileOf(textStyles.kommentar.family), 'Braveold fehlt: npm run fonts').toBe(base(kommentar.file));
   expect(textStyles.kommentar.letterSpacingEm).toBe(kommentar.tracking / 1000);
   expect(textStyles.kommentar.lineHeight).toBe(kommentar.examples[0].leading / kommentar.examples[0].size);
   expect(textStyles.kommentar.defaultSize).toBe(kommentar.examples[1].size);
