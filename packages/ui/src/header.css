@@ -1,0 +1,5 @@
+.bbzb-header { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; background: var(--table); }
+.bbzb-wordmark { display: flex; flex-direction: column; gap: 2px; font-family: var(--font-ui); font-weight: 800; white-space: nowrap; text-decoration: none; }
+.bbzb-wordmark-name { font-size: 22px; line-height: 29px; letter-spacing: -0.5px; color: var(--ink); }
+.bbzb-wordmark-tool { font-size: 11px; line-height: 15px; letter-spacing: 3px; color: var(--accent); }
+.bbzb-header > :nth-child(2) { margin-left: auto; }
