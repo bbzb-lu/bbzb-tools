@@ -2,4 +2,4 @@
 .bbzb-wordmark { display: flex; flex-direction: column; gap: 2px; font-family: var(--font-ui); font-weight: 800; white-space: nowrap; text-decoration: none; }
 .bbzb-wordmark-name { font-size: 22px; line-height: 29px; letter-spacing: -0.5px; color: var(--ink); }
 .bbzb-wordmark-tool { font-size: 11px; line-height: 15px; letter-spacing: 3px; color: var(--accent); }
-.bbzb-header > :nth-child(2) { margin-left: auto; }
+.bbzb-wordmark { margin-right: auto; }

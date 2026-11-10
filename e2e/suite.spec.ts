@@ -27,8 +27,8 @@ test('Kachel öffnet das Tool, Logo führt zurück', async ({ page }) => {
     await page.getByRole('link', { name: new RegExp(t.name) }).click();
     await expect(page).toHaveURL(new RegExp(`${t.pfad}$`));
     // ohne 404.html liefert Pages für fehlende Pfade die Startseite mit 200, darum den Tool-Namen im Header prüfen
-    await expect(page.getByRole('link', { name: 'BBZB Tools, zur Startseite' })).toContainText(t.name);
-    await page.getByRole('link', { name: 'BBZB Tools, zur Startseite' }).click();
+    await expect(page.getByRole('link', { name: `BBZB Tools, ${t.name}, zur Startseite` })).toContainText(t.name);
+    await page.getByRole('link', { name: `BBZB Tools, ${t.name}, zur Startseite` }).click();
     await expect(page).toHaveURL(/\/$/);
   }
 });

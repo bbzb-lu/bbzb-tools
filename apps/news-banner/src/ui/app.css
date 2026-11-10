@@ -24,6 +24,7 @@
 .icon-tile { width: 100%; min-height: 2.75rem; padding: 0; display: grid; place-items: center; border: 1px solid transparent; background: var(--paper-shade); }
 .icon-tile svg { width: 24px; height: 24px; }
 .icon-tile:hover { border-color: var(--ink); }
+button.icon-tile, button.icon-tile:is(:hover, :active) { box-shadow: none; transform: none; }
 .steps { margin: 0; padding-left: 1.25rem; display: grid; gap: 0.25rem; }
 a { color: var(--ink); text-underline-offset: 2px; }
 a:hover { background: var(--paper-shade); }

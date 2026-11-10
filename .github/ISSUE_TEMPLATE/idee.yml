@@ -9,7 +9,7 @@ body:
     id: idee
     attributes:
       label: Was soll anders sein?
-      description: Kurz beschreiben, was Dir fehlt oder stört.
+      description: Kurz beschreiben, was dir fehlt oder stört.
     validations:
       required: true
   - type: dropdown

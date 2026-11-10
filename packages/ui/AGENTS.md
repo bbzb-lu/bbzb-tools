@@ -11,6 +11,3 @@ Gemeinsame Oberfläche aller BBZB-Tools: Kopf (`Header`), Bauteile (`Button`, `S
 
 ## Herkunft
 Der Look stammt aus dem Social Studio. `DESIGN.md` und der Pen-Entwurf bleiben im Studio-Ordner (ab Plan 2 hier im Repo). UI-Änderungen mit dem Impeccable-Skill gestalten und prüfen.
-
-## Offen
-`kit.css` enthält noch die Regel für `.icon-tile` aus dem Banner. Sie wandert mit dem Banner in dessen App.

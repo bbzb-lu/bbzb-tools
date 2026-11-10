@@ -13,13 +13,13 @@ export function Start() {
             <li key={t.id}>
               <a className="kachel" href={t.pfad}>
                 <img src={`${import.meta.env.BASE_URL}${t.vorschau}`} alt="" width={960} height={540} />
-                <span className="kachel-text">
-                  <span className="kachel-kopf">
+                <div className="kachel-text">
+                  <div className="kachel-kopf">
                     <h2>{t.name}</h2>
                     {t.beta && <span className="badge">Beta</span>}
-                  </span>
+                  </div>
                   <span className="muted">{t.satz}</span>
-                </span>
+                </div>
               </a>
             </li>
           ))}

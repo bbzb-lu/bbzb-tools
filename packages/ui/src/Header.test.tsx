@@ -8,7 +8,7 @@ describe('Header', () => {
     expect(m).toContain('href="/"');
     expect(m).toContain('BBZB Tools');
     expect(m).toContain('News-Banner');
-    expect(m).toMatch(/aria-label="BBZB Tools, zur Startseite"/);
+    expect(m).toContain('aria-label="BBZB Tools, News-Banner, zur Startseite"');
   });
   it('rendert Kinder rechts im Kopf', () => {
     expect(renderToStaticMarkup(<Header tool="X"><button>Hilfe</button></Header>)).toContain('<button>Hilfe</button>');

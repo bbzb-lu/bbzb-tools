@@ -8,8 +8,8 @@ button:hover:not(:disabled, [aria-disabled='true'], [aria-pressed='true'], [aria
 button:active:not(:disabled, [aria-disabled='true']) { transform: translate(3px, 3px); }
 button:active, button[aria-pressed='true'], button[aria-checked='true'], button:disabled, button[aria-disabled='true'] { box-shadow: none; }
 /* Keine Taste im Sinn des Entwurfs: Kacheln, Reiter, Menüeinträge, Teilknöpfe einer Reihe, Hinweise, Abschnittsleiste */
-button:is(.icon-tile, [role='tab'], [role='menuitem']) { box-shadow: none; }
-button:is(.icon-tile, [role='tab'], [role='menuitem']):is(:hover, :active) { transform: none; box-shadow: none; }
+button:is([role='tab'], [role='menuitem']) { box-shadow: none; }
+button:is([role='tab'], [role='menuitem']):is(:hover, :active) { transform: none; box-shadow: none; }
 
 /* Umschalter (Segmented): graue Reihe, gewählt = Tinte invers, Fokusring um die ganze Reihe */
 .segmented { position: relative; display: flex; border: 1px solid var(--ink); background: var(--paper-shade); }

@@ -1,6 +1,6 @@
 # BBZB Tools
 
-Websuite, die Abläufe am BBZB Luzern einfacher macht. Die Tools laufen im Browser, es gibt keine Datenspeicherung und der Code ist offen.
+Websuite, die Abläufe am BBZB Luzern einfacher macht. Die Tools laufen im Browser, nichts wird hochgeladen und der Code ist offen.
 
 ```
 npm install

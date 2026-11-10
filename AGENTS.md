@@ -1,6 +1,6 @@
 # BBZB Tools
 
-Websuite des BBZB Luzern mit kleinen Browser-Tools, die den Schulalltag einfacher machen. Alles läuft im Browser, nichts wird gespeichert oder hochgeladen.
+Websuite des BBZB Luzern mit kleinen Browser-Tools, die den Schulalltag einfacher machen. Alles läuft im Browser, nichts wird hochgeladen.
 
 ## Ordner
 - `apps/`: ein Ordner pro Tool, jeweils mit eigener `AGENTS.md`
