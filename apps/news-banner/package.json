@@ -1,0 +1,20 @@
+{
+  "name": "news-banner",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:lucide-meta": "node scripts/build-lucide-meta.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bbzb/ui": "*",
+    "lucide": "^1.68.0"
+  },
+  "devDependencies": {
+    "@tabler/icons": "^3.49.0",
+    "lucide-static": "^1.68.0"
+  }
+}

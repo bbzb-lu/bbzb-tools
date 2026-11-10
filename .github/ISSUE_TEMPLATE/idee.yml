@@ -1,0 +1,26 @@
+name: Idee oder Wunsch
+description: Was soll in einem Tool anders sein?
+labels: [idee]
+body:
+  - type: markdown
+    attributes:
+      value: Keine echten Fotos, Namen oder Projektdateien anhängen.
+  - type: textarea
+    id: idee
+    attributes:
+      label: Was soll anders sein?
+      description: Kurz beschreiben, was dir fehlt oder stört.
+    validations:
+      required: true
+  - type: dropdown
+    id: bereich
+    attributes:
+      label: Bereich
+      options:
+        - social-studio
+        - news-banner
+        - embeds
+        - startseite
+        - alle
+    validations:
+      required: true

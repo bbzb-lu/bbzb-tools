@@ -1,0 +1,12 @@
+.superpowers/
+node_modules/
+dist/
+dev-dist/
+coverage/
+playwright-report/
+test-results/
+.DS_Store
+*.local
+.env*
+.wrangler/
+/fonts-private/

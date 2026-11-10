@@ -1,0 +1,37 @@
+{
+  "name": "bbzb-tools",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": ["apps/*", "packages/*"],
+  "engines": { "node": ">=26" },
+  "scripts": {
+    "dev:startseite": "npm run dev --workspace apps/startseite",
+    "dev:news-banner": "npm run dev --workspace apps/news-banner",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc --noEmit -p e2e",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "react": "19.3",
+    "react-dom": "19.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64",
+    "@types/node": "^26.6.6",
+    "@types/pngjs": "^6.0.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "eslint": "^10.14.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "pngjs": "^7.0.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^8.3.5",
+    "vitest": "^5.1.0",
+    "wrangler": "^4.157.0"
+  }
+}
