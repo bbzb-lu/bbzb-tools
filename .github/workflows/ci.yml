@@ -11,6 +11,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,6 +24,8 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run test:e2e -- --reporter=html
+        env:
+          PLAYWRIGHT_HTML_OPEN: never
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -31,6 +34,7 @@ jobs:
 
   windows:
     runs-on: windows-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -45,6 +49,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [test, windows]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     concurrency:
       group: deploy
       cancel-in-progress: false
