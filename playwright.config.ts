@@ -7,7 +7,7 @@ const base = 'http://localhost:8788/';
 export default defineConfig({
   webServer: {
     timeout: 180_000,
-    command: 'npm run build && npx wrangler pages dev dist --port 8788',
+    command: 'node scripts/build.mjs --mode test && npx wrangler pages dev dist --port 8788',
     url: 'http://localhost:8788',
     reuseExistingServer: !process.env.CI,
   },

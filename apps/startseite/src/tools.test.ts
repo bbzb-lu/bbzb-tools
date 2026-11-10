@@ -15,4 +15,7 @@ describe('tools', () => {
   it('News-Banner ist eingetragen und Beta', () => {
     expect(tools.find((t) => t.id === 'news-banner')).toMatchObject({ name: 'News-Banner', beta: true });
   });
+  it('Social Studio ist eingetragen und Beta', () => {
+    expect(tools.find((t) => t.id === 'social-studio')).toMatchObject({ name: 'Social Studio', beta: true });
+  });
 });

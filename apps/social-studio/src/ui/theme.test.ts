@@ -2,7 +2,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { theme as uiTheme } from '@bbzb/ui';
-import { applyStudioTheme, studioTheme, theme, type ThemeToken, uiFonts } from './theme';
+import { applyStudioTheme, studioTheme, theme, type ThemeToken } from './theme';
+import { uiFonts } from './uiFonts';
 
 const lum = (hex: string) => {
   const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));

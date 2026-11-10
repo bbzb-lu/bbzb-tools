@@ -54,3 +54,11 @@ test('Unterpfad ohne Schrägstrich und Neuladen laden vollständig', async ({ pa
 test('unbekannter Pfad liefert 404', async ({ request }) => {
   expect((await request.get('/gibt-es-nicht/')).status()).toBe(404);
 });
+
+test('connect-src: nur das Social Studio darf KI-Modelle von Hugging Face laden', async ({ request }) => {
+  for (const p of seiten) {
+    const csp = (await request.get(p)).headers()['content-security-policy']!;
+    const connect = csp.split(';').map((d) => d.trim()).filter((d) => d.startsWith('connect-src'));
+    expect(connect, p).toEqual([p === '/social-studio/' ? "connect-src 'self' https://huggingface.co https://*.hf.co" : "connect-src 'self'"]);
+  }
+});

@@ -8,7 +8,7 @@ it('nennt eine oder mehrere fehlende Schriften', () => {
 
 it('Oberflächen-Schriften blockieren den Export nie, Export-Schriften schon', async () => {
   const { faces } = await import('./fonts');
-  const { uiFonts } = await import('./ui/theme');
+  const { uiFonts } = await import('./ui/uiFonts');
   const exportLabels = faces.map((f) => f.label);
   for (const f of uiFonts) expect(exportLabels).not.toContain(f.label);
   expect(exportLabels).toEqual(expect.arrayContaining(['Segoe UI Black', 'Braveold Light']));

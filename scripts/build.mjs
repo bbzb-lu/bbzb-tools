@@ -3,7 +3,11 @@ import { execSync } from 'node:child_process';
 import { copyFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
-const run = (app) => execSync(`npm run build -w apps/${app}`, { stdio: 'inherit' });
+// `--mode <name>` geht an jede App (z. B. `--mode test` für den Test-Build mit Testhaken, nie deployen)
+const i = process.argv.indexOf('--mode');
+if (i > 0 && !process.argv[i + 1]) throw new Error('--mode braucht einen Namen');
+const mode = i > 0 ? ` -- --mode ${process.argv[i + 1]}` : '';
+const run = (app) => execSync(`npm run build -w apps/${app}${mode}`, { stdio: 'inherit' });
 
 rmSync('dist', { recursive: true, force: true });
 run('startseite');
