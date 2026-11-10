@@ -129,6 +129,7 @@ it('Standortfarben (Phase 2.5) stehen nur in tokens.ts; «akzent» ist kein Hexw
   expect(locationColors.BM.text).toBe('warmweiss');
   const hexes = ['#008C7E', '#4C5EBD', '#D81E3A', '#D84FC3'];
   const files = globSync('src/**/*.{ts,tsx,css}', { cwd: app(), exclude: (f) => /\.test\.tsx?$/.test(f) }).map((f) => f.replaceAll('\\', '/'));
+  expect(files.length).toBeGreaterThan(100); // leerer Glob wäre stumm grün
   expect(files.filter((f) => f !== 'src/tokens.ts' && hexes.some((h) => readFileSync(app(f), 'utf8').toUpperCase().includes(h)))).toEqual([]);
   expect(Object.keys(colors)).not.toContain(akzent);
   expect(colorTokens).not.toContain(akzent);

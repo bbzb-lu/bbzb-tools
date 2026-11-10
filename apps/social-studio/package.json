@@ -26,7 +26,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "@tabler/icons": "^3.49.0",
+    "@tabler/icons": "3.49.0",
     "fake-indexeddb": "^6.2.6"
   }
 }

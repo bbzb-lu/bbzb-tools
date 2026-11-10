@@ -9,6 +9,10 @@ const files = globSync('src/**/*.{ts,tsx,css}', { cwd: app(), exclude: (f) => /\
 const offenders = (test: (path: string, text: string) => boolean) =>
   files.filter((f) => test(f.replaceAll('\\', '/'), readFileSync(app(f), 'utf8')));
 
+it('der Glob findet den Quelltext (sonst wären die Prüfungen stumm grün)', () => {
+  expect(files.length).toBeGreaterThan(100);
+});
+
 it('Hex-Farben nur in tokens.ts und ui/theme.ts', () => {
   expect(offenders((p, t) => p !== 'src/tokens.ts' && p !== 'src/ui/theme.ts' && /#[0-9a-fA-F]{6}\b/.test(t))).toEqual([]);
 });
