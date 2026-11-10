@@ -3,7 +3,7 @@ import { renameForStyle } from '../../../model/elements';
 import type { Element } from '../../../model/types';
 import { apply } from '../../../store/document';
 import { textAdjust, textStyles } from '../../../tokens';
-import { Segmented } from '../../../ui/kit/Segmented';
+import { Segmented } from '@bbzb/ui';
 import { OpacitySlider } from '../../../ui/OpacitySlider';
 import { Section } from '../../../ui/Section';
 import { Slider } from '../../../ui/Slider';

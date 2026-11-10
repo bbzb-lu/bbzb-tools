@@ -1,4 +1,5 @@
 import { IconCopy, IconFolderOpen, IconLock, IconPhoto, IconPlus, IconDeviceMobile, IconTrash } from '@tabler/icons-react';
+import { Header } from '@bbzb/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './start.css';
 import { elementTypes, formats } from '../core/registries';
@@ -14,7 +15,6 @@ import { deleteProject, listProjects, loadProject, saveProject, type ProjectSumm
 import { collectGarbage } from '../storage/gc';
 import { errorText } from './errors';
 import { LicensesDialog } from './LicensesDialog';
-import { Logo } from './Logo';
 import { copyRules, fontsLoaded } from './layoutActions';
 
 const fail = (e: unknown, fallback: string) => useUi.getState().setNotice({ kind: 'error', text: errorText(e, fallback) });
@@ -145,110 +145,111 @@ export function StartPage() {
   };
 
   return (
-    <main className="start">
-      <h1>
-        <Logo className="start-logo" />
-      </h1>
+    <>
+      <Header tool="Social Studio" />
+      <main className="start">
+        <h1 className="sr-only">Social Studio</h1>
 
-      <section aria-labelledby="neu">
-        <h2 id="neu">Neues Projekt</h2>
-        <div className="format-tiles">
-          {formats.all().map((f) => (
-            <button key={f.id} type="button" className="format-tile" aria-label={`${f.label} anlegen`} aria-disabled={creating} onClick={() => !creating && create(f.id)}>
-              <span className="format-preview" aria-hidden="true">
-                <span style={{ aspectRatio: `${f.width} / ${f.height}` }} />
-              </span>
-              <span className="format-name" aria-hidden="true">
-                <IconPlus />
-                {f.label} anlegen
-              </span>
-              {formatHint[f.id] && <span className="format-hint" aria-hidden="true">{formatHint[f.id]}</span>}
-            </button>
-          ))}
-        </div>
-        <button type="button" className="open-file" aria-disabled={creating} onClick={() => !creating && fileInput.current?.click()}>
-          <IconFolderOpen aria-hidden="true" />
-          Projektdatei öffnen
-        </button>
-        <input
-          ref={fileInput}
-          type="file"
-          accept=".bbzbsocial"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            e.target.value = '';
-            if (file) void importFile(file);
-          }}
-        />
-        <p className="local-hint muted">
-          <IconLock aria-hidden="true" />
-          Deine Fotos und Projekte bleiben in diesem Browser. Sichere wichtige Projekte als Projektdatei.
-        </p>
-      </section>
-
-      <section aria-labelledby="liste">
-        <h2 id="liste">Deine Projekte</h2>
-        {projects?.length === 0 && <p className="muted">Noch keine Projekte.</p>}
-        {projects && projects.length > 0 && (
-          <ul className="project-list">
-            {projects.map((p) => (
-              <li key={p.id}>
-                <span className="project-title">
-                  {p.name}
+        <section aria-labelledby="neu">
+          <h2 id="neu">Neues Projekt</h2>
+          <div className="format-tiles">
+            {formats.all().map((f) => (
+              <button key={f.id} type="button" className="format-tile" aria-label={`${f.label} anlegen`} aria-disabled={creating} onClick={() => !creating && create(f.id)}>
+                <span className="format-preview" aria-hidden="true">
+                  <span style={{ aspectRatio: `${f.width} / ${f.height}` }} />
                 </span>
-                <span className="muted">
-                  {formatLabel(p.formatId)} · zuletzt bearbeitet {dateTime(p.updatedAt)}
+                <span className="format-name" aria-hidden="true">
+                  <IconPlus />
+                  {f.label} anlegen
                 </span>
-                <span className="row-actions">
-                  <button type="button" aria-label={`«${p.name}» öffnen`} aria-disabled={creating} onClick={() => !creating && open(p.id)}>
-                    <IconFolderOpen aria-hidden="true" />
-                    Öffnen
-                  </button>
-                  <button type="button" className="icon-btn" aria-label={`«${p.name}» duplizieren`} aria-disabled={creating} data-tip="Duplizieren" onClick={() => !creating && duplicate(p.id)}>
-                    <IconCopy aria-hidden="true" />
-                  </button>
-                  {formats
-                    .all()
-                    .filter((f) => f.id !== p.formatId)
-                    .map((f) => (
-                      <button
-                        key={f.id}
-                        type="button"
-                        className="icon-btn"
-                        aria-label={`«${p.name}» als ${formatName(f.label)} kopieren`}
-                        aria-disabled={creating}
-                        data-tip={`Als ${formatName(f.label)} kopieren`}
-                        onClick={() => !creating && copyAs(p.id, f.id)}
-                      >
-                        {f.id === 'story' ? <IconDeviceMobile aria-hidden="true" /> : <IconPhoto aria-hidden="true" />}
-                      </button>
-                    ))}
-                  <button type="button" className="icon-btn" aria-label={`«${p.name}» löschen`} aria-disabled={creating} data-tip="Löschen" onClick={() => !creating && askDelete(p)}>
-                    <IconTrash aria-hidden="true" />
-                  </button>
-                </span>
-              </li>
+                {formatHint[f.id] && <span className="format-hint" aria-hidden="true">{formatHint[f.id]}</span>}
+              </button>
             ))}
-          </ul>
-        )}
-      </section>
-
-      <footer>
-        <LicensesDialog />
-      </footer>
-
-      <dialog ref={dialog} aria-labelledby="loeschen-frage" className="confirm-dialog" onClose={() => setToDelete(null)}>
-        <p id="loeschen-frage" className="confirm-text">«{toDelete?.name}» löschen? Das lässt sich nicht rückgängig machen.</p>
-        <div className="actions">
-          <button type="button" onClick={() => dialog.current?.close()}>
-            Abbrechen
+          </div>
+          <button type="button" className="open-file" aria-disabled={creating} onClick={() => !creating && fileInput.current?.click()}>
+            <IconFolderOpen aria-hidden="true" />
+            Projektdatei öffnen
           </button>
-          <button type="button" className="danger" onClick={confirmDelete}>
-            Löschen
-          </button>
-        </div>
-      </dialog>
-    </main>
+          <input
+            ref={fileInput}
+            type="file"
+            accept=".bbzbsocial"
+            hidden
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              if (file) void importFile(file);
+            }}
+          />
+          <p className="local-hint muted">
+            <IconLock aria-hidden="true" />
+            Deine Fotos und Projekte bleiben in diesem Browser. Sichere wichtige Projekte als Projektdatei.
+          </p>
+        </section>
+
+        <section aria-labelledby="liste">
+          <h2 id="liste">Deine Projekte</h2>
+          {projects?.length === 0 && <p className="muted">Noch keine Projekte.</p>}
+          {projects && projects.length > 0 && (
+            <ul className="project-list">
+              {projects.map((p) => (
+                <li key={p.id}>
+                  <span className="project-title">
+                    {p.name}
+                  </span>
+                  <span className="muted">
+                    {formatLabel(p.formatId)} · zuletzt bearbeitet {dateTime(p.updatedAt)}
+                  </span>
+                  <span className="row-actions">
+                    <button type="button" aria-label={`«${p.name}» öffnen`} aria-disabled={creating} onClick={() => !creating && open(p.id)}>
+                      <IconFolderOpen aria-hidden="true" />
+                      Öffnen
+                    </button>
+                    <button type="button" className="icon-btn" aria-label={`«${p.name}» duplizieren`} aria-disabled={creating} data-tip="Duplizieren" onClick={() => !creating && duplicate(p.id)}>
+                      <IconCopy aria-hidden="true" />
+                    </button>
+                    {formats
+                      .all()
+                      .filter((f) => f.id !== p.formatId)
+                      .map((f) => (
+                        <button
+                          key={f.id}
+                          type="button"
+                          className="icon-btn"
+                          aria-label={`«${p.name}» als ${formatName(f.label)} kopieren`}
+                          aria-disabled={creating}
+                          data-tip={`Als ${formatName(f.label)} kopieren`}
+                          onClick={() => !creating && copyAs(p.id, f.id)}
+                        >
+                          {f.id === 'story' ? <IconDeviceMobile aria-hidden="true" /> : <IconPhoto aria-hidden="true" />}
+                        </button>
+                      ))}
+                    <button type="button" className="icon-btn" aria-label={`«${p.name}» löschen`} aria-disabled={creating} data-tip="Löschen" onClick={() => !creating && askDelete(p)}>
+                      <IconTrash aria-hidden="true" />
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <footer>
+          <LicensesDialog />
+        </footer>
+
+        <dialog ref={dialog} aria-labelledby="loeschen-frage" className="confirm-dialog" onClose={() => setToDelete(null)}>
+          <p id="loeschen-frage" className="confirm-text">«{toDelete?.name}» löschen? Das lässt sich nicht rückgängig machen.</p>
+          <div className="actions">
+            <button type="button" onClick={() => dialog.current?.close()}>
+              Abbrechen
+            </button>
+            <button type="button" className="danger" onClick={confirmDelete}>
+              Löschen
+            </button>
+          </div>
+        </dialog>
+      </main>
+    </>
   );
 }

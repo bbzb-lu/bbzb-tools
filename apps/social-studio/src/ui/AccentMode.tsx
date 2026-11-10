@@ -1,5 +1,5 @@
 import { apply, useDoc } from '../store/document';
-import { Segmented } from './kit/Segmented';
+import { Segmented } from '@bbzb/ui';
 
 /** Akzentfarbe des Projekts: fix Orange oder die Farbe des Schulhauses. Eine Wahl = ein apply = ein Undo-Schritt. */
 export function AccentMode() {

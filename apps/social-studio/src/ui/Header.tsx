@@ -1,3 +1,4 @@
+import { Header as BbzbHeader } from '@bbzb/ui';
 import { IconHome, IconArrowForwardUp, IconDeviceFloppy, IconArrowBackUp } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 import { blurIntoMenu } from './ContextMenu';
@@ -11,7 +12,6 @@ import { ExportDialog } from './ExportDialog';
 import { SettingsDialog } from './SettingsDialog';
 import { saveProjectFile } from './projectFileActions';
 import { KEYS, keysAttr } from './keys';
-import { Logo } from './Logo';
 
 export function Header() {
   const name = useDoc((s) => s.project?.name ?? '');
@@ -53,8 +53,7 @@ export function Header() {
   };
 
   return (
-    <header className="editor-header">
-      <Logo className="header-logo" />
+    <BbzbHeader tool="Social Studio" className="editor-header">
       <button type="button" className="icon-btn" aria-label="Übersicht" data-tip="Übersicht" onClick={back}>
         <IconHome aria-hidden="true" />
       </button>
@@ -87,6 +86,6 @@ export function Header() {
         <SettingsDialog />
         <ExportDialog />
       </div>
-    </header>
+    </BbzbHeader>
   );
 }

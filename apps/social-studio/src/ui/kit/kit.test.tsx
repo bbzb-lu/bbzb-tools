@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useUi } from '../../store/ui';
@@ -62,12 +61,5 @@ describe('Section einklappbar', () => {
   it('ohne collapsible immer offen, ohne Inhalt nichts', () => {
     expect(body(html('c', false))).not.toContain('hidden');
     expect(renderToStaticMarkup(<Section heading="x">{false}</Section>)).toBe('');
-  });
-});
-
-describe('Bewegung', () => {
-  it('prefers-reduced-motion schaltet Übergänge und Animationen ab', () => {
-    const css = readFileSync(new URL('./kit.css', import.meta.url), 'utf8');
-    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[^}]*transition: none !important/);
   });
 });

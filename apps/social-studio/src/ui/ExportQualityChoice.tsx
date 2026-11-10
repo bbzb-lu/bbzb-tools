@@ -1,6 +1,6 @@
 import { apply, useDoc } from '../store/document';
 import { exportQuality, type ExportQuality } from '../tokens';
-import { Segmented } from './kit/Segmented';
+import { Segmented } from '@bbzb/ui';
 
 const LABELS: [ExportQuality, string][] = [['klein', 'Klein'], ['standard', 'Standard'], ['hoch', 'Hoch']];
 

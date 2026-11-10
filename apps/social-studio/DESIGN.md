@@ -123,7 +123,7 @@ Neutrale Grautöne aus Tisch, Papier und Tinte, dazu genau ein Akzent.
 **Bedienschrift:** Host Grotesk (400, 600, 700; Fallback Segoe UI, system-ui)
 **Hinweisschrift:** Newsreader (400; Fallback Georgia)
 
-**Character:** Eine sachliche Grotesk mit etwas Eigenart trägt alles, was man bedient; eine ruhige Zeitungs-Serif setzt erklärende Sätze ab. Beide liegen unter `public/fonts/` (OFL) und sind reine Oberflächenschriften: Segoe UI und Braveold bleiben den Exporten vorbehalten.
+**Character:** Eine sachliche Grotesk mit etwas Eigenart trägt alles, was man bedient; eine ruhige Zeitungs-Serif setzt erklärende Sätze ab. Beide kommen aus `@bbzb/ui` (OFL) und sind reine Oberflächenschriften: Segoe UI und Braveold bleiben den Exporten vorbehalten.
 
 ### Hierarchy
 - **Title** (700, 1.75rem): h1 der Startseite.

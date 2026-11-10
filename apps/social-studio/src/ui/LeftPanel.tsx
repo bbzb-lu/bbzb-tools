@@ -1,6 +1,5 @@
 import { useId, useRef, type KeyboardEvent } from 'react';
-import { SlideHighlight } from './kit/SlideHighlight';
-import { useSlidingHighlight } from './kit/slide';
+import { SlideHighlight, useSlidingHighlight } from '@bbzb/ui';
 import { useUi } from '../store/ui';
 import { AddBar } from './AddBar';
 import { BrandLibrary } from './BrandLibrary';

@@ -10,6 +10,10 @@ describe('Header', () => {
     expect(m).toContain('News-Banner');
     expect(m).toContain('aria-label="BBZB Tools, News-Banner, zur Startseite"');
   });
+  it('hängt eine Tool-Klasse an', () => {
+    expect(renderToStaticMarkup(<Header tool="X" className="editor-header" />)).toContain('class="bbzb-header editor-header"');
+    expect(renderToStaticMarkup(<Header tool="X" />)).toContain('class="bbzb-header"');
+  });
   it('rendert Kinder rechts im Kopf', () => {
     expect(renderToStaticMarkup(<Header tool="X"><button>Hilfe</button></Header>)).toContain('<button>Hilfe</button>');
   });

@@ -3,13 +3,13 @@ body:has(.start) { background: var(--table); }
 .start {
   max-width: 76rem;
   margin: 0 auto;
-  padding: 3rem 2rem 3rem;
+  padding: 4rem 2rem 3rem; /* oben 4rem: mit dem Kopf darüber beginnen die Abschnitte wie zuvor unter dem Logo */
   display: grid;
   grid-template-columns: minmax(0, 27rem) minmax(0, 1fr);
   gap: 2rem 3rem;
   align-items: start;
 }
-.start h1, .start footer { grid-column: 1 / -1; }
+.start footer { grid-column: 1 / -1; }
 .start section { display: grid; gap: 0.75rem; }
 .start footer { justify-self: start; }
 .start footer button { border: 0; box-shadow: none; background: transparent; padding: 0 0.25rem; }

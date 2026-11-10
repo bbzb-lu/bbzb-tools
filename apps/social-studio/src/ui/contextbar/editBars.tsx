@@ -4,7 +4,7 @@ import type { ContextBarState } from '../../core/types';
 import { useUi } from '../../store/ui';
 import { brush as tokens } from '../../tokens';
 import { ContextBar } from '../ContextBar';
-import { Segmented } from '../kit/Segmented';
+import { Segmented } from '@bbzb/ui';
 import { Slider } from '../Slider';
 
 function CropBar() {

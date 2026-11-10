@@ -10,7 +10,7 @@ import { useDoc } from '../store/document';
 import { useUi } from '../store/ui';
 import { errorText } from './errors';
 import { KEYS, keysAttr } from './keys';
-import { Segmented } from './kit/Segmented';
+import { Segmented } from '@bbzb/ui';
 import { contentRules } from './layoutActions';
 
 const Info = ({ children }: { children: string }) => (

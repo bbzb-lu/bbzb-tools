@@ -1,5 +1,5 @@
 import { useEffect, useRef, type RefObject } from 'react';
-import { frameOnce, reducedMotion } from './slide';
+import { frameOnce, reducedMotion } from '@bbzb/ui';
 
 export const ROLL_MS = 100;
 

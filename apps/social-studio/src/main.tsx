@@ -6,15 +6,19 @@ import { startAutosave } from './storage/autosave';
 import { useUi } from './store/ui';
 import { installTestHook } from './testHook';
 import { App } from './ui/App';
-import { applyTheme, loadUiFonts } from './ui/theme';
-import './ui/fonts.css';
+import { applyStudioTheme, loadUiFonts } from './ui/theme';
+import '@bbzb/ui/fonts.css';
+import '@bbzb/ui/base.css';
 import './ui/app.css';
+// Reihenfolge wie vor dem Umzug: Grundregeln, Editor, Bauteile (geteilt, dann eigene), Kopf
+import '@bbzb/ui/kit.css';
 import './ui/kit/kit.css';
 import './ui/slider.css';
 import './ui/inspector.css';
 import './ui/contextbar.css';
+import '@bbzb/ui/header.css';
 
-applyTheme(document.documentElement);
+applyStudioTheme(document.documentElement);
 registerPlugins();
 void navigator.storage?.persist?.().catch(() => {});
 void loadBrandFonts().then(({ missing }) => useUi.getState().setFonts(missing));

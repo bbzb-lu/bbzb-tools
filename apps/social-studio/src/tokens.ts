@@ -214,9 +214,6 @@ export const slider = { track: 6, thumb: 20, thumbHeight: 28, hit: 28 } as const
 /** Bereichsregler (Video kürzen) wie «Bereichsregler» im Pen-Entwurf: Klammern 12 × 32 px mit Stab und Füssen 5 px, Schiene 8 px. */
 export const range = { handle: 12, handleHeight: 32, bar: 5, rail: 8 } as const;
 
-/** Bildlaufleisten der Oberfläche: Breite und Höhe in px (grosses Ziel, 125 % Skalierung bleibt benutzbar). */
-export const scrollbar = { size: 14 } as const;
-
 /** Video (Phase 3): Grenzen und Export. Bitrate für 1080x1350 H.264 (ca. 8 Mbit/s). */
 /** Exportqualität (Projekteinstellung `exportQuality`, fehlt = standard): Video-Bitrate in bit/s und JPEG-Qualität. */
 export const exportQuality = {

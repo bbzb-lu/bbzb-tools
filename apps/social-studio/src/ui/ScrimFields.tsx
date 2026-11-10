@@ -3,7 +3,7 @@ import type { Icon } from '@tabler/icons-react';
 import { useId } from 'react';
 import type { Scrim, ScrimSide } from '../model/scrim';
 import { scrim as scrimTokens } from '../tokens';
-import { Segmented } from './kit/Segmented';
+import { Segmented } from '@bbzb/ui';
 import { Slider } from './Slider';
 
 export const SIDE: Record<ScrimSide, [string, Icon]> = {

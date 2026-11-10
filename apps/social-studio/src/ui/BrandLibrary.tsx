@@ -7,8 +7,7 @@ import { tagPreviewFill } from '../model/accent';
 import { colors, onAccent } from '../tokens';
 import { DoodleSearch } from './DoodleSearch';
 import { IconSearch } from './IconSearch';
-import { SlideHighlight } from './kit/SlideHighlight';
-import { useSlidingHighlight } from './kit/slide';
+import { SlideHighlight, useSlidingHighlight } from '@bbzb/ui';
 import { Item, Thumb } from './LibraryTile';
 
 type TabId = 'scribble' | 'icon' | 'tag' | 'doodle';
