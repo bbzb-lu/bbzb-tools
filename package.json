@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "build": "node scripts/build.mjs",
-    "fonts": "node scripts/fonts.mjs"
+    "fonts": "node scripts/fonts.mjs",
+    "neues-tool": "node scripts/neues-tool.mjs"
   },
   "dependencies": {
     "react": "19.3",
