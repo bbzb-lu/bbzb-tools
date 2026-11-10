@@ -1,0 +1,95 @@
+{
+  "id": "abschluss",
+  "label": "Abschluss",
+  "family": "abschluss",
+  "format": "post",
+  "slides": 1,
+  "background": "warmweiss",
+  "elements": [
+    {
+      "type": "tag",
+      "role": "schulTag",
+      "name": "Schul-Tag",
+      "x": 72,
+      "y": 72,
+      "width": 323,
+      "height": 62,
+      "props": {
+        "variant": "schul",
+        "text": "Bahnhof"
+      }
+    },
+    {
+      "type": "text",
+      "role": "titel",
+      "name": "Titel",
+      "x": 62,
+      "y": 205,
+      "width": 946,
+      "height": 100,
+      "props": {
+        "text": "Neugierig\ngeworden?",
+        "style": "titel",
+        "color": "blau",
+        "fontSize": 150,
+        "align": "left",
+        "lineHeight": 113,
+        "tracking": -15
+      }
+    },
+    {
+      "type": "text",
+      "role": "kommentar",
+      "name": "Kommentar",
+      "x": 72,
+      "y": 561,
+      "width": 936,
+      "height": 100,
+      "props": {
+        "text": "Mehr aus dem Schulalltag\nund zu unseren Lehrberufen:",
+        "style": "kommentar",
+        "color": "blauschwarz",
+        "fontSize": 54,
+        "align": "left",
+        "lineHeight": 103
+      }
+    },
+    {
+      "type": "tag",
+      "role": "cta",
+      "name": "CTA",
+      "x": 72,
+      "y": 735,
+      "width": 318,
+      "height": 75,
+      "props": {
+        "variant": "cta",
+        "text": "LINK IN BIO"
+      }
+    },
+    {
+      "type": "brand",
+      "role": "scribble",
+      "name": "Pfeil",
+      "x": 420,
+      "y": 821.5,
+      "width": 236,
+      "height": 107,
+      "props": {
+        "brandId": "scribble-05",
+        "color": "akzent",
+        "flipX": true
+      }
+    },
+    {
+      "type": "photo",
+      "role": "freisteller",
+      "name": "Freisteller",
+      "x": 719,
+      "y": 530,
+      "width": 361,
+      "height": 820,
+      "props": {}
+    }
+  ]
+}

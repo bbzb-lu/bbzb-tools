@@ -1,0 +1,106 @@
+/* Regler: Masse aus tokens.ts (main.tsx setzt --slider-*). Eckig, Bahn mit Füllung, Griff bündig an den Bahnenden. */
+:root {
+  --slider-rest: var(--ink); /* Entwurf: die ganze Bahn ist Tinte; nur Mitte-Regler füllen von der Mitte bis zum Griff in Akzent (Tinte auf Akzent 3:1) */
+}
+/* Beschriftung oben (Oberflächenschrift, fett), darunter eine Zeile: Bahn mit Skalenstrichen, Zahlenfeld mit Einheit rechts */
+fieldset.choice.slider { grid-template-columns: minmax(0, 1fr); gap: 0.25rem 0; }
+fieldset.choice.slider > legend { float: none; margin: 0 0 0.25rem; padding: 0; font: 600 0.875rem/1.25 var(--font-ui); color: var(--ink); }
+.slider-row { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.slider-track { flex: 1 1 0; min-width: 0; display: grid; }
+.slider-short .slider-track { flex: 0 1 7rem; }
+.slider-short .slider-row { justify-content: space-between; }
+/* Skalenstriche wie im Entwurf: 11 Striche (1.5 px, Tinte weich), Enden und Mitte lang; Griffmitte läuft von thumb/2 bis Breite − thumb/2.
+   Das Feld ist 12 px hoch: oben 2 px frei für die Mittelmarke der Mitte-Variante, Striche ab 2 px. Rückt unter den Griff wie im Entwurf. */
+.slider-ticks::after {
+  --tick: var(--ink-soft);
+  content: '';
+  height: 12px;
+  margin: -5px calc(var(--slider-thumb) / 2) 0;
+  pointer-events: none; /* liegt unter dem Griff: Zeiger gehen an den Regler durch */
+  background:
+    linear-gradient(var(--tick), var(--tick)) 0 2px / 1.5px 9px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 50% 2px / 1.5px 9px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 100% 2px / 1.5px 9px no-repeat,
+    repeating-linear-gradient(to right, var(--tick) 0 1.5px, transparent 1.5px calc((100% - 1.5px) / 10)) 0 2px / 100% 5px no-repeat;
+}
+/* Mitte-Variante: Mittelmarke 2 × 12 px in Tinte statt des langen Mittelstrichs */
+.slider-center .slider-ticks::after {
+  background:
+    linear-gradient(var(--ink), var(--ink)) 50% 0 / 2px 12px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 0 2px / 1.5px 9px no-repeat,
+    linear-gradient(var(--tick), var(--tick)) 100% 2px / 1.5px 9px no-repeat,
+    repeating-linear-gradient(to right, var(--tick) 0 1.5px, transparent 1.5px calc((100% - 1.5px) / 10)) 0 2px / 100% 5px no-repeat;
+}
+.slider-ends { order: 1; display: flex; justify-content: space-between; font: 0.75rem/1.2 var(--font-serif); color: var(--ink-soft); }
+.slider-field { display: flex; align-items: center; gap: 0.25rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+/* Keine Pfeilknöpfe des Browsers: Pfeiltasten und Regler ändern den Wert */
+.slider-field input[type='number'] { appearance: textfield; -moz-appearance: textfield; }
+.slider-field input[type='number']::-webkit-inner-spin-button, .slider-field input[type='number']::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.slider-unit { width: 1rem; } /* immer reserviert: alle Zahlenfelder fluchten, mit oder ohne «%» */
+.slider-field input[type='number'] { width: 3.5rem; padding: 0 0.5rem; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+
+/* Der globale input-Stil (Rahmen, Innenabstand, Mindesthöhe) darf die Bahn nicht verkürzen: sonst endet der Griff vor dem Bahnende */
+input.slider-input { /* «input.» schlägt «input:disabled» aus app.css, sonst verschwindet die Bahn am gesperrten Regler */
+  /* Griffmitte läuft von thumb/2 bis Breite − thumb/2; die Füllung rechnet genauso und läuft von --a (Anfang, bei «center» die Nullstelle) bis --stop */
+  --a: 0px;
+  --fill: var(--ink);
+  --stop: calc(var(--slider-thumb) / 2 + (100% - var(--slider-thumb)) * var(--hi) / 100);
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--slider-hit);
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* Bahn und Füllung auf dem Eingabefeld selbst gemalt (nicht auf dem Pseudo-Element): so bleibt sie auf jedem Gerät sichtbar */
+  background: linear-gradient(to right, var(--slider-rest) var(--a), var(--fill) var(--a), var(--fill) var(--stop), var(--slider-rest) var(--stop)) center / 100% var(--slider-track) no-repeat;
+  cursor: pointer;
+}
+.slider-center .slider-input { --fill: var(--accent); --a: calc(var(--slider-thumb) / 2 + (100% - var(--slider-thumb)) * var(--lo) / 100); }
+/* Den Griff malt ein eigenes Element (.slider-thumb): in Edge, Chrome, Safari und Firefox gleich. Der Griff des Browsers bleibt gleich gross, aber unsichtbar:
+   Zeiger, Tastatur und Bildschirmleser bedienen weiter das Eingabefeld, und Klick und Ziehen rechnen mit derselben Griffbreite. */
+.slider-input:focus-visible { outline: none; }
+.slider-input:disabled { cursor: not-allowed; }
+.slider-input::-webkit-slider-runnable-track { height: var(--slider-track); background: transparent; }
+.slider-input::-webkit-slider-thumb {
+  appearance: none;
+  width: var(--slider-thumb);
+  height: var(--slider-thumb-height);
+  margin-top: calc((var(--slider-track) - var(--slider-thumb-height)) / 2);
+  border: 0;
+  background: transparent;
+}
+.slider-input::-moz-range-track { background: transparent; }
+.slider-input::-moz-range-thumb { width: var(--slider-thumb); height: var(--slider-thumb-height); border: 0; border-radius: 0; background: transparent; }
+/* Griff wie «Fader»: 20 × 28 px Papier, Rand 1.5 px Tinte, Akzentmarke 4 × 20 px mittig (8 px von links, 4 px von oben), kein Schatten. Liegt über den Teilstrichen. */
+.slider-thumb {
+  grid-area: 1 / 1;
+  z-index: 1;
+  align-self: center;
+  justify-self: start;
+  box-sizing: border-box;
+  width: var(--slider-thumb);
+  height: var(--slider-thumb-height);
+  margin-left: calc((100% - var(--slider-thumb)) * var(--at) / 100);
+  position: relative; /* Bezug für Papierfläche und Marke */
+  background: var(--ink);
+  pointer-events: none;
+}
+/* Rand als Tinte unter einer Papierfläche 1.5 px weiter innen: «border: 1.5px» rundet Chromium auf 1 px ab; so sind es zusammen 3 px (Safari, Firefox je 1.5 px, Chromium 2 + 1) */
+.slider-thumb::before, .slider-thumb::after { content: ''; position: absolute; }
+.slider-thumb::before { inset: 1.5px; background: var(--paper); }
+.slider-thumb::after { inset: 4px 8px; background: var(--accent); }
+.slider-input { grid-area: 1 / 1; }
+.slider-input:focus-visible + .slider-thumb { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Windows-Kontrastmodus: Systemfarben, die Füllung bleibt am Griff */
+@media (forced-colors: active) {
+  .slider-input { forced-color-adjust: none; }
+  input.slider-input { background: linear-gradient(to right, GrayText var(--a), Highlight var(--a), Highlight var(--stop), GrayText var(--stop)) center / 100% var(--slider-track) no-repeat; }
+  .slider-thumb { forced-color-adjust: none; background: ButtonText; }
+  .slider-thumb::before, .slider-thumb::after { display: none; }
+  .slider-input:focus-visible + .slider-thumb { outline: 3px solid Highlight; }
+  .slider-input:disabled { background: linear-gradient(GrayText, GrayText) center / 100% var(--slider-track) no-repeat; }
+  .slider-input:disabled + .slider-thumb { background: GrayText; }
+}

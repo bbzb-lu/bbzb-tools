@@ -1,0 +1,65 @@
+{
+  "id": "panorama",
+  "label": "Panorama",
+  "family": "panorama",
+  "format": "post",
+  "slides": 2,
+  "background": "blau",
+  "elements": [
+    {
+      "type": "photo",
+      "role": "foto",
+      "name": "Foto",
+      "x": 0,
+      "y": 0,
+      "width": 2160,
+      "height": 1350,
+      "props": {}
+    },
+    {
+      "type": "text",
+      "role": "kommentar",
+      "name": "Kommentar",
+      "x": 71,
+      "y": 635,
+      "width": 937,
+      "height": 100,
+      "props": {
+        "text": "Wahlangebote fürs\n3. und 4. Lehrjahr.",
+        "style": "kommentar",
+        "color": "warmweiss",
+        "fontSize": 66,
+        "align": "left"
+      }
+    },
+    {
+      "type": "text",
+      "role": "kommentar",
+      "name": "Kommentar",
+      "x": 1152,
+      "y": 76,
+      "width": 936,
+      "height": 100,
+      "props": {
+        "text": "Golf, Kajak\nund Flowtrail.",
+        "style": "kommentar",
+        "color": "blauschwarz",
+        "fontSize": 66,
+        "align": "right"
+      }
+    },
+    {
+      "type": "brand",
+      "role": "scribble",
+      "name": "Pfeil",
+      "x": 870,
+      "y": 612,
+      "width": 420,
+      "height": 191,
+      "props": {
+        "brandId": "scribble-05",
+        "color": "akzent"
+      }
+    }
+  ]
+}

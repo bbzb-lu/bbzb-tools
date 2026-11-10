@@ -1,0 +1,72 @@
+{
+  "id": "titel",
+  "label": "Titel",
+  "family": "titel",
+  "format": "post",
+  "slides": 1,
+  "background": "blau",
+  "elements": [
+    {
+      "type": "photo",
+      "role": "foto",
+      "name": "Foto",
+      "x": 0,
+      "y": 0,
+      "width": 1080,
+      "height": 1350,
+      "props": {
+        "scrim": {
+          "side": "oben",
+          "strength": "leicht"
+        }
+      }
+    },
+    {
+      "type": "text",
+      "role": "titel",
+      "name": "Titel",
+      "x": 59,
+      "y": 161,
+      "width": 949,
+      "height": 100,
+      "props": {
+        "text": "Sommer\nsport\ntage",
+        "style": "titel",
+        "color": "warmweiss",
+        "fontSize": 222,
+        "align": "left"
+      }
+    },
+    {
+      "type": "text",
+      "role": "kommentar",
+      "name": "Kommentar",
+      "x": 72,
+      "y": 1057,
+      "width": 936,
+      "height": 100,
+      "props": {
+        "text": "Seilpark, Flowtrail\nund Schwyzerörgeli.",
+        "style": "kommentar",
+        "color": "warmweiss",
+        "fontSize": 62,
+        "align": "left",
+        "lineHeight": 101
+      }
+    },
+    {
+      "type": "tag",
+      "role": "schulTag",
+      "name": "Schul-Tag",
+      "x": 685,
+      "y": 72,
+      "width": 323,
+      "height": 62,
+      "props": {
+        "variant": "schul",
+        "text": "Bahnhof"
+      },
+      "anchorRight": true
+    }
+  ]
+}

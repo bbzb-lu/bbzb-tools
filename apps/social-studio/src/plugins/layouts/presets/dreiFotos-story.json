@@ -1,0 +1,77 @@
+{
+  "id": "dreiFotos-story",
+  "label": "Drei Fotos",
+  "family": "dreiFotos",
+  "format": "story",
+  "slides": 1,
+  "background": "blau",
+  "grain": true,
+  "elements": [
+    {
+      "type": "photo",
+      "role": "foto",
+      "name": "Foto 1",
+      "x": 72,
+      "y": 309,
+      "width": 780,
+      "height": 380,
+      "props": {}
+    },
+    {
+      "type": "photo",
+      "role": "foto",
+      "name": "Foto 2",
+      "x": 228,
+      "y": 725,
+      "width": 780,
+      "height": 380,
+      "props": {}
+    },
+    {
+      "type": "photo",
+      "role": "foto",
+      "name": "Foto 3",
+      "x": 72,
+      "y": 1141,
+      "width": 780,
+      "height": 380,
+      "props": {}
+    },
+    {
+      "type": "photo",
+      "role": "sticker",
+      "name": "Sticker",
+      "x": 600,
+      "y": 1030,
+      "width": 450,
+      "height": 163,
+      "props": {}
+    },
+    {
+      "type": "brand",
+      "role": "scribble",
+      "name": "Funkeln",
+      "x": 832,
+      "y": 350,
+      "width": 210,
+      "height": 160,
+      "props": {
+        "brandId": "scribble-10",
+        "color": "akzent"
+      }
+    },
+    {
+      "type": "brand",
+      "role": "scribble",
+      "name": "Pfeil",
+      "x": 26,
+      "y": 841,
+      "width": 189,
+      "height": 86,
+      "props": {
+        "brandId": "scribble-05",
+        "color": "akzent"
+      }
+    }
+  ]
+}
