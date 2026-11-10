@@ -11,7 +11,17 @@ export function fontsStatus(dir) {
   return existsSync(join(dir, 'Braveold-Light.otf')) ? 'ok' : 'missing';
 }
 
+/** Für `--check` (CI-Checkout ohne Git-Zugang): Fehlermeldung oder null, wenn die Schrift da ist. */
+export function checkFonts(dir) {
+  return fontsStatus(dir) === 'ok' ? null : `Braveold-Light.otf fehlt in ${dir}/. Ohne die Schrift wird nicht deployt.`;
+}
+
 function run() {
+  if (process.argv.includes('--check')) {
+    const error = checkFonts(DIR);
+    if (error) console.error(error);
+    process.exit(error ? 1 : 0);
+  }
   const strict = process.argv.includes('--strict');
   const git = (args) => execFileSync('git', args, { stdio: 'inherit', env: { ...process.env, GIT_TERMINAL_PROMPT: '0' } });
   try {
