@@ -28,6 +28,9 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      # Live-Build wie beim Deploy, ohne Testhaken
+      - run: npm run build
+      - run: node scripts/check-live-build.mjs
       - name: Braveold nicht im öffentlichen Repo
         run: "! git ls-files | grep -i braveold"
 

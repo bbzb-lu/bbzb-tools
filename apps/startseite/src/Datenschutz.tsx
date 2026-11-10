@@ -13,8 +13,8 @@ export function Datenschutz() {
         <h2>Ausnahmen</h2>
         <p>Das Social Studio lädt beim Freistellen KI-Modelle von Hugging Face herunter. Dabei wird nichts von dir gesendet, deine Bilder bleiben im Browser.</p>
         <p>
-          Nachprüfen: Jede Seite schickt eine Content-Security-Policy, die dem Browser verbietet, Daten an andere Adressen zu senden. Du
-          siehst sie in den Entwicklertools unter Netzwerk. Der Quellcode ist öffentlich, und ein automatischer Test prüft bei jeder
+          Nachprüfen: Jede Seite schickt eine Content-Security-Policy, die dem Browser verbietet, Daten an andere Adressen zu senden.
+          Einzige Ausnahme ist der Download der KI-Modelle im Social Studio. Du siehst die Regeln in den Entwicklertools unter Netzwerk. Der Quellcode ist öffentlich, und ein automatischer Test prüft bei jeder
           Änderung, dass keine fremden Adressen angefragt werden.
         </p>
       </main>

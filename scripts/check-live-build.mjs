@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const KEY = '__bbzbTest'; // globaler Schlüssel aus apps/social-studio/src/testHook.ts
+export const KEY = '__bbzbTest'; // globaler Schlüssel aus apps/social-studio/src/testHook.ts
 
 /** Dateien unter `dir`, die den Schlüssel des Testhakens enthalten. */
 export function findTestHook(dir) {
