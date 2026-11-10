@@ -43,10 +43,7 @@ Am BBZB Luzern entstehen laufend kleine Webtools, die Mitarbeitenden und Lehrper
 - npm-Workspaces, keine Zusatzwerkzeuge (kein Turborepo, kein Nx).
 - `apps/<tool>/` je ein Vite-Projekt mit eigenem `base` (`/social-studio/`, `/news-banner/`). Die Startseite ist ebenfalls eine App unter `/`.
 - `embeds/<name>/` die sechs Embeds als statische Ordner unter `/sharepoint/<name>/`. Snake und Gruppengenerator sind nicht eingebunden und ziehen nicht um. `bbzb-hub-template` wird `embeds/_vorlage/` für neue Embeds (Entscheid Claude). RawPixel ist lizenziert und liegt schon heute in öffentlichen Repos, sie bleibt öffentlich. Gemeinsame Schrift RawPixel, Icons und Grundstile liegen einmal in `embeds/_shared/` statt sechsfach kopiert. Jedes Embed hat eine kleine Beschreibung (Name, Datum, Art) für die Übersicht.
-- `packages/` für Gemeinsames, zu Beginn genau drei:
-  - `ui`: Bauteile aus `src/ui/kit/`, Oberflächenfarben (`theme.ts`), `base.css`, `fonts.css`, UI-Schriften, gemeinsamer Kopf.
-  - `brand`: CI-Farben, Segoe UI, Einbindung von Braveold.
-  - `config`: TypeScript, ESLint, Playwright-Grundeinstellung, der Netzwerk-Test, der prüft, dass nichts nach aussen geht.
+- `packages/` für Gemeinsames. Zu Beginn nur `ui`: Bauteile aus `src/ui/kit/`, Oberflächenfarben (`theme.ts`), `base.css`, `fonts.css`, UI-Schriften, gemeinsamer Kopf. `brand` (CI-Farben, Segoe UI, Braveold) entsteht beim Umzug des Studios, weil das Banner weder Segoe noch die CI-Farben nutzt. Konfiguration (TypeScript, ESLint, Vitest, Playwright, Netzwerk-Test) liegt im Hauptordner statt in einem Paket (Entscheid Claude, beim Planen geändert).
 - Regel für später: Etwas wandert erst nach `packages/`, wenn ein zweites Tool es wirklich braucht. Das Speichern (Dexie, OPFS, Edge-Kniff aus `src/storage/db.ts`) wird deshalb erst dann ein Paket `storage`, wenn das Banner speichern lernt.
 - Die heute auseinandergelaufenen Stände von `theme.ts` und `kit.css` werden zusammengeführt: Grundlage ist der Stand des Studio, studio-eigene Regeln (Bibliothek, Zahlenrolle, Farbfelder) bleiben im Studio.
 - Build: jede App baut sich selbst, ein Skript legt alle Ergebnisse und die Embeds in einen Ordner `dist/`. Ein Cloudflare-Pages-Projekt `bbzb-tools`.
@@ -69,7 +66,7 @@ Am BBZB Luzern entstehen laufend kleine Webtools, die Mitarbeitenden und Lehrper
 - Ein neues Tool: Vorlage `apps/_vorlage/` kopieren (oder ein Befehl, der das tut), Kachel eintragen, fertig. Wie genau, entscheidet der Builder.
 
 ## Reihenfolge
-1. Fundament: Workspaces, die drei Pakete, CI, automatischer Deploy, privates Schriften-Repo, Labels und Board.
+1. Fundament: Workspaces, Paket `ui`, CI, automatischer Deploy, Labels und Board. Das private Schriften-Repo kommt mit dem Studio.
 2. Startseite mit Kacheln, gemeinsamer Kopf, Seite «Datenschutz».
 3. News-Banner umziehen (klein, prüft das Fundament).
 4. Social Studio umziehen, inklusive Dateiprüfung und Braveold-Einbindung.
