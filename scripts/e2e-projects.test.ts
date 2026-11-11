@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { pick } from './e2e-projects.mjs';
 
-const ids = ['news-banner', 'social-studio'];
+const ids = ['news-banner', 'sharepoint', 'social-studio'];
 
 describe('pick', () => {
   it('nur ein Tool geändert: Suite und dieses Tool', () => {
@@ -16,5 +16,8 @@ describe('pick', () => {
   });
   it('Vorlage oder Tool ohne e2e: nur die Suite', () => {
     expect(pick(['apps/_vorlage/src/App.tsx'], ids)).toEqual(['suite']);
+  });
+  it('Embeds geändert: Suite und SharePoint-Übersicht', () => {
+    expect(pick(['embeds/sudoku/script.js', 'embeds/_shared/icons/x.png'], ids)).toEqual(['suite', 'sharepoint']);
   });
 });
