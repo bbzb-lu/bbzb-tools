@@ -53,7 +53,7 @@ export function Header() {
   };
 
   return (
-    <BbzbHeader tool="Social Studio" className="editor-header">
+    <BbzbHeader tool="Social Studio" feedback="Social Studio" className="editor-header">
       <button type="button" className="icon-btn" aria-label="Übersicht" data-tip="Übersicht" onClick={back}>
         <IconHome aria-hidden="true" />
       </button>

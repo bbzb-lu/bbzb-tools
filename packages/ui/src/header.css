@@ -3,3 +3,5 @@
 .bbzb-wordmark-name { font-size: 22px; line-height: 29px; letter-spacing: -0.5px; color: var(--ink); }
 .bbzb-wordmark-tool { font-size: 11px; line-height: 15px; letter-spacing: 3px; color: var(--accent); }
 .bbzb-wordmark { margin-right: auto; }
+.bbzb-feedback { flex: none; font-size: 14px; font-weight: 600; color: var(--ink); text-underline-offset: 0.2em; white-space: nowrap; }
+.bbzb-feedback:hover { color: var(--accent); }

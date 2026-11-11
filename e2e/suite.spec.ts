@@ -62,3 +62,13 @@ test('connect-src: nur das Social Studio darf KI-Modelle von Hugging Face laden'
     expect(connect, p).toEqual([p === '/social-studio/' ? "connect-src 'self' https://huggingface.co https://*.hf.co" : "connect-src 'self'"]);
   }
 });
+
+test('Startseite: Datenschutz-Satz, Feedback, LegicCard verlinkt GitHub in neuem Tab', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByText('Alles bleibt in deinem Browser')).toBeVisible();
+  await expect(page.getByRole('link', { name: /Feedback geben/ })).toHaveAttribute('href', /=%22Startseite%22$/);
+  const legic = page.getByRole('link', { name: /LegicCard Creator/ });
+  await expect(legic).toHaveAttribute('href', 'https://github.com/alexejwaser/Identity-Card-Photo-Creator');
+  await expect(legic).toHaveAttribute('target', '_blank');
+  await expect(page.getByRole('region', { name: 'Zuletzt bearbeitet' })).toHaveCount(0); // leer: kein Bereich
+});

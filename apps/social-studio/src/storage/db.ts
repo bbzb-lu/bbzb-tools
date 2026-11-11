@@ -1,3 +1,4 @@
+import { merkeZuletzt, vergissZuletzt } from '@bbzb/ui';
 import Dexie, { type EntityTable } from 'dexie';
 import type { Project } from '../model/types';
 
@@ -29,6 +30,7 @@ export async function saveProject(p: Project, keep?: string[]): Promise<void> {
   const t = db.backendDB().transaction('projects', 'readwrite');
   t.objectStore('projects').put(row);
   t.commit();
+  merkeZuletzt({ tool: 'social-studio', id: p.id, name: p.name, geaendert: p.updatedAt }); // für «Zuletzt» auf der Startseite
   await new Promise<void>((resolve, reject) => {
     t.oncomplete = () => resolve();
     t.onabort = () => reject(t.error ?? new DOMException('Speichern abgebrochen', 'AbortError'));
@@ -46,4 +48,5 @@ export async function listProjects(): Promise<ProjectSummary[]> {
 
 export async function deleteProject(id: string): Promise<void> {
   await db.projects.delete(id);
+  vergissZuletzt('social-studio', id);
 }

@@ -8,5 +8,8 @@
     "build": "vite build",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": { "@bbzb/ui": "*" }
+  "dependencies": {
+    "@bbzb/ui": "*",
+    "@tabler/icons-react": "3.49.0"
+  }
 }

@@ -9,5 +9,9 @@ Gemeinsame Oberfläche aller BBZB-Tools: Kopf (`Header`), Bauteile (`Button`, `S
 - UI-Texte Deutsch, Schweizer Rechtschreibung, Du-Form, keine Halbgeviertstriche (–).
 - Die Schriften Host Grotesk und Newsreader sind OFL, Lizenztexte in `src/licenses/`.
 
+## Für alle Tools
+- `Header({ tool, feedback })`: `feedback` ist die Option «Tool» im Microsoft-Forms-Formular (`src/feedback.ts`). Neues Tool: Option dort gleich benennen, sonst ist nichts vorausgewählt.
+- `merkeZuletzt()` beim Speichern, `vergissZuletzt()` beim Löschen: speist «Zuletzt bearbeitet» auf der Startseite. Das Tool öffnet `/<id>/?projekt=<id>` direkt (Vorbild: Studio `StartPage.tsx`).
+
 ## Herkunft
 Der Look stammt aus dem Social Studio. `DESIGN.md` und der Pen-Entwurf bleiben im Studio-Ordner (ab Plan 2 hier im Repo). UI-Änderungen mit dem Impeccable-Skill gestalten und prüfen.
