@@ -67,6 +67,7 @@ test('Text aus Phase 1.2 hat Zeilenabstand und Laufweite des Stils', async ({ pa
 const golden12 = PNG.sync.read(readFileSync(`${import.meta.dirname}/golden/phase-1-2.png`));
 
 test('Phase 1.2 sieht gleich aus wie vorher; sichern und wieder öffnen behält alles', async ({ page }) => {
+  test.fixme(process.platform === 'win32', 'Windows weicht vom Mac-Referenzbild ab: github.com/bbzb-lu/bbzb-tools/issues/8');
   await page.goto('');
   await page.locator('input[type=file]').setInputFiles({ name: 'phase-1-2.bbzbsocial', mimeType: 'application/zip', buffer: phase12 });
   await page.getByRole('button', { name: '«Phase 1.2» öffnen', exact: true }).click();

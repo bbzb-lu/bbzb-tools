@@ -27,6 +27,7 @@ async function sizes(page: Page, label: 'Klein' | 'Hoch') {
 }
 
 test('Exportqualität: «Hoch» liefert grössere JPEG und MP4 als «Klein»', async ({ page }) => {
+  test.fixme(process.platform === 'win32', 'Windows-Encoder: MP4 kaum grösser, github.com/bbzb-lu/bbzb-tools/issues/7');
   await newProject(page, 'Post 4:5');
   await addPhoto(page, { name: 'f.png', mimeType: 'image/png', buffer: gradientPng(1080, 1350) });
   await addSlide(page);

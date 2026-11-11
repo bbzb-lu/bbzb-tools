@@ -37,6 +37,7 @@ const grid = f.flatMap((y) => f.map((x): [number, number] => [x, y]));
 
 for (const clip of ['landscape-h264-aac.mp4', 'tagged-bt709.mp4', 'rotated-90.mov']) {
   test(`Farben: Editor-Startbild und erstes MP4-Bild stimmen überein (${clip})`, async ({ page }) => {
+    test.fixme(process.platform === 'win32' && clip === 'tagged-bt709.mp4', 'Windows: <video> zeigt BT.709 anders, github.com/bbzb-lu/bbzb-tools/issues/6');
     await newProject(page, 'Post 4:5');
     const id = await addVideo(page, `${DIR}/${clip}`);
     await setVideo(page, id, { start: T, end: T + 1 });

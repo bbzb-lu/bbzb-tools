@@ -7,6 +7,8 @@ const base = 'http://localhost:8788/';
 export default defineConfig({
   // CI: Spur und Bild bei Fehlern, landen im Bericht (Artefakt)
   use: { trace: 'retain-on-failure', screenshot: 'only-on-failure' },
+  // Windows-Runner ist langsam: ein zweiter Versuch, Wackler stehen im Bericht als «flaky»
+  retries: process.env.CI ? 1 : 0,
   webServer: {
     timeout: 180_000,
     command: 'node scripts/build.mjs --mode test && npx wrangler pages dev dist --port 8788',

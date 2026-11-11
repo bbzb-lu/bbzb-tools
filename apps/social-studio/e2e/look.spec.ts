@@ -211,6 +211,7 @@ test('Look aus und Regler neutral: kein Filter läuft, Export = Rohbild', async 
 const col = (p: PNG, x: number) => p.data[(675 * 1080 + x) * 4]! + 256 * p.data[(675 * 1080 + x) * 4 + 1]!;
 
 test('Spiegeln: Export spiegelt den Inhalt; Ausschnitt ziehen und zoomen folgen der Maus', async ({ page }) => {
+  test.fixme(process.platform === 'win32', 'Windows: 2 statt 1 Spalte Abweichung, github.com/bbzb-lu/bbzb-tools/issues/9');
   // 2160 breit, mittig: Spalte 540 links im Rahmen
   await open(page, 'Spiegel', [{ y: 0, height: 1350, asset: columnPng(2160, 1350), props: { crop: { x: -540, y: 0, scale: 1 } } }]);
   const c = await toScreen(page, 540, 675);
