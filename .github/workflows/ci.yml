@@ -34,9 +34,28 @@ jobs:
       - name: Braveold nicht im öffentlichen Repo
         run: "! git ls-files | grep -i braveold"
 
+  # Welche Playwright-Projekte laufen: im PR nur geänderte Tools, bei Gemeinsamem und auf main alle
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      projects: ${{ steps.p.outputs.projects }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - id: p
+        run: node scripts/e2e-projects.mjs "${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || '' }}" >> "$GITHUB_OUTPUT"
+
   e2e:
+    needs: changes
+    # Windows mit Edge ist die Zielplattform; Linux war nicht schneller und weicht bei Video und Pixeln ab
     runs-on: windows-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -55,14 +74,14 @@ jobs:
       - name: Testvideos
         shell: bash
         run: sh apps/social-studio/scripts/make-test-videos.sh
-      # channel msedge nutzt das vorinstallierte Edge
-      - run: npm run test:e2e -- --reporter=html
+      - run: npm run test:e2e -- ${{ needs.changes.outputs.projects }} --shard ${{ matrix.shard }}/3 --pass-with-no-tests --reporter=html
+        shell: bash
         env:
           PLAYWRIGHT_HTML_OPEN: never
       - uses: actions/upload-artifact@v5
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
 
   deploy:
