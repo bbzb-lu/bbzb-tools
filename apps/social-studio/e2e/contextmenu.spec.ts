@@ -216,6 +216,28 @@ test('Menü «Kopieren», Slide wechseln, Strg + V fügt ein (Marker in der Zwis
   await expect.poll(async () => (await elements(page)).filter((e) => e.type === 'text')).toHaveLength(2);
 });
 
+// Windows: die rechte Taste geht vor «contextmenu» hoch; mit dem Klick davor zählte Konva das als Doppelklick.
+test('Windows-Rechtsklick gleich nach einem Klick: Menü des Elements, kein Doppelklick', async ({ page }) => {
+  await photoAndText(page);
+  // Mac und Linux melden «contextmenu» beim Drücken; hier zurückhalten und wie Windows erst nach dem Loslassen schicken
+  await page.evaluate(() => window.addEventListener('contextmenu', (e) => e.isTrusted && e.stopImmediatePropagation(), true));
+  const winRightClick = async (x: number, y: number) => {
+    await page.mouse.down({ button: 'right' });
+    await page.mouse.up({ button: 'right' });
+    await page.evaluate(([cx, cy]) => {
+      document.elementFromPoint(cx!, cy!)!.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, button: 2, clientX: cx, clientY: cy }));
+    }, [x, y]);
+  };
+  for (const [x, y, entry] of [[300, 400, 'Maske bearbeiten'], [300, 850, 'Text bearbeiten']] as const) {
+    const at = await toScreen(page, x, y);
+    await page.mouse.click(at.x, at.y);
+    await winRightClick(at.x, at.y);
+    await expect(item(page, entry)).toBeVisible();
+    expect(await page.evaluate(() => { const u = window.__bbzbTest.ui(); return [u.cropEditId, u.textEditId]; })).toEqual([null, null]);
+    await page.keyboard.press('Escape');
+  }
+});
+
 test('Spiegeln hat ein Untermenü: Pfeil rechts öffnet, Waagerecht und Senkrecht kippen das Foto, Pfeil links und Esc schliessen nur das Untermenü', async ({ page }) => {
   const { photo } = await photoAndText(page);
   const props = () => page.evaluate((id) => (window.__bbzbTest.elements().find((e) => e.id === id)!.props as { flipX?: boolean; flipY?: boolean }), photo.id);

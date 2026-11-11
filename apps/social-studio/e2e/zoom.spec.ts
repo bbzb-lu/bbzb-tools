@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { addPhoto, elements, newProject, overlayVsElement, png, toScreen, view, addSlide } from './fixtures';
+import { addPhoto, elements, frames, newProject, overlayVsElement, png, toScreen, view, addSlide } from './fixtures';
 
 const zoomText = (page: Page) => page.locator('.zoom-value');
 const percent = async (page: Page) => parseInt((await zoomText(page).textContent())!, 10);
@@ -165,6 +165,8 @@ test('Ausschnittmodus: Rad zoomt das Bild, Ctrl + Rad die Ansicht', async ({ pag
   const crop = async () => ((await elements(page))[0]!.props as { crop: { scale: number } }).crop.scale;
   const p = await toScreen(page, 540, 675);
   await page.mouse.dblclick(p.x, p.y);
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.ui().cropEditId)).not.toBeNull();
+  await frames(page); // Ausschnittmodus tauscht den Bildknoten, Konva trifft ihn erst nach dem Neuzeichnen
   const c0 = await crop();
   await page.mouse.wheel(0, -100);
   await expect.poll(crop).toBeGreaterThan(c0);

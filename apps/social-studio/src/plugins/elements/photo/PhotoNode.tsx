@@ -228,7 +228,7 @@ export function PhotoNode({ el, editing }: ElementRenderProps<PhotoProps>) {
           liveRing(ringN, { draw: ringDraw(gesture.current?.lite ?? null), box: { width: el.width, height: el.height }, sx, sy });
         }
       }}
-      onDblClick={() => el.props.assetId && useUi.getState().setCropEditId(id)}
+      onDblClick={(e) => e.evt.button === 0 && el.props.assetId && useUi.getState().setCropEditId(id)} // Windows: Rechtsklick zählt sonst mit
       onDblTap={() => el.props.assetId && useUi.getState().setCropEditId(id)}
       onWheel={(e) => {
         // Ctrl/Alt + Rad zoomt die Ansicht (CanvasView), nicht das Bild

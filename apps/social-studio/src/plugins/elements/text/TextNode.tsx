@@ -37,7 +37,7 @@ export function TextNode({ el, editing }: ElementRenderProps<TextProps>) {
         t.scaleX(1 / sx);
       }}
       onTransformEnd={() => textRef.current?.scaleX(1)}
-      onDblClick={edit}
+      onDblClick={(e) => e.evt.button === 0 && edit()} // Windows: Rechtsklick zählt sonst mit
       onDblTap={edit}
     >
       {/* Im Textmodus liegt die Textarea darüber. */}

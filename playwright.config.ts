@@ -5,6 +5,8 @@ import { tools } from './apps/startseite/src/tools';
 const base = 'http://localhost:8788/';
 
 export default defineConfig({
+  // CI: Spur und Bild bei Fehlern, landen im Bericht (Artefakt)
+  use: { trace: 'retain-on-failure', screenshot: 'only-on-failure' },
   webServer: {
     timeout: 180_000,
     command: 'node scripts/build.mjs --mode test && npx wrangler pages dev dist --port 8788',

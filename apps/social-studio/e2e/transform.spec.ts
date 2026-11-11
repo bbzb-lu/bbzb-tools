@@ -26,6 +26,8 @@ async function shiftedPhoto(page: Page) {
   await expect.poll(() => elements(page)).toHaveLength(1);
   const o = await toScreen(page, 0, 0);
   await page.mouse.dblclick(o.x + 176, o.y + 276);
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.ui().cropEditId)).not.toBeNull();
+  await frames(page); // Ausschnittmodus tauscht den Bildknoten, Konva trifft ihn erst nach dem Neuzeichnen
   for (let i = 0; i < 3; i++) await page.mouse.wheel(0, -100); // Zoom 1.33: Platz zum Verschieben
   await expect.poll(async () => (await photo(page)).crop.x).toBeLessThan(0);
   const before = (await photo(page)).crop.x;
