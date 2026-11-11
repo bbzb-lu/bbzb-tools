@@ -1,0 +1,53 @@
+<!doctype html><meta charset="utf-8"><title>Modellvergleich</title>
+<script type="importmap">{"imports":{"onnxruntime-web/webgpu":"/ort/ort.webgpu.bundle.min.mjs","onnxruntime-web":"/ort/ort.webgpu.bundle.min.mjs","onnxruntime-common":"/common/index.js"}}</script>
+<script type="module">
+import { env, AutoModel, AutoProcessor, RawImage } from '/tf/transformers.web.js';
+env.allowRemoteModels = false; env.allowLocalModels = true; env.localModelPath = '/models/';
+env.backends.onnx.wasm.wasmPaths = '/ort/';
+const cache = {};
+// Läuft ein Modell auf einem Foto; gibt Zeiten und das Cut-out als PNG-Data-URL zurück.
+window.run = async ({ id, dtype, device, photo, kind, size, so }) => {
+  const key = [id, dtype, device, size, JSON.stringify(so)].join('|');
+  const out = { id, dtype, device, photo };
+  try {
+    if (!cache[key]) {
+      for (const k of Object.keys(cache)) { try { await cache[k].model.dispose(); } catch {} delete cache[k]; }
+      const t0 = performance.now();
+      const model = await AutoModel.from_pretrained(id, { dtype, device, ...(so ? { session_options: so } : {}) });
+      const processor = await AutoProcessor.from_pretrained(id);
+      if (size) { processor.image_processor.size = { width: size, height: size }; }
+      out.loadMs = Math.round(performance.now() - t0);
+      cache[key] = { model, processor };
+    }
+    const { model, processor } = cache[key];
+    const image = await RawImage.fromURL('/photos/' + photo);
+    out.size = [image.width, image.height];
+    const t1 = performance.now();
+    const { pixel_values } = await processor(image);
+    const inName = model.sessions?.model?.inputNames?.[0] ?? (kind === 'modnet' ? 'input' : 'input_image');
+    const res = await model({ [inName]: pixel_values });
+    const t = res.output_image ?? res.output ?? Object.values(res)[0];
+    let a;
+    if (kind === 'isnet') { const d = t[0].data; let mn = Infinity, mx = -Infinity; for (const v of d) { if (v < mn) mn = v; if (v > mx) mx = v; } a = t[0].sub(mn).div(mx - mn).mul(255).to('uint8'); }
+    else a = kind === 'modnet' ? t[0].mul(255).to('uint8') : t[0].sigmoid().mul(255).to('uint8');
+    const mask = await RawImage.fromTensor(a).resize(image.width, image.height);
+    out.inferMs = Math.round(performance.now() - t1);
+    out.inputShape = pixel_values.dims;
+    const c = new OffscreenCanvas(image.width, image.height), g = c.getContext('2d');
+    const rgba = new Uint8ClampedArray(image.width * image.height * 4);
+    const src = image.channels === 4 ? image.data : null;
+    for (let i = 0; i < image.width * image.height; i++) {
+      const s = image.channels;
+      rgba[i*4] = image.data[i*s]; rgba[i*4+1] = image.data[i*s+1]; rgba[i*4+2] = image.data[i*s+2]; rgba[i*4+3] = mask.data[i];
+    }
+    g.putImageData(new ImageData(rgba, image.width, image.height), 0, 0);
+    const blob = await c.convertToBlob({ type: 'image/png' });
+    const buf = new Uint8Array(await blob.arrayBuffer()); let bin = ''; for (const b of buf) bin += String.fromCharCode(b);
+    out.png = btoa(bin);
+    out.jsHeapMB = performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : null;
+    out.gpu = !!navigator.gpu;
+  } catch (e) { out.error = String(e && e.message || e).slice(0, 300); }
+  return out;
+};
+window.ready = true;
+</script>

@@ -1,0 +1,55 @@
+{
+  "id": "vollbild-story",
+  "label": "Vollbild",
+  "family": "vollbild",
+  "format": "story",
+  "slides": 1,
+  "background": "warmweiss",
+  "elements": [
+    {
+      "type": "photo",
+      "role": "foto",
+      "name": "Foto",
+      "x": 0,
+      "y": 0,
+      "width": 1080,
+      "height": 1920,
+      "props": {
+        "scrim": {
+          "side": "unten",
+          "strength": "stark"
+        }
+      }
+    },
+    {
+      "type": "text",
+      "role": "kommentar",
+      "name": "Kommentar",
+      "x": 412,
+      "y": 347,
+      "width": 596,
+      "height": 100,
+      "props": {
+        "text": "Moderne Lieder auf\ndem Schwyzerörgeli.",
+        "style": "kommentar",
+        "color": "blauschwarz",
+        "fontSize": 57,
+        "align": "left"
+      }
+    },
+    {
+      "type": "brand",
+      "role": "scribble",
+      "name": "Pfeil",
+      "x": 765.1,
+      "y": 569.6,
+      "width": 195,
+      "height": 89,
+      "props": {
+        "brandId": "scribble-05",
+        "color": "akzent"
+      },
+      "rotation": 128
+    }
+  ]
+}

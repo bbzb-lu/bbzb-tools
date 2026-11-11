@@ -3,7 +3,7 @@
 Websuite des BBZB Luzern mit kleinen Browser-Tools, die den Schulalltag einfacher machen. Alles läuft im Browser, nichts wird hochgeladen.
 
 ## Ordner
-- `apps/`: ein Ordner pro Tool, jeweils mit eigener `AGENTS.md`
+- `apps/`: ein Ordner pro Tool, jeweils mit eigener `AGENTS.md`. `apps/_vorlage/` ist die Vorlage für neue Tools
 - `packages/ui/`: gemeinsame Oberfläche (Theme, Bauteile)
 - `embeds/`: folgt
 - `docs/`: Spezifikationen und Pläne
@@ -17,7 +17,7 @@ Arbeite im Ordner des Tools und lies dessen `AGENTS.md`, nicht die anderer Tools
 - Zielgeräte: Windows 11 mit Edge. Playwright läuft mit `channel: 'msedge'`.
 - Keine absoluten Pfade wie `'/badges/…'` oder `url('/fonts/…')`, jedes Tool läuft unter einem Unterpfad. Assets importieren oder `import.meta.env.BASE_URL` nutzen.
 - Speichert ein Tool etwas (`localStorage`, IndexedDB, OPFS), beginnt jeder Schlüssel und jeder Datenbank- oder Ordnername mit der Tool-ID (`news-banner`, `startseite`).
-- Lizenzierte Schriften gehören nie ins Repo (es ist öffentlich).
+- Braveold (lizenziert) gehört nie ins Repo, es ist öffentlich. Segoe UI darf rein (Schullizenz).
 
 ## Arbeitsweise
 - Code erst nach `packages/`, wenn ein zweites Tool ihn braucht.
@@ -29,3 +29,7 @@ Arbeite im Ordner des Tools und lies dessen `AGENTS.md`, nicht die anderer Tools
 
 ## Befehle
 `npm install`, `npm run dev:startseite`, `npm run build`
+Neues Tool: `npm run neues-tool -- <id> "<Name>"`, danach Satz und Vorschaubild in der Startseite ersetzen (`apps/startseite/AGENTS.md`).
+Für das Social Studio: `npm run fonts` holt Braveold aus dem privaten Repo (Zugriff nötig).
+Ohne Zugriff auf Braveold scheitern einzelne Studio-Tests. Dann nur das eigene Tool testen: `npx vitest --project <id> run` und `npx playwright test --project <id>` (id wie in `apps/startseite/src/tools.ts`).
+`npm run test:e2e` braucht die Testvideos: `sh apps/social-studio/scripts/make-test-videos.sh` (braucht ffmpeg).

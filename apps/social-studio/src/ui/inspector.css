@@ -1,0 +1,93 @@
+/* Eigenschaften wie Figma: Abschnitte mit dünner Linie und kleiner Überschrift, einheitliche Zeilen (Beschriftung links,
+   Wert rechts). Eckig, kein Kasten um Gruppen, Beschriftungen gedämpft. Farben nur über die Variablen aus app.css. */
+:root {
+  --row: 2.125rem; /* Zeilenhöhe = Knopfhöhe, dichter als die globalen 2.5 rem */
+  --section-space: 1.25rem; /* Abstand unter einem Abschnitt (vorher 0.75 rem), geschlossen und offen */
+  --nested-space: 0.75rem; /* unter verschachtelten Zeilen: Erweitert, Effekte (vorher 0.5 rem) */
+  --label: 4.75rem; /* Beschriftungsspalte: «Ausrichtung», «Akzentfarbe» passen in 13 px */
+}
+
+.inspector {
+  position: relative; /* versteckte Radios und sr-only-Texte (absolut) bleiben im Scrollbereich, sonst verlängern sie die Seite */
+  display: grid;
+  align-content: start;
+  min-height: 0;
+  padding: 0.75rem 0.25rem 1rem 1rem; /* rechts schmal: die Bildlaufleiste (--scrollbar) reserviert ihren Platz selbst */
+  overflow-y: auto;
+  /* Platz für den Balken immer reservieren: die Spalten springen nicht, wenn ein Panel zu scrollen beginnt */
+  scrollbar-gutter: stable;
+}
+.inspector button, .inspector input:not([type='range']), .inspector select { min-height: var(--row); }
+.inspector > h2 { padding: 0.125rem 0 0.5rem; overflow-wrap: anywhere; }
+.inspector > .review-note { margin-bottom: 0.5rem; }
+
+.section { display: grid; gap: 0.375rem; min-width: 0; padding: 0.5rem 0 var(--section-space); border-top: 1px solid var(--line); }
+.section-title { margin: 0; font-size: 0.8125rem; line-height: 1.25rem; font-weight: 700; }
+.section .hint { margin: 0; }
+
+/* Zeile: Beschriftung (legend) links, Wert rechts. Eine nicht-gerenderte (gefloatete) legend wird Rasterelement. */
+.section .choice { grid-template-columns: var(--label) minmax(0, 1fr); align-items: center; gap: 0 0.5rem; min-height: var(--row); }
+.section .choice > legend { float: left; margin: 0; padding: 0; font-size: 0.8125rem; line-height: 1.25; color: var(--ink-soft); }
+.section .choice input:not([type='radio'], [type='range'], [type='number']), .section .choice select { width: 100%; min-width: 0; }
+.section .choice .hint { grid-column: 1 / -1; margin: 0; }
+.section .segmented span { padding: 0 0.25rem; font-size: 0.875rem; white-space: nowrap; }
+.section .swatches { gap: 0.375rem; }
+/* 28 px, damit fünf Kacheln (mit «Akzent») neben der Beschriftung Platz haben; Ring näher, damit er die Nachbarin nicht berührt */
+.section .swatch { width: 1.75rem; height: 1.75rem; }
+.section .swatch:has(input:checked) { outline-offset: 1px; }
+
+/* Selbstbeschriftete Schalter (Rahmen, Korn) paarweise, Textknopf mit Icon-Knopf daneben (BBZB-Look und Spiegeln) */
+.tool-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.375rem; }
+.tool-grid > button { padding: 0 0.5rem; }
+.tool-row { display: flex; gap: 0.375rem; }
+.tool-row > button:not(.icon-btn) { flex: 1; }
+
+/* Video: erstes und letztes Bild des gekürzten Stücks nebeneinander; hohe Formate (Story) oben und unten beschnitten */
+.video-thumbs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.375rem; }
+.video-thumb { display: block; max-height: 7.5rem; object-fit: cover; background: var(--line); }
+.video-thumbs > span { margin-top: -0.125rem; color: var(--ink-soft); font-size: 0.75rem; }
+
+/* Ebene: Duplizieren, Nach vorne, Nach hinten (Icons) und «Löschen» in einer Zeile */
+.actions-row { flex-wrap: wrap; gap: 0.125rem; }
+.actions-row button:not(.icon-btn) { padding: 0 0.5rem; }
+.actions-row .icon-btn { width: 2rem; padding: 0; }
+
+/* Akzentfarbe: die langen Namen stehen untereinander, Kanten überlappen um 1 px */
+.accent-section { display: grid; gap: 0.375rem; }
+.accent-section .segmented { flex-direction: column; }
+.accent-section .segmented span { margin-left: 0; margin-top: -1px; }
+.accent-section .segmented label:first-child span { margin-top: 0; }
+
+/* Leerer Inspector und Mehrfachauswahl: ein Satz in der Serife des Entwurfs */
+.inspector-hint { margin: 0 0 0.75rem; font-family: var(--font-serif); font-size: 1rem; line-height: 1.4; }
+.section .choice > label:first-child { color: var(--ink-soft); font-size: 0.8125rem; }
+
+/* Effekte: «+» rechts in der Kopfzeile, Auswahl als Popover (CSS-Anker wie «Slide hinzufügen»), Zeilen mit Linie links */
+.effects-add { anchor-name: --effects-add; width: 1.75rem; height: 1.75rem; min-height: 0; padding: 0; }
+.effects-menu { position-anchor: --effects-add; inset: auto; top: anchor(bottom); right: anchor(right); position-try-fallbacks: flip-block; margin: 0.25rem 0 0; min-width: 15rem; padding: 0.25rem 0; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+.effects-menu:popover-open { display: grid; }
+.effects-menu-title { margin: 0; padding: 0.25rem 0.75rem; font-weight: 700; font-size: 0.8125rem; }
+.effects-menu [role='menuitem'] { display: grid; grid-template-columns: 5rem minmax(0, 1fr) auto; align-items: center; gap: 0.5rem; min-height: 2.25rem; padding: 0 0.75rem; border: 0; font-weight: 700; text-align: left; }
+.effects-menu [role='menuitem']:focus-visible { outline-offset: -3px; }
+.effects-menu [role='menuitem'][aria-disabled='true'] { color: var(--ink-disabled); cursor: not-allowed; }
+.effects-menu [role='menuitem'][aria-disabled='true']:hover { background: transparent; }
+.effects-menu-hint { font-family: var(--font-serif); font-weight: 400; color: var(--ink-soft); }
+.section .section.nested { gap: 0.375rem; padding: 0 0 var(--nested-space) 0.5rem; }
+
+/* Maske: Hauptknopf gross, Fortschritt des Modell-Downloads, Trennlinie vor Umkehren/Zurücksetzen, Grund unter gesperrten Knöpfen */
+.inspector .mask-main { min-height: 3.25rem; font-size: 1rem; font-weight: 700; }
+.ai-bar { display: block; height: 0.5rem; border: 1px solid var(--ink); background: var(--paper); }
+.ai-bar > span { display: block; height: 100%; background: var(--accent); }
+.mask-flat { display: grid; gap: 0.375rem; }
+.mask-nested { display: grid; gap: 0.375rem; margin-left: 0.5rem; padding-left: 0.5rem; border-left: 1px solid var(--line); } /* wie .section.nested: gehört zu «Maske bearbeiten» */
+.mask-sep { height: 1px; background: var(--line); }
+.hint.reason { display: flex; align-items: center; gap: 0.25rem; }
+.hint.reason svg { width: 1rem; height: 1rem; flex: none; }
+/* Video: Länge des Stücks, Start/Ende als Felder mit Einheit */
+.video-times { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.375rem; }
+.video-time { display: flex; align-items: center; gap: 0.375rem; padding: 0 0.5rem; border: 1px solid var(--ink); }
+.video-time input { flex: 1; width: 100%; min-width: 0; padding: 0; border: 0; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; appearance: textfield; }
+.video-time input::-webkit-inner-spin-button, .video-time input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.switch-row { display: flex; align-items: center; gap: 0.5rem; }
+.switch-row > :first-child { flex: 1; }
+.switch-state { font-weight: 700; }

@@ -4,3 +4,7 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+# Social Studio: WebAssembly und Blob-Worker für Video und Freistellen, KI-Modelle von Hugging Face (nur GET)
+/social-studio/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob:; font-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self' https://huggingface.co https://*.hf.co; frame-ancestors 'none'

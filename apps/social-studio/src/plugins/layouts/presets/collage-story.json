@@ -1,0 +1,48 @@
+{
+  "id": "collage-story",
+  "label": "Collage",
+  "family": "collage",
+  "format": "story",
+  "slides": 1,
+  "background": "blau",
+  "grain": true,
+  "elements": [
+    {
+      "type": "photo",
+      "role": "foto",
+      "name": "Foto",
+      "x": 154.00402261473263,
+      "y": 485.0002920211965,
+      "width": 733.8,
+      "height": 892.8,
+      "props": {
+        "frame": true,
+        "frameOutside": true
+      },
+      "rotation": -2.5
+    },
+    {
+      "type": "photo",
+      "role": "sticker",
+      "name": "Sticker",
+      "x": 377,
+      "y": 874,
+      "width": 622,
+      "height": 706,
+      "props": {}
+    },
+    {
+      "type": "tag",
+      "role": "ortTag",
+      "name": "Ort-Tag",
+      "x": 72,
+      "y": 1456,
+      "width": 250,
+      "height": 62,
+      "props": {
+        "variant": "ort",
+        "text": "Seilpark"
+      }
+    }
+  ]
+}

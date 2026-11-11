@@ -43,7 +43,7 @@ Am BBZB Luzern entstehen laufend kleine Webtools, die Mitarbeitenden und Lehrper
 - npm-Workspaces, keine Zusatzwerkzeuge (kein Turborepo, kein Nx).
 - `apps/<tool>/` je ein Vite-Projekt mit eigenem `base` (`/social-studio/`, `/news-banner/`). Die Startseite ist ebenfalls eine App unter `/`.
 - `embeds/<name>/` die sechs Embeds als statische Ordner unter `/sharepoint/<name>/`. Snake und Gruppengenerator sind nicht eingebunden und ziehen nicht um. `bbzb-hub-template` wird `embeds/_vorlage/` für neue Embeds (Entscheid Claude). RawPixel ist lizenziert und liegt schon heute in öffentlichen Repos, sie bleibt öffentlich. Gemeinsame Schrift RawPixel, Icons und Grundstile liegen einmal in `embeds/_shared/` statt sechsfach kopiert. Jedes Embed hat eine kleine Beschreibung (Name, Datum, Art) für die Übersicht.
-- `packages/` für Gemeinsames. Zu Beginn nur `ui`: Bauteile aus `src/ui/kit/`, Oberflächenfarben (`theme.ts`), `base.css`, `fonts.css`, UI-Schriften, gemeinsamer Kopf. `brand` (CI-Farben, Segoe UI, Braveold) entsteht beim Umzug des Studios, weil das Banner weder Segoe noch die CI-Farben nutzt. Konfiguration (TypeScript, ESLint, Vitest, Playwright, Netzwerk-Test) liegt im Hauptordner statt in einem Paket (Entscheid Claude, beim Planen geändert).
+- `packages/` für Gemeinsames. Zu Beginn nur `ui`: Bauteile aus `src/ui/kit/`, Oberflächenfarben (`theme.ts`), `base.css`, `fonts.css`, UI-Schriften, gemeinsamer Kopf. `brand` (CI-Farben, Segoe UI) entsteht erst, wenn ein zweites Tool es braucht. Bis dahin liegt beides im Studio (Entscheid Claude, Plan 2). Konfiguration (TypeScript, ESLint, Vitest, Playwright, Netzwerk-Test) liegt im Hauptordner statt in einem Paket (Entscheid Claude, beim Planen geändert).
 - Regel für später: Etwas wandert erst nach `packages/`, wenn ein zweites Tool es wirklich braucht. Das Speichern (Dexie, OPFS, Edge-Kniff aus `src/storage/db.ts`) wird deshalb erst dann ein Paket `storage`, wenn das Banner speichern lernt.
 - Die heute auseinandergelaufenen Stände von `theme.ts` und `kit.css` werden zusammengeführt: Grundlage ist der Stand des Studio, studio-eigene Regeln (Bibliothek, Zahlenrolle, Farbfelder) bleiben im Studio.
 - Build: jede App baut sich selbst, ein Skript legt alle Ergebnisse und die Embeds in einen Ordner `dist/`. Ein Cloudflare-Pages-Projekt `bbzb-tools`.
@@ -51,9 +51,10 @@ Am BBZB Luzern entstehen laufend kleine Webtools, die Mitarbeitenden und Lehrper
 - Header: eine `_headers`-Datei mit CSP pro Pfad. Grundregel streng wie beim Banner, das Studio zusätzlich mit `wasm-unsafe-eval`, Blob-Workern und `connect-src` auf Hugging Face. Embeds müssen in SharePoint-iframes laufen dürfen (`frame-ancestors https://sluz.sharepoint.com` statt `'none'`, eingebunden vor allem auf `sluz.sharepoint.com/sites/BBZB`), Editoren nicht.
 
 ## Tests und Deploy (Entscheid Alexej: automatisch)
-- GitHub Actions bei jedem Pull Request und Push: Typecheck, Lint, Vitest und Playwright (Edge) aller Apps. Ändert sich etwas in `packages/`, laufen die Tests aller Tools.
+- GitHub Actions bei jedem Pull Request und Push: Typecheck, Lint, Vitest und Live-Build auf Linux, Playwright (Edge) aller Apps auf Windows. Ändert sich etwas in `packages/`, laufen die Tests aller Tools.
+- Der Test-Build (`--mode test`, mit Testhaken) wird nie deployt. `scripts/check-live-build.mjs` prüft den Live-Build vor dem Deploy und in jedem Pull Request.
 - Nach Merge auf `main` und grünen Tests geht die Seite automatisch live. Das Schulnetz, das wrangler blockiert, spielt keine Rolle mehr. Claude fragt Alexej vor dem Merge, nicht mehr vor dem Deploy.
-- Beitragende sind Mitglieder von `bbzb-lu` und pushen Branches ins Repo, keine Forks. So hat jeder Pull Request Zugriff auf Braveold und alle Pixel-Tests laufen. Pull Requests aus Forks laufen ohne die Tests, die Braveold brauchen, und werden nur nach einem Lauf auf einem Branch im Repo gemergt. Kein `pull_request_target` (Entscheid Claude).
+- Beitragende sind Mitglieder von `bbzb-lu` und pushen Branches ins Repo, keine Forks. So hat jeder Pull Request Zugriff auf Braveold und alle Pixel-Tests laufen. Pull Requests aus Forks scheitern in der CI (kein Zugriff auf Braveold) und werden nur nach einem Lauf auf einem Branch im Repo gemergt. Kein `pull_request_target` (Entscheid Claude).
 - Die Embeds bekommen ihre bestehenden Prüfskripte (`verify.js`, beide SharePoint-Grössen) im selben Lauf.
 
 ## Arbeitsweise für Mitarbeitende und Agenten
@@ -63,7 +64,7 @@ Am BBZB Luzern entstehen laufend kleine Webtools, die Mitarbeitenden und Lehrper
 - Ideen und Planung über GitHub Issues mit Label pro Bereich (`social-studio`, `news-banner`, `embeds`, `startseite`, `alle`) und ein GitHub Project als Board (Eingang, Geplant, In Arbeit, Erledigt). Öffentlich ist in Ordnung (Entscheid Alexej). Regel: keine echten Fotos, Namen oder Projektdateien in Issues. `roadmap.md` und `ideen.md` fallen weg, offene Punkte daraus und aus `windows-checkliste.md` werden Issues.
 - Spezifikation und Pläne als `.md` beim Tool: `apps/<tool>/docs/`. Übergreifendes unter `docs/` im Hauptordner.
 - Verbindlich sind Tests, Lint und die Regeln in `AGENTS.md`. Superpowers, Impeccable und Ponytail sind im Repo als Plugins eingetragen und werden angeboten, nicht verlangt (Entscheid Alexej).
-- Ein neues Tool: Vorlage `apps/_vorlage/` kopieren (oder ein Befehl, der das tut), Kachel eintragen, fertig. Wie genau, entscheidet der Builder.
+- Ein neues Tool: `npm run neues-tool -- <id> "<Name>"` kopiert `apps/_vorlage/` und trägt eine Beta-Kachel ein. Danach Satz und Vorschaubild ersetzen. Test (`e2e/`), Build und Deploy laufen ohne weitere Verdrahtung mit.
 
 ## Reihenfolge
 1. Fundament: Workspaces, Paket `ui`, CI, automatischer Deploy, Labels und Board. Das private Schriften-Repo kommt mit dem Studio.

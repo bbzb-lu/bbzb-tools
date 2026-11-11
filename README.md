@@ -8,3 +8,5 @@ npm run dev:startseite
 ```
 
 Hinweise für Mitarbeit und Agenten stehen in [AGENTS.md](AGENTS.md).
+
+Für das Social Studio: `npm run fonts` holt Braveold aus dem privaten Repo (Zugriff nötig).

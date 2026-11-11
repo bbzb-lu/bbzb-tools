@@ -5,9 +5,13 @@ import { tools } from './apps/startseite/src/tools';
 const base = 'http://localhost:8788/';
 
 export default defineConfig({
+  // CI: Spur und Bild bei Fehlern, landen im Bericht (Artefakt)
+  use: { trace: 'retain-on-failure', screenshot: 'only-on-failure' },
+  // Windows-Runner ist langsam: ein zweiter Versuch, Wackler stehen im Bericht als «flaky»
+  retries: process.env.CI ? 1 : 0,
   webServer: {
     timeout: 180_000,
-    command: 'npm run build && npx wrangler pages dev dist --port 8788',
+    command: 'node scripts/build.mjs --mode test && npx wrangler pages dev dist --port 8788',
     url: 'http://localhost:8788',
     reuseExistingServer: !process.env.CI,
   },

@@ -10,3 +10,4 @@ test-results/
 .env*
 .wrangler/
 /fonts-private/
+apps/social-studio/e2e/fixtures/video/

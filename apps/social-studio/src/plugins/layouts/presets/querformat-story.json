@@ -1,0 +1,62 @@
+{
+  "id": "querformat-story",
+  "label": "Querformat",
+  "family": "querformat",
+  "format": "story",
+  "slides": 1,
+  "background": "warmweiss",
+  "elements": [
+    {
+      "type": "text",
+      "role": "kommentar",
+      "name": "Kommentar",
+      "x": 74,
+      "y": 449,
+      "width": 934,
+      "height": 100,
+      "props": {
+        "text": "Hinfallen, aufstehen,\nweiterfahren.",
+        "style": "kommentar",
+        "color": "blauschwarz",
+        "fontSize": 66,
+        "align": "left"
+      }
+    },
+    {
+      "type": "photo",
+      "role": "foto",
+      "name": "Foto",
+      "x": 72,
+      "y": 673,
+      "width": 936,
+      "height": 454,
+      "props": {}
+    },
+    {
+      "type": "brand",
+      "role": "scribble",
+      "name": "Strahlen",
+      "x": 800,
+      "y": 570,
+      "width": 150,
+      "height": 165,
+      "props": {
+        "brandId": "scribble-02",
+        "color": "akzent"
+      }
+    },
+    {
+      "type": "tag",
+      "role": "ortTag",
+      "name": "Ort-Tag",
+      "x": 72,
+      "y": 1320,
+      "width": 515,
+      "height": 62,
+      "props": {
+        "variant": "ort",
+        "text": "Flowtrail Marbachegg"
+      }
+    }
+  ]
+}

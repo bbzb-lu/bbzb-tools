@@ -8,11 +8,14 @@
   "scripts": {
     "dev:startseite": "npm run dev --workspace apps/startseite",
     "dev:news-banner": "npm run dev --workspace apps/news-banner",
+    "dev:social-studio": "npm run dev --workspace apps/social-studio",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc --noEmit -p e2e",
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "fonts": "node scripts/fonts.mjs",
+    "neues-tool": "node scripts/neues-tool.mjs"
   },
   "dependencies": {
     "react": "19.3",

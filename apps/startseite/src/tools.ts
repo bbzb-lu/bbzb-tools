@@ -10,4 +10,12 @@ export const tools: readonly Tool[] = [
     vorschau: 'vorschau/news-banner.png',
     beta: true,
   },
+  {
+    id: 'social-studio',
+    name: 'Social Studio',
+    satz: 'Carousels und Stories für Instagram und LinkedIn im BBZB-Design.',
+    pfad: '/social-studio/',
+    vorschau: 'vorschau/social-studio.png',
+    beta: true,
+  },
 ];

@@ -1,0 +1,172 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "scribble-01",
+      "file": "scribbles/Scribble_01.png",
+      "name": "Scribble 1",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-02",
+      "file": "scribbles/Scribble_02.png",
+      "name": "Scribble 2",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-03",
+      "file": "scribbles/Scribble_03.png",
+      "name": "Scribble 3",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-04",
+      "file": "scribbles/Scribble_04.png",
+      "name": "Scribble 4",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-05",
+      "file": "scribbles/Scribble_05.png",
+      "name": "Scribble 5",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-06",
+      "file": "scribbles/Scribble_06.png",
+      "name": "Scribble 6",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-07",
+      "file": "scribbles/Scribble_07.png",
+      "name": "Scribble 7",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-08",
+      "file": "scribbles/Scribble_08.png",
+      "name": "Scribble 8",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-09",
+      "file": "scribbles/Scribble_09.png",
+      "name": "Scribble 9",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-10",
+      "file": "scribbles/Scribble_10.png",
+      "name": "Scribble 10",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-11",
+      "file": "scribbles/Scribble_11.png",
+      "name": "Scribble 11",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-12",
+      "file": "scribbles/Scribble_12.png",
+      "name": "Scribble 12",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-13",
+      "file": "scribbles/Scribble_13.png",
+      "name": "Glühbirne",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-14",
+      "file": "scribbles/Scribble_14.png",
+      "name": "Fragezeichen",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-15",
+      "file": "scribbles/Scribble_15.png",
+      "name": "Ausrufezeichen",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-16",
+      "file": "scribbles/Scribble_16.png",
+      "name": "Kreuz",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-17",
+      "file": "scribbles/Scribble_17.png",
+      "name": "Fragezeichen Pinsel",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "scribble-18",
+      "file": "scribbles/Scribble_18.png",
+      "name": "Ausrufezeichen Pinsel",
+      "category": "scribble",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "icon-bike",
+      "file": "icons/bike.svg",
+      "name": "Velo",
+      "category": "icon",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "icon-map-pin",
+      "file": "icons/map-pin.svg",
+      "name": "Ort",
+      "category": "icon",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "icon-mountain",
+      "file": "icons/mountain.svg",
+      "name": "Berg",
+      "category": "icon",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "icon-tree-pine",
+      "file": "icons/tree-pine.svg",
+      "name": "Tanne",
+      "category": "icon",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "icon-waves",
+      "file": "icons/waves.svg",
+      "name": "Wellen",
+      "category": "icon",
+      "defaultColor": "akzent"
+    },
+    {
+      "id": "filmkorn",
+      "file": "textures/film-grain-03.jpg",
+      "name": "Filmkorn",
+      "category": "textur"
+    }
+  ]
+}
