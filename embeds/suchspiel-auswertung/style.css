@@ -1,0 +1,717 @@
+/* ── Fonts ── */
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* ── Design tokens ── */
+:root {
+  --blue:        #4A6FA5;
+  --blue-vivid:  #3B4FC8;
+  --blue-light:  #C8D6E8;
+  --pink:        #E84393;
+  --yellow:      #FFD000;
+  --dark:        #1A1A2E;
+  --cream:       #FFF9E6;
+  --font:        'RawPixel', monospace;
+
+  /* ── Fluid sizing ──────────────────────────────────────────────────
+     Das Embed lebt in einem SharePoint-iframe: ~480×350 am Desktop,
+     bis hinunter zu ~350×250 mobil. Alles leitet sich aus dem Viewport
+     ab, damit ein Regelwerk beide Grössen deckt — ohne Media Queries
+     und ohne je eine Scrollbar.                                       */
+  --bar-h: clamp(22px, 8vh, 34px);       /* Titelleiste                */
+  --pad-x: clamp(5px, 1.6vw, 10px);      /* Innenabstand card-body     */
+  --pad-y: clamp(4px, 1.2vh, 8px);
+  --gap:   clamp(4px, 1.4vw, 9px);
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+/* ── Root: transparent so SharePoint background shows ── */
+html, body {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  font-family: var(--font);
+  overflow: hidden;
+}
+
+/* ── Card fills the full iframe ── */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--cream);
+  border-top:    4px solid var(--blue);
+  border-left:   4px solid var(--blue);
+  border-right:  4px solid var(--pink);
+  border-bottom: 4px solid var(--pink);
+  box-shadow: 5px 5px 0 var(--dark);
+}
+
+/* ── Title bar ── */
+.titlebar {
+  background: var(--blue);
+  height: var(--bar-h);
+  padding: 0 clamp(6px, 2vw, 14px);
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vw, 12px);
+  flex-shrink: 0;
+}
+
+.dots {
+  display: flex;
+  gap: clamp(3px, 1vw, 6px);
+  flex-shrink: 0;
+}
+
+.dot {
+  width: clamp(6px, 2.4vh, 10px);
+  height: clamp(6px, 2.4vh, 10px);
+  background: var(--pink);
+  border: 2px solid var(--dark);
+}
+
+.titlebar-text {
+  color: #FFFFFF;
+  font-size: clamp(0.55rem, 2.8vh, 0.9rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titlebar-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* ── Card variants ── */
+.card--pink {
+  border: 4px solid var(--blue);
+}
+.card--pink .titlebar {
+  background: var(--pink);
+}
+.card--pink .dot {
+  background: var(--blue);
+  border-color: var(--dark);
+}
+
+.card--yellow {
+  border: 5px solid var(--blue);
+}
+.card--yellow .titlebar {
+  background: var(--yellow);
+}
+.card--yellow .titlebar-text {
+  color: var(--dark);
+}
+.card--yellow .dot {
+  background: var(--blue);
+  border-color: var(--dark);
+}
+
+.card--popup {
+  border-top:    4px solid var(--yellow);
+  border-left:   4px solid var(--yellow);
+  border-right:  4px solid var(--blue);
+  border-bottom: 4px solid var(--blue);
+}
+.card--popup .titlebar      { background: var(--yellow); }
+.card--popup .titlebar-text { color: var(--dark); }
+.card--popup .dot           { background: var(--blue); border-color: var(--dark); }
+
+/* ── Card body ── */
+.card-body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--pad-y) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(rgba(74, 111, 165, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 111, 165, 0.13) 1px, transparent 1px);
+  background-size: 22px 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Control button (reusable) ── */
+.btn-ctrl {
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: var(--blue);
+  border-top:    4px solid var(--dark);
+  border-left:   4px solid var(--dark);
+  border-right:  4px solid var(--pink);
+  border-bottom: 4px solid var(--pink);
+  box-shadow:
+    4px 4px 0 var(--dark),
+    inset 0 -5px 0 rgba(0, 0, 0, 0.25);
+  padding: 11px 14px;
+  cursor: pointer;
+  min-width: 48px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.btn-ctrl:hover {
+  background: var(--pink);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -4px 0 rgba(0,0,0,0.25);
+}
+.btn-ctrl:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -2px 0 rgba(0,0,0,0.25);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Gemeinsamer Titelbildschirm (.ts-*)
+   Identisch in allen BBZB-Embeds. Aufbau der Landing-Page:
+
+        Pixel-Icon (Mitte oben)
+        TITEL
+        Ein Satz, was man hier tun kann.
+        [ HAUPT-CTA ]  [ zweite CTA ]
+
+   Maximal ZWEI CTAs. Alles Weitere (Schwierigkeit, Codes, Optionen)
+   gehört auf einen zweiten Schritt — .ts-inner--step.
+
+   Skaliert über eine einzige Einheit (--ts-u) aus der Containergrösse,
+   deshalb ohne Media Queries: 480×350 und 350×250 teilen ein Regelwerk.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Container-Root ──────────────────────────────────────────────────
+   container-type: size erlaubt cqw/cqh in allen Kindelementen.      */
+.ts {
+  container-type: size;
+  container-name: ts;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Skalen-Einheit ──────────────────────────────────────────────────
+   Messwerte: 480×350 → --ts-u ≈ 5.1px | 350×250 → --ts-u ≈ 3.4px    */
+.ts-inner {
+  --ts-u: min(1.18cqw, 1.7cqh);
+
+  width: 100%;
+  height: 100%;
+  padding: calc(var(--ts-u) * 2) calc(var(--ts-u) * 3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 2.2);
+  overflow: hidden;              /* Sicherheitsnetz: nie scrollen */
+  text-align: center;
+}
+
+/* ── Icon-Plakette, mittig oben ──────────────────────────────────────
+   Harter Offsetschatten, kein Radius, kein Blur.                    */
+.ts-icon {
+  width: calc(var(--ts-u) * 11);
+  height: calc(var(--ts-u) * 11);
+  object-fit: contain;
+  flex-shrink: 0;
+  padding: calc(var(--ts-u) * 0.9);
+  background: #FFFFFF;
+  border-top:    3px solid var(--blue);
+  border-left:   3px solid var(--blue);
+  border-right:  3px solid var(--pink);
+  border-bottom: 3px solid var(--pink);
+  box-shadow: 3px 3px 0 var(--dark);
+  image-rendering: pixelated;
+}
+
+.ts-title {
+  font-family: var(--font);
+  font-size: clamp(1rem, calc(var(--ts-u) * 5.6), 1.8rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: clamp(2px, calc(var(--ts-u) * 0.8), 5px);
+  color: var(--blue);
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 var(--blue-light);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ein Satz. Er sagt, was man hier tun kann — nicht mehr. */
+.ts-sub {
+  font-family: var(--font);
+  font-size: clamp(0.58rem, calc(var(--ts-u) * 3.05), 0.95rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--dark);
+  max-width: calc(var(--ts-u) * 82);
+  text-wrap: balance;          /* gleichmässige Zeilen statt Hänger */
+}
+
+/* ── CTA-Reihe: ein oder zwei Knöpfe, sonst nichts ───────────────── */
+.ts-cta-icon {
+  height: calc(var(--ts-u) * 5.4);
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+}
+/* Die Icons sind reines Schwarz auf Transparenz — hier auf die
+   Schriftfarbe des jeweiligen Buttons umgefärbt. */
+.ts-btn--primary .ts-cta-icon { filter: brightness(0) invert(1); }
+.ts-btn--second  .ts-cta-icon { filter: none; }
+
+/* Buttons mit Icon: Icon über dem Text, beides zentriert */
+.ts-btn--stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--ts-u) * 1.1);
+}
+
+.ts-cta {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 2.4);
+  margin-top: calc(var(--ts-u) * 1.2);
+  max-width: 100%;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────
+   Aufbau nach CLAUDE.md: top/left --dark (Lichtseite), right/bottom
+   Akzentfarbe, harter Offsetschatten, inset-Tiefenband.             */
+.ts-btn {
+  font-family: var(--font);
+  font-weight: 700;
+  color: #FFFFFF;
+  background: var(--blue);
+  font-size: clamp(0.6rem, calc(var(--ts-u) * 3), 0.95rem);
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.45), 2px);
+  padding: calc(var(--ts-u) * 1.7) calc(var(--ts-u) * 3.2);
+  border-top:    3px solid var(--dark);
+  border-left:   3px solid var(--dark);
+  border-right:  3px solid var(--pink);
+  border-bottom: 3px solid var(--pink);
+  box-shadow: 3px 3px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ts-btn:hover {
+  background: var(--pink);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+}
+.ts-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* Haupt-CTA (pink, gross) — genau EINER pro Titelbildschirm */
+.ts-btn--primary {
+  background: var(--pink);
+  font-size: clamp(0.68rem, calc(var(--ts-u) * 3.5), 1.1rem);
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.6), 3px);
+  padding: calc(var(--ts-u) * 2.2) calc(var(--ts-u) * 4.6);
+  border-width: 4px;
+  border-right-color: var(--pink);
+  border-bottom-color: var(--pink);
+  box-shadow: 4px 4px 0 var(--dark), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
+}
+.ts-btn--primary:hover {
+  background: var(--blue);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
+}
+.ts-btn--primary:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -2px 0 rgba(0, 0, 0, 0.28);
+}
+
+/* Zweite CTA — gleiche Grösse wie die erste, ruhigere Farbe */
+.ts-btn--second {
+  background: var(--cream);
+  color: var(--dark);
+  font-size: clamp(0.68rem, calc(var(--ts-u) * 3.5), 1.1rem);
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.6), 3px);
+  padding: calc(var(--ts-u) * 2.2) calc(var(--ts-u) * 4.6);
+  border-width: 4px;
+  border-right-color: var(--blue);
+  border-bottom-color: var(--blue);
+  box-shadow: 4px 4px 0 var(--dark), inset 0 -4px 0 rgba(0, 0, 0, 0.15);
+}
+.ts-btn--second:hover {
+  background: var(--blue-light);
+  color: var(--dark);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -4px 0 rgba(0, 0, 0, 0.15);
+}
+.ts-btn--second:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   ZWEITER SCHRITT (.ts-inner--step)
+   Alles, was NICHT auf die Landing-Page gehört: Schwierigkeit, Codes,
+   Optionen. Gleiche Bausteine, nur dichter gesetzt.
+   ════════════════════════════════════════════════════════════════════ */
+.ts-inner--step {
+  gap: calc(var(--ts-u) * 2);
+  justify-content: center;
+}
+
+/* Kopfzeile des Schritts: Zurück-Pfeil + Name des Modus */
+.ts-step-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 1.6);
+}
+
+.ts-step-title {
+  font-family: var(--font);
+  font-size: clamp(0.62rem, calc(var(--ts-u) * 3.3), 1.05rem);
+  font-weight: 700;
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.6), 3px);
+  color: var(--blue);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ts-back {
+  font-family: var(--font);
+  font-size: clamp(0.5rem, calc(var(--ts-u) * 2.5), 0.78rem);
+  font-weight: 700;
+  color: var(--dark);
+  background: var(--blue-light);
+  border-top:    2px solid var(--dark);
+  border-left:   2px solid var(--dark);
+  border-right:  2px solid var(--blue);
+  border-bottom: 2px solid var(--blue);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  padding: calc(var(--ts-u) * 0.9) calc(var(--ts-u) * 1.8);
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ts-back:hover {
+  background: var(--cream);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+}
+.ts-back:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   BAUSTEINE (Namensraum ts-)
+   ════════════════════════════════════════════════════════════════════ */
+
+.ts-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 1.8);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ts-label {
+  font-family: var(--font);
+  font-size: clamp(0.52rem, calc(var(--ts-u) * 2.6), 0.82rem);
+  font-weight: 700;
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.45), 2px);
+  color: var(--blue);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+}
+.ts-label--pink { color: var(--pink); }
+
+/* ── Segmentierte Auswahl (Schwierigkeit, Modus, …) ───────────────── */
+.ts-seg {
+  display: flex;
+  gap: calc(var(--ts-u) * 1.4);
+}
+.ts-seg-btn {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: clamp(0.53rem, calc(var(--ts-u) * 2.7), 0.85rem);
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.45), 2px);
+  color: var(--dark);
+  background: var(--cream);
+  padding: calc(var(--ts-u) * 1.3) calc(var(--ts-u) * 2.4);
+  border-top:    3px solid var(--dark);
+  border-left:   3px solid var(--dark);
+  border-right:  3px solid var(--blue);
+  border-bottom: 3px solid var(--blue);
+  box-shadow: 3px 3px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+}
+.ts-seg-btn:hover { background: var(--blue-light); }
+.ts-seg-btn.is-active {
+  color: #FFFFFF;
+  background: var(--pink);
+  border-right-color: var(--pink);
+  border-bottom-color: var(--pink);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.28);
+}
+
+/* ── Panel: abgesetzte Unterbox (Rennen-Code, Optionen, …) ────────── */
+.ts-panel {
+  background: var(--cream);
+  border: 3px solid var(--blue);
+  box-shadow: 3px 3px 0 var(--dark);
+  padding: calc(var(--ts-u) * 1.4) calc(var(--ts-u) * 2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 1.6);
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* ── Texteingabe ─────────────────────────────────────────────────── */
+.ts-input {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: clamp(0.58rem, calc(var(--ts-u) * 2.9), 0.92rem);
+  letter-spacing: 2px;
+  color: var(--dark);
+  background: #FFFFFF;
+  border: 3px solid var(--dark);
+  padding: calc(var(--ts-u) * 1.1) calc(var(--ts-u) * 1.4);
+  width: calc(var(--ts-u) * 22);
+  min-width: 0;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  line-height: 1;
+}
+.ts-input:focus { border-color: var(--pink); }
+
+/* Schmale Zahleneingabe — gleiche Optik, halbe Breite, ohne Spinner */
+.ts-input--num {
+  width: calc(var(--ts-u) * 11);
+  letter-spacing: 1px;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.ts-input--num::-webkit-inner-spin-button,
+.ts-input--num::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.ts-input--num::placeholder { color: rgba(26, 26, 46, 0.4); }
+
+/* ── Hinweis-/Fehlerzeile (immer einzeilig) ──────────────────────── */
+.ts-note {
+  font-family: var(--font);
+  font-size: clamp(0.48rem, calc(var(--ts-u) * 2.4), 0.75rem);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--pink);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.ts-note--muted { color: var(--dark); font-weight: 400; }
+.ts-note.ok     { color: var(--blue); }
+
+
+
+/* ════════════════════════════════════════════════════════════════════
+   ENGER MODUS — greift nur unter ~230px Containerhöhe (350×250).
+   Container-Query, keine Media-Query → funktioniert auch im iframe.
+   ════════════════════════════════════════════════════════════════════ */
+@container ts (max-height: 230px) {
+  .ts-hide-tight { display: none !important; }
+  .ts-icon       { box-shadow: 2px 2px 0 var(--dark); }
+}
+
+
+/* ════════════════════════════════
+   Suchspiel — Eingabe-Zeilen
+   ════════════════════════════════ */
+
+.ts-row-icon {
+  width: calc(var(--ts-u) * 7);
+  height: calc(var(--ts-u) * 7);
+  object-fit: contain;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+}
+
+/* Beide Zeilen gleich breit, damit die Felder untereinander fluchten */
+#input-screen .ts-label {
+  width: calc(var(--ts-u) * 17);
+  text-align: left;
+}
+
+@keyframes breathe {
+  0%, 100% { filter: brightness(1);   }
+  50%      { filter: brightness(1.3); }
+}
+.breathe { animation: breathe 2.5s ease-in-out infinite; }
+
+
+/* ════════════════════════════════
+   Ergebnis-Overlay (Terminal)
+   Legt sich über den Karteninhalt — wie das Win-Banner im Sudoku.
+   ════════════════════════════════ */
+
+#result-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: clamp(4px, 1.6vh, 10px);
+  padding: clamp(8px, 3vh, 18px) clamp(10px, 4vw, 24px);
+  background: var(--blue-vivid);
+  border: 3px solid var(--pink);
+  overflow: hidden;
+}
+
+#result-screen.visible {
+  display: flex;
+}
+
+/* ── Terminal-Text ── */
+.term-line {
+  font-size: clamp(0.64rem, 4vh, 1.15rem);
+  color: var(--pink);
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+}
+.term-line--white { color: #FFFFFF; }
+
+/* ── Ladebalken ── */
+.term-bar-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(5px, 2vw, 10px);
+  width: 100%;
+}
+
+.loadbar {
+  border: 2px solid var(--pink);
+  height: clamp(10px, 4vh, 18px);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.loadbar-fill {
+  height: 100%;
+  background: var(--pink);
+  width: 0;
+}
+
+@keyframes bootBar {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+.loadbar--boot .loadbar-fill {
+  animation: bootBar 0.7s steps(12) forwards;
+}
+
+.term-status {
+  font-size: clamp(0.64rem, 4vh, 1.15rem);
+  color: var(--pink);
+  flex-shrink: 0;
+  opacity: 0;
+}
+#result-screen.visible .term-status {
+  animation: termFadeIn 0.1s 0.7s forwards;
+}
+
+@keyframes termFadeIn {
+  to { opacity: 1; }
+}
+
+/* ── Ergebnisausgabe ── */
+.term-result {
+  font-size: clamp(0.66rem, 4.2vh, 1.2rem);
+  line-height: 1.5;
+  white-space: pre-line;
+  letter-spacing: 0.5px;
+  width: 100%;
+  min-height: 0;
+  flex: 0 1 auto;
+  margin-top: clamp(2px, 1.5vh, 10px);
+  color: #FFFFFF;
+  overflow: hidden;
+}
+
+.term-result.result--ok    { color: #5FFF99; }
+.term-result.result--error { color: #FF6688; }
+
+/* Zurück-Knopf im Overlay: heller Rahmen auf dunklem Grund */
+#result-back {
+  align-self: center;
+  flex-shrink: 0;
+  margin-top: auto;
+  --ts-u: min(1.18vw, 1.7vh);
+  background: var(--cream);
+  color: var(--dark);
+  border-right-color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+#result-back:hover {
+  background: var(--blue-light);
+  color: var(--dark);
+}

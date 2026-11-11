@@ -1,0 +1,312 @@
+/* ── Fonts ── */
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* ── Design tokens ── */
+:root {
+  --blue:        #4A6FA5;
+  --blue-vivid:  #3B4FC8;
+  --blue-light:  #C8D6E8;
+  --pink:        #E84393;
+  --yellow:      #FFD000;
+  --dark:        #1A1A2E;
+  --cream:       #FFF9E6;
+  --font:        'RawPixel', monospace;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  font-family: var(--font);
+}
+
+/* ── Card ── */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--cream);
+  border-top:    4px solid var(--blue);
+  border-left:   4px solid var(--blue);
+  border-right:  4px solid var(--pink);
+  border-bottom: 4px solid var(--pink);
+  box-shadow: 5px 5px 0 var(--dark);
+}
+
+/* ── Pink variant ── */
+.card--pink {
+  border: 4px solid var(--blue);
+}
+.card--pink .titlebar {
+  background: var(--pink);
+}
+.card--pink .dot {
+  background: var(--blue);
+  border-color: var(--dark);
+}
+
+/* ── Yellow variant ── */
+.card--yellow {
+  border: 5px solid var(--blue);
+}
+.card--yellow .titlebar {
+  background: var(--yellow);
+}
+.card--yellow .titlebar-text {
+  color: var(--dark);
+}
+.card--yellow .dot {
+  background: var(--blue);
+  border-color: var(--dark);
+}
+
+/* ── Popup variant ── */
+.card--popup {
+  border-top:    4px solid var(--yellow);
+  border-left:   4px solid var(--yellow);
+  border-right:  4px solid var(--blue);
+  border-bottom: 4px solid var(--blue);
+}
+.card--popup .titlebar { background: var(--yellow); }
+.card--popup .titlebar-text { color: var(--dark); }
+.card--popup .dot { background: var(--blue); border-color: var(--dark); }
+
+/* ── Titlebar ── */
+.titlebar {
+  background: var(--blue);
+  padding: 9px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: var(--pink);
+  border: 2px solid var(--dark);
+}
+
+.titlebar-text {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  flex: 1;
+}
+
+.titlebar-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* ── Card body ── */
+.card-body {
+  flex: 1;
+  padding: 18px 28px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(rgba(74, 111, 165, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 111, 165, 0.13) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* ── Tagline ── */
+.radio-tagline {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--dark);
+  text-align: center;
+}
+
+/* ── Now playing label ── */
+.now-playing {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* ── Progress track ── */
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--blue-light);
+  border-top:    2px solid var(--blue);
+  border-left:   2px solid var(--blue);
+  border-right:  2px solid var(--dark);
+  border-bottom: 2px solid var(--dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--pink);
+  transition: width 0.1s linear;
+}
+
+/* Scanning animation when playing */
+.progress-track.playing .progress-fill {
+  width: 100%;
+  background: linear-gradient(90deg, var(--blue) 0%, var(--pink) 50%, var(--blue) 100%);
+  background-size: 200% 100%;
+  animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* ── Controls row ── */
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ── Icon buttons (heart, prev, next, repeat) ── */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.08s, opacity 0.08s;
+}
+
+.ctrl-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.btn-icon--flip .ctrl-icon {
+  transform: scaleX(-1);
+}
+
+.btn-icon:hover {
+  transform: translate(1px, 1px);
+  opacity: 0.85;
+}
+
+.btn-icon:active {
+  transform: translate(2px, 2px);
+  opacity: 0.7;
+}
+
+/* ── Play button — PNG already contains the circle ── */
+.btn-play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.08s, opacity 0.08s;
+}
+
+.btn-play img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.btn-play:hover {
+  transform: translate(2px, 2px);
+  opacity: 0.85;
+}
+
+.btn-play:active {
+  transform: translate(4px, 4px);
+  opacity: 0.7;
+}
+
+/* Shared base classes kept for template compat */
+.btn-ctrl {
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--blue);
+  border-top:    4px solid var(--dark);
+  border-left:   4px solid var(--dark);
+  border-right:  4px solid var(--pink);
+  border-bottom: 4px solid var(--pink);
+  box-shadow:
+    4px 4px 0 var(--dark),
+    inset 0 -5px 0 rgba(0, 0, 0, 0.25);
+  padding: 11px 14px;
+  cursor: pointer;
+  min-width: 48px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.btn-ctrl:hover {
+  background: var(--pink);
+  transform: translate(2px, 2px);
+  box-shadow:
+    2px 2px 0 var(--dark),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.25);
+}
+
+.btn-ctrl:active {
+  transform: translate(4px, 4px);
+  box-shadow:
+    0 0 0 var(--dark),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+}

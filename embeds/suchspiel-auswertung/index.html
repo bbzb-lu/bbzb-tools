@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BBZB Suchspiel Auswertung</title>
+  <link rel="icon" type="image/png" href="../_shared/icons/glühbirne_icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="card card--pink">
+
+    <div class="titlebar">
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <span class="titlebar-text">auswertung.exe</span>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Screen 1: Titelbildschirm — Icon, Titel, ein Satz, eine CTA -->
+      <div id="start-screen" class="ts">
+        <div class="ts-inner">
+          <img class="ts-icon" src="../_shared/icons/glühbirne_icon.png" alt="">
+          <div class="ts-title">AUSWERTUNG</div>
+          <div class="ts-sub">Trag ein, wie viele Symbole du im Schulplaner gefunden hast &ndash; und sieh nach, ob es stimmt.</div>
+          <div class="ts-cta">
+            <button class="ts-btn ts-btn--primary" id="start-btn">AUSWERTEN</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 2: Schritt 2 — die gefundenen Anzahlen -->
+      <div id="input-screen" class="ts" style="display:none">
+        <div class="ts-inner ts-inner--step">
+
+          <div class="ts-step-head">
+            <button class="ts-back" id="input-back">&#9664;</button>
+            <span class="ts-step-title">GEFUNDEN</span>
+          </div>
+
+          <div class="ts-row">
+            <img class="ts-row-icon breathe" src="../_shared/icons/cursor_icon.png" alt="">
+            <span class="ts-label">CURSOR</span>
+            <input class="ts-input ts-input--num" type="number" id="input-cursor"
+                   min="0" max="99" placeholder="?" inputmode="numeric" autocomplete="off">
+          </div>
+
+          <div class="ts-row">
+            <img class="ts-row-icon breathe" src="../_shared/icons/tomate.png" alt="">
+            <span class="ts-label">TOMATEN</span>
+            <input class="ts-input ts-input--num" type="number" id="input-tomate"
+                   min="0" max="99" placeholder="?" inputmode="numeric" autocomplete="off">
+          </div>
+
+          <button class="ts-btn ts-btn--primary" id="check-btn">&gt;&gt; PR&Uuml;FEN</button>
+
+          <div class="ts-note" id="input-error"></div>
+
+        </div>
+      </div>
+
+      <!-- Ergebnis-Overlay: Terminal-Ausgabe über dem Karteninhalt -->
+      <div id="result-screen">
+        <p class="term-line">c:\schulplaner &gt; auswertung</p>
+        <div class="term-bar-row">
+          <div class="loadbar loadbar--boot" id="loadbar-boot"><div class="loadbar-fill"></div></div>
+          <span class="term-status" id="term-status">ok</span>
+        </div>
+        <p class="term-line term-line--white">&gt; ergebnis:</p>
+        <div id="result" class="term-result"></div>
+        <button class="ts-btn" id="result-back">&#9664; NOCHMAL</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
