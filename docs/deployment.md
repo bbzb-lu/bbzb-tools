@@ -25,3 +25,4 @@ rm /tmp/fonts-key /tmp/fonts-key.pub
 - Vor dem Build prüft `node scripts/fonts.mjs --check`, dass `Braveold-Light.otf` da ist, sonst wird nicht deployt. Nach dem Build prüft `node scripts/check-live-build.mjs`, dass kein Testhaken im Build steckt.
 - Lokal holt `npm run fonts` die Schrift. Ohne Zugriff läuft das Studio, exportiert aber ohne Braveold nicht.
 - Vorschau: Jeder PR aus diesem Repo bekommt eine eigene Adresse (`<branch>.bbzb-tools.pages.dev`), der Link steht als Kommentar im PR. Die Live-Seite ändert sich erst mit dem Merge. Lokal: `npm run build && npx wrangler pages dev dist`, dann http://localhost:8788.
+- Embeds: `embeds/<id>/` wird ohne Build nach `dist/sharepoint/<id>/` kopiert (`scripts/embeds.mjs`). CSP pro Pfad in `_headers`: Embeds mit `frame-ancestors 'self' https://sluz.sharepoint.com`, Sudoku und Radio je mit ihrem Host.
