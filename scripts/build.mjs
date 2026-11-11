@@ -2,6 +2,7 @@
 import { execSync } from 'node:child_process';
 import { copyFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
+import { kopiereEmbeds } from './embeds.mjs';
 
 // `--mode <name>` geht an jede App (z. B. `--mode test` für den Test-Build mit Testhaken, nie deployen)
 const i = process.argv.indexOf('--mode');
@@ -14,4 +15,5 @@ run('startseite');
 for (const e of readdirSync('apps', { withFileTypes: true })) {
   if (e.isDirectory() && e.name !== 'startseite' && !e.name.startsWith('_') && existsSync(join('apps', e.name, 'package.json'))) run(e.name);
 }
+kopiereEmbeds('embeds', join('dist', 'sharepoint')); // statisch, ohne Build
 copyFileSync('_headers', join('dist', '_headers'));

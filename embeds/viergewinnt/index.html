@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BBZB Vier gewinnt</title>
+  <link rel="icon" type="image/png" href="../_shared/icons/viergewinnt-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="card card--yellow">
+
+    <div class="titlebar">
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <span class="titlebar-text">viergewinnt.exe</span>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Bildschirm 1: Titel — Icon, Titel, ein Satz, eine CTA -->
+      <div id="start-screen" class="ts">
+        <div class="ts-inner">
+          <img class="ts-icon" src="../_shared/icons/viergewinnt-icon.png" alt="">
+          <div class="ts-title">VIER GEWINNT</div>
+          <div class="ts-sub">Vier Steine in einer Reihe &mdash; wer zuerst?</div>
+          <div class="ts-cta">
+            <button class="ts-btn ts-btn--primary ts-btn--stack" id="mode-duo">
+              <img class="ts-cta-icon" src="../_shared/icons/multiplayer-black.png" alt="">
+              <span>DUELL</span>
+            </button>
+            <button class="ts-btn ts-btn--second ts-btn--stack" id="mode-cpu">
+              <img class="ts-cta-icon" src="../_shared/icons/robot-icon.png" alt="">
+              <span>COMPUTER</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bildschirm 2: Gegner und Figuren w&auml;hlen -->
+      <div id="setup-screen" class="ts" style="display:none">
+        <div class="ts-inner ts-inner--step">
+
+          <div class="ts-step-head">
+            <button class="ts-back" id="setup-back">&#9664;</button>
+            <span class="ts-step-title" id="setup-title">DUELL</span>
+          </div>
+
+          <div class="ts-row">
+
+            <div class="ts-pick">
+              <span class="ts-label" id="p1-cap">SPIELER 1</span>
+              <div class="ts-pick-row">
+                <button class="ts-btn ts-btn--icon" id="p1-prev">&#9664;</button>
+                <img class="ts-pick-icon" id="p1-icon" src="../_shared/icons/tomate.png" alt="">
+                <button class="ts-btn ts-btn--icon" id="p1-next">&#9654;</button>
+              </div>
+              <span class="ts-pick-name" id="p1-name">TOMATE</span>
+            </div>
+
+            <span class="ts-vs">VS</span>
+
+            <div class="ts-pick">
+              <span class="ts-label ts-label--pink" id="p2-cap">SPIELER 2</span>
+              <div class="ts-pick-row">
+                <button class="ts-btn ts-btn--icon" id="p2-prev">&#9664;</button>
+                <img class="ts-pick-icon" id="p2-icon" src="../_shared/icons/pacman_icon.png" alt="">
+                <button class="ts-btn ts-btn--icon" id="p2-next">&#9654;</button>
+              </div>
+              <span class="ts-pick-name" id="p2-name">PACMAN</span>
+            </div>
+
+          </div>
+
+          <button class="ts-btn ts-btn--primary" id="start-btn">&gt;&gt; LOS</button>
+
+        </div>
+      </div>
+
+      <!-- Bildschirm 3: Spiel — Brett links, Anzeige rechts -->
+      <div id="game-screen" style="display:none">
+
+        <div class="board" id="board">
+          <div id="col-hl"></div>
+          <!-- die 42 Zellen erzeugt script.js -->
+          <div id="win-line"></div>
+        </div>
+
+        <div class="side">
+
+          <div class="side-turn">
+            <span class="side-cap">AM ZUG</span>
+            <img class="status-icon" id="current-icon" src="" alt="">
+            <span id="status-text">SPIELER 1</span>
+          </div>
+
+          <div class="score-row">
+            <img class="score-icon" id="score-icon-p1" src="" alt="">
+            <span class="score-val" id="score-p1">0</span>
+            <span class="score-sep">&mdash;</span>
+            <span class="score-val" id="score-p2">0</span>
+            <img class="score-icon" id="score-icon-p2" src="" alt="">
+          </div>
+
+          <button class="back-btn" id="back-btn">&#9664; ZUR&Uuml;CK</button>
+
+        </div>
+      </div>
+
+      <!-- Gewinn-/Unentschieden-Overlay, liegt &uuml;ber .card-body -->
+      <div id="win-banner">
+        <img class="win-icon-large" id="win-icon" src="" alt="">
+        <div class="win-text" id="win-text"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

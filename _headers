@@ -8,3 +8,22 @@
 /social-studio/*
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; media-src 'self' blob:; font-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'self' https://huggingface.co https://*.hf.co; frame-ancestors 'none'
+# SharePoint Embeds: dürfen in SharePoint (und in der eigenen Übersicht) eingebettet werden
+/sharepoint/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; frame-ancestors 'self' https://sluz.sharepoint.com
+# Sudoku lädt Rätsel von der API (nur GET), mit lokalem Ersatz, wenn sie nicht antwortet
+/sharepoint/sudoku/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://sudoku-api.vercel.app; media-src 'self'; frame-ancestors 'self' https://sluz.sharepoint.com
+# Radio spielt den Stream ab
+/sharepoint/radio-player/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self' https://stream.streambase.ch; frame-ancestors 'self' https://sluz.sharepoint.com
+# Übersicht der Embeds: streng wie die Startseite, nicht einbettbar
+/sharepoint/
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'
+/sharepoint/assets/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'

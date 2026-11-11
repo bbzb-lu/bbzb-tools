@@ -12,6 +12,10 @@ const harmless = (f) => f.endsWith('.md') || f.startsWith('docs/');
 export function pick(files, ids) {
   const apps = new Set();
   for (const f of files.filter((f) => !harmless(f))) {
+    if (f.startsWith('embeds/')) {
+      apps.add('sharepoint'); // die Embeds prüft das Projekt der Übersicht
+      continue;
+    }
     const m = /^apps\/([^/]+)\//.exec(f);
     // Gemeinsames (packages, Startseite, e2e, scripts, Konfiguration) trifft jedes Tool
     if (!m || m[1] === 'startseite') return null;

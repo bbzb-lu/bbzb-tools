@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ANPASSEN: Titel und Favicon -->
+  <title>BBZB Embed</title>
+  <link rel="icon" type="image/png" href="../_shared/icons/computer_icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Fenstervariante wählen: .card (blau) | .card--pink | .card--yellow -->
+  <div class="card card--yellow">
+
+    <div class="titlebar">
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <!-- ANPASSEN: Fenstername, immer kleingeschrieben mit .exe -->
+      <span class="titlebar-text">embed.exe</span>
+    </div>
+
+    <div class="card-body">
+
+      <!-- ════════════════════════════════════════════════════════════
+           BILDSCHIRM 1 — Titelbildschirm
+           Icon mittig oben, Titel, EIN Satz, ein oder zwei CTAs.
+           Nichts, was eine Auswahl verlangt. Siehe CLAUDE.md.
+           ════════════════════════════════════════════════════════════ -->
+      <div id="start-screen" class="ts">
+        <div class="ts-inner">
+          <!-- ANPASSEN: Icon, Titel, Satz, CTA-Beschriftungen -->
+          <img class="ts-icon" src="../_shared/icons/computer_icon.png" alt="">
+          <div class="ts-title">EMBED</div>
+          <div class="ts-sub">Ein Satz: was kann man hier tun?</div>
+          <div class="ts-cta">
+            <button class="ts-btn ts-btn--primary" id="cta-primary">&gt;&gt; LOS</button>
+            <!-- Zweite CTA ist optional. Nie mehr als zwei.
+            <button class="ts-btn ts-btn--second" id="cta-second">ZWEITER WEG</button>
+            -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════════
+           BILDSCHIRM 2 — Auswahl (optional)
+           Weglassen, wenn es nichts zu wählen gibt; dann führt die CTA
+           direkt in den App-Bildschirm.
+           ════════════════════════════════════════════════════════════ -->
+      <div id="setup-screen" class="ts" style="display:none">
+        <div class="ts-inner ts-inner--step">
+
+          <div class="ts-step-head">
+            <button class="ts-back" id="setup-back">&#9664;</button>
+            <span class="ts-step-title" id="setup-title">AUSWAHL</span>
+          </div>
+
+          <div class="ts-row">
+            <span class="ts-label ts-hide-tight">MODUS</span>
+            <div class="ts-seg">
+              <button class="ts-seg-btn is-active" data-opt="a">A</button>
+              <button class="ts-seg-btn" data-opt="b">B</button>
+              <button class="ts-seg-btn" data-opt="c">C</button>
+            </div>
+          </div>
+
+          <button class="ts-btn ts-btn--primary" id="start-btn">&gt;&gt; STARTEN</button>
+
+          <div class="ts-note" id="note"></div>
+          <div class="ts-note ts-note--muted" id="loading">WIRD GELADEN&hellip;</div>
+
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════════
+           BILDSCHIRM 3 — App
+           Hauptfläche links, Bedienspalte rechts. Für Embeds ohne
+           Bedienspalte .app-side löschen.
+           ════════════════════════════════════════════════════════════ -->
+      <div id="app-screen" style="display:none">
+
+        <div class="app-main" id="stage">
+          <!-- HIER kommt der eigentliche Inhalt hin -->
+        </div>
+
+        <div class="app-side">
+
+          <div class="app-status">
+            <span id="status-left">STATUS</span>
+            <span id="status-right">00:00</span>
+          </div>
+
+          <!-- HIER kommen die Bedienelemente hin -->
+
+          <div class="app-foot">
+            <button class="back-btn" id="back-btn">&#9664; ZUR&Uuml;CK</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════════
+           OVERLAY — Gewinn, Ergebnis, Hinweis. Liegt über .card-body.
+           ════════════════════════════════════════════════════════════ -->
+      <div id="overlay">
+        <img class="overlay-icon" id="overlay-icon" src="../_shared/icons/glühbirne_icon.png" alt="">
+        <div class="overlay-title" id="overlay-title">FERTIG!</div>
+        <div class="overlay-sub" id="overlay-sub"></div>
+        <button class="ts-btn" id="overlay-btn">NOCHMAL</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

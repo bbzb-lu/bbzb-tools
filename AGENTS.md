@@ -5,7 +5,7 @@ Websuite des BBZB Luzern mit kleinen Browser-Tools, die den Schulalltag einfache
 ## Ordner
 - `apps/`: ein Ordner pro Tool, jeweils mit eigener `AGENTS.md`. `apps/_vorlage/` ist die Vorlage für neue Tools
 - `packages/ui/`: gemeinsame Oberfläche (Theme, Bauteile)
-- `embeds/`: folgt
+- `embeds/`: SharePoint Embeds (statisch, eigene `AGENTS.md`), unter `/sharepoint/<id>/`
 - `docs/`: Spezifikationen und Pläne
 
 Arbeite im Ordner des Tools und lies dessen `AGENTS.md`, nicht die anderer Tools.

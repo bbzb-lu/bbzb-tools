@@ -1,0 +1,6 @@
+{
+  "name": "Radio Player",
+  "satz": "Radioplayer fürs Schulhaus, zeigt an, welcher Sender gerade läuft.",
+  "datum": "2026-07-08",
+  "extern": "stream.streambase.ch"
+}

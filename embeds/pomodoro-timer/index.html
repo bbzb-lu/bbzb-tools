@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BBZB Pomodoro</title>
+  <link rel="icon" type="image/png" href="../_shared/icons/tomate.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="titlebar">
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <span class="titlebar-text">pomodoro.exe</span>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Screen 1: Titelbildschirm — Icon, Titel, ein Satz, eine CTA.
+           Pomodoro hat nichts zu w&auml;hlen, deshalb kein Schritt 2. -->
+      <div id="idle-view" class="ts">
+        <div class="ts-inner">
+          <img class="ts-icon" id="hero-icon" src="../_shared/icons/tomate.png" alt="">
+          <div class="ts-title">POMODORO</div>
+          <div class="ts-sub">25 Minuten arbeiten, 5 Minuten Pause. Vier Runden bis zur langen Pause.</div>
+          <div class="ts-cta">
+            <button class="ts-btn ts-btn--primary" id="start-btn">&gt;&gt; START</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 2: laufender Timer -->
+      <div id="running-view">
+        <div class="phase-label" id="phase-label">WORK</div>
+        <div class="phase-progress" id="phase-progress"></div>
+        <img src="../_shared/icons/tomate.png" class="hero-icon" id="running-icon" alt="">
+        <div class="timer-row">
+          <button class="btn-ctrl" id="pause-btn" title="Pause / Weiter">II</button>
+          <div class="timer-display" id="timer-display">25:00</div>
+          <button class="btn-ctrl" id="skip-btn" title="Phase &uuml;berspringen">&gt;&gt;</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

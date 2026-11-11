@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BBZB Sudoku</title>
+  <link rel="icon" type="image/png" href="../_shared/icons/sudoku_field_icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="card card--yellow">
+
+    <div class="titlebar">
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+      <span class="titlebar-text">sudoku.exe</span>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Screen 1: Start -->
+      <!-- Screen 1: Titelbildschirm — Icon, Titel, ein Satz, zwei CTAs -->
+      <div id="start-screen" class="ts">
+        <div class="ts-inner">
+          <img class="ts-icon" src="../_shared/icons/sudoku-field-filled-in.png" alt="Sudoku-Feld">
+          <div class="ts-title">SUDOKU</div>
+          <div class="ts-sub">F&uuml;lle das Gitter mit 1&ndash;9. Allein oder im Rennen gegen die Klasse.</div>
+          <div class="ts-cta">
+            <button class="ts-btn ts-btn--primary ts-btn--stack" id="mode-single">
+              <img class="ts-cta-icon" src="../_shared/icons/singleplayer-black.png" alt="">
+              <span>EINZELSPIEL</span>
+            </button>
+            <button class="ts-btn ts-btn--second ts-btn--stack" id="mode-race">
+              <img class="ts-cta-icon" src="../_shared/icons/multiplayer-black.png" alt="">
+              <span>RENNEN</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 2: Schritt 2 — Schwierigkeit, und im Rennen der Code -->
+      <div id="setup-screen" class="ts" style="display:none">
+        <div class="ts-inner ts-inner--step">
+
+          <div class="ts-step-head">
+            <button class="ts-back" id="setup-back">&#9664;</button>
+            <span class="ts-step-title" id="setup-title">EINZELSPIEL</span>
+          </div>
+
+          <div class="ts-row">
+            <span class="ts-label ts-hide-tight">SCHWIERIGKEIT</span>
+            <div class="ts-seg">
+              <button class="ts-seg-btn is-active" data-diff="easy">LEICHT</button>
+              <button class="ts-seg-btn" data-diff="medium">MITTEL</button>
+              <button class="ts-seg-btn" data-diff="hard">SCHWER</button>
+            </div>
+          </div>
+
+          <button class="ts-btn ts-btn--primary" id="play-btn">&gt;&gt; SPIELEN</button>
+
+          <div class="ts-panel" id="race-panel">
+            <button class="ts-btn" id="code-make-btn">ERSTELLEN</button>
+            <input class="ts-input" type="text" id="code-input" maxlength="12"
+                   placeholder="CODE" autocomplete="off" spellcheck="false">
+            <button class="ts-btn" id="code-start-btn">START</button>
+          </div>
+
+          <div class="ts-note" id="code-error"></div>
+          <div class="ts-note ts-note--muted" id="loading">SUDOKU WIRD GELADEN&hellip;</div>
+
+        </div>
+      </div>
+
+      <!-- Screen 2: Game — board left, controls right (fits a wide, short box) -->
+      <div id="game-screen" style="display:none">
+
+        <div class="board" id="board"></div>
+
+        <div class="side">
+
+          <div class="side-status">
+            <span class="status-diff" id="status-diff">LEICHT</span>
+            <span class="status-time">
+              <img class="status-icon" src="../_shared/icons/hourglass_icon.png" alt="">
+              <span id="timer">00:00</span>
+            </span>
+          </div>
+
+          <div class="pad" id="pad">
+            <button class="pad-key" data-n="1">1</button>
+            <button class="pad-key" data-n="2">2</button>
+            <button class="pad-key" data-n="3">3</button>
+            <button class="pad-key" data-n="4">4</button>
+            <button class="pad-key" data-n="5">5</button>
+            <button class="pad-key" data-n="6">6</button>
+            <button class="pad-key" data-n="7">7</button>
+            <button class="pad-key" data-n="8">8</button>
+            <button class="pad-key" data-n="9">9</button>
+            <button class="pad-key pad-del" id="pad-del">&#9003;</button>
+          </div>
+
+          <div class="side-foot">
+            <span class="status-code" id="code-label">ZUFALLSPUZZLE</span>
+            <label class="err-toggle" id="err-toggle">
+              <span class="checkbox" id="err-box"></span>
+              <img class="toggle-icon" src="../_shared/icons/caution_icon.png" alt="">
+              <span>FEHLER</span>
+            </label>
+            <button class="back-btn" id="new-btn">&#9664; NEU</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Win overlay (covers card-body) -->
+      <div id="win-banner">
+        <img class="win-icon-large" id="win-icon" src="../_shared/icons/glühbirne_icon.png" alt="">
+        <div class="win-text">GEL&Ouml;ST!</div>
+        <div class="win-sub" id="win-sub"></div>
+        <button class="ts-btn" id="win-again-btn">NEUES SPIEL</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

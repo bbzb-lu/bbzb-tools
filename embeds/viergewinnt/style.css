@@ -1,0 +1,1121 @@
+/* ── Fonts ── */
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'RawPixel';
+  src: url('../_shared/font/RawPixel-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* ── Design tokens ── */
+:root {
+  --blue:        #4A6FA5;
+  --blue-vivid:  #3B4FC8;
+  --blue-light:  #C8D6E8;
+  --pink:        #E84393;
+  --yellow:      #FFD000;
+  --dark:        #1A1A2E;
+  --cream:       #FFF9E6;
+  --font:        'RawPixel', monospace;
+
+  /* ── Fluide Grössen ────────────────────────────────────────────────
+     Das Embed sitzt in einem SharePoint-iframe: ~480×350 am Desktop,
+     ~350×250 auf dem Handy. Alle Grössen leiten sich vom Viewport ab,
+     damit ein Regelwerk beide Fälle abdeckt — keine Media Queries,
+     nie ein Scrollbalken.                                            */
+  --bar-h:  clamp(22px, 8vh, 34px);      /* titlebar                   */
+  --pad-x:  clamp(5px, 1.6vw, 10px);     /* card-body padding          */
+  --pad-y:  clamp(4px, 1.2vh, 8px);
+  --gap:    clamp(4px, 1.4vw, 9px);
+  --side-w: clamp(100px, 30vw, 150px);    /* controls column            */
+
+  /* Das Brett ist 7×6, also NICHT quadratisch — anders als bei Sudoku
+     und TicTacToe. Quadratisch bleiben muss die einzelne Zelle, sonst
+     werden die Steine oval. Also zuerst die Zelle aus der knapperen
+     Achse ableiten, dann das Brett daraus aufbauen.
+     Die -10px sind die 5px Rahmen der Karte auf beiden Seiten, die
+     -8px halten den 3px-Schlagschatten des Bretts im Body.           */
+  --cols: 7;
+  --rows: 6;
+  --cell: min(
+    calc((100vw - var(--side-w) - var(--gap) - var(--pad-x) * 2 - 10px - 8px) / 7),
+    calc((100vh - var(--bar-h) - var(--pad-y) * 2 - 10px - 8px) / 6)
+  );
+  --board-w: calc(var(--cell) * 7);
+  --board-h: calc(var(--cell) * 6);
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
+/* ── Root: transparent so SharePoint background shows ── */
+html, body {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  font-family: var(--font);
+}
+
+/* ── Card fills the full iframe ── */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--cream);
+  border-top:    4px solid var(--blue);
+  border-left:   4px solid var(--blue);
+  border-right:  4px solid var(--pink);
+  border-bottom: 4px solid var(--pink);
+  box-shadow: 5px 5px 0 var(--dark);
+}
+
+/* ── Title bar ── */
+.titlebar {
+  background: var(--blue);
+  height: var(--bar-h);
+  padding: 0 clamp(6px, 2vw, 14px);
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 2vw, 12px);
+  flex-shrink: 0;
+}
+
+.dots {
+  display: flex;
+  gap: clamp(3px, 1vw, 6px);
+  flex-shrink: 0;
+}
+
+.dot {
+  width: clamp(6px, 2.4vh, 10px);
+  height: clamp(6px, 2.4vh, 10px);
+  background: var(--pink);
+  border: 2px solid var(--dark);
+}
+
+.titlebar-text {
+  color: #FFFFFF;
+  font-size: clamp(0.55rem, 2.8vh, 0.9rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.titlebar-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* ── Card variants ── */
+.card--pink {
+  border: 4px solid var(--blue);
+}
+.card--pink .titlebar {
+  background: var(--pink);
+}
+.card--pink .dot {
+  background: var(--blue);
+  border-color: var(--dark);
+}
+
+.card--yellow {
+  border: 5px solid var(--blue);
+}
+.card--yellow .titlebar {
+  background: var(--yellow);
+}
+.card--yellow .titlebar-text {
+  color: var(--dark);
+}
+.card--yellow .dot {
+  background: var(--blue);
+  border-color: var(--dark);
+}
+
+.card--popup {
+  border-top:    4px solid var(--yellow);
+  border-left:   4px solid var(--yellow);
+  border-right:  4px solid var(--blue);
+  border-bottom: 4px solid var(--blue);
+}
+.card--popup .titlebar      { background: var(--yellow); }
+.card--popup .titlebar-text { color: var(--dark); }
+.card--popup .dot           { background: var(--blue); border-color: var(--dark); }
+
+/* ── Card body ── */
+.card-body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--pad-y) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(rgba(74, 111, 165, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 111, 165, 0.13) 1px, transparent 1px);
+  background-size: 22px 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Control button (reusable) ── */
+.btn-ctrl {
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: var(--blue);
+  border-top:    4px solid var(--dark);
+  border-left:   4px solid var(--dark);
+  border-right:  4px solid var(--pink);
+  border-bottom: 4px solid var(--pink);
+  box-shadow:
+    4px 4px 0 var(--dark),
+    inset 0 -5px 0 rgba(0, 0, 0, 0.25);
+  padding: 11px 14px;
+  cursor: pointer;
+  min-width: 48px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.btn-ctrl:hover {
+  background: var(--pink);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -4px 0 rgba(0,0,0,0.25);
+}
+.btn-ctrl:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -2px 0 rgba(0,0,0,0.25);
+}
+
+.back-btn {
+  font-family: var(--font);
+  font-size: clamp(0.56rem, 3.6vh, 0.95rem);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--dark);
+  background: var(--blue-light);
+  border-top:    2px solid var(--dark);
+  border-left:   2px solid var(--dark);
+  border-right:  2px solid var(--blue);
+  border-bottom: 2px solid var(--blue);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -3px 0 rgba(0,0,0,0.18);
+  padding: clamp(3px, 1.1vh, 6px) clamp(6px, 2vw, 12px);
+  cursor: pointer;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.back-btn:hover {
+  background: var(--cream);
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -3px 0 rgba(0,0,0,0.18);
+}
+.back-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -1px 0 rgba(0,0,0,0.18);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Gemeinsamer Titelbildschirm (.ts-*)
+   Identisch in allen BBZB-Embeds. Aufbau der Landing-Page:
+
+        Pixel-Icon (Mitte oben)
+        TITEL
+        Ein Satz, was man hier tun kann.
+        [ HAUPT-CTA ]  [ zweite CTA ]
+
+   Maximal ZWEI CTAs. Alles Weitere (Schwierigkeit, Codes, Optionen)
+   gehört auf einen zweiten Schritt — .ts-inner--step.
+
+   Skaliert über eine einzige Einheit (--ts-u) aus der Containergrösse,
+   deshalb ohne Media Queries: 480×350 und 350×250 teilen ein Regelwerk.
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Container-Root ──────────────────────────────────────────────────
+   container-type: size erlaubt cqw/cqh in allen Kindelementen.      */
+.ts {
+  container-type: size;
+  container-name: ts;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Skalen-Einheit ──────────────────────────────────────────────────
+   Messwerte: 480×350 → --ts-u ≈ 5.1px | 350×250 → --ts-u ≈ 3.4px    */
+.ts-inner {
+  --ts-u: min(1.18cqw, 1.7cqh);
+
+  width: 100%;
+  height: 100%;
+  padding: calc(var(--ts-u) * 2) calc(var(--ts-u) * 3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 2.2);
+  overflow: hidden;              /* Sicherheitsnetz: nie scrollen */
+  text-align: center;
+}
+
+/* ── Icon-Plakette, mittig oben ──────────────────────────────────────
+   Harter Offsetschatten, kein Radius, kein Blur.                    */
+.ts-icon {
+  width: calc(var(--ts-u) * 11);
+  height: calc(var(--ts-u) * 11);
+  object-fit: contain;
+  flex-shrink: 0;
+  padding: calc(var(--ts-u) * 0.9);
+  background: #FFFFFF;
+  border-top:    3px solid var(--blue);
+  border-left:   3px solid var(--blue);
+  border-right:  3px solid var(--pink);
+  border-bottom: 3px solid var(--pink);
+  box-shadow: 3px 3px 0 var(--dark);
+  image-rendering: pixelated;
+}
+
+.ts-title {
+  font-family: var(--font);
+  font-size: clamp(1rem, calc(var(--ts-u) * 5.6), 1.8rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: clamp(2px, calc(var(--ts-u) * 0.8), 5px);
+  color: var(--blue);
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 var(--blue-light);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ein Satz. Er sagt, was man hier tun kann — nicht mehr. */
+.ts-sub {
+  font-family: var(--font);
+  font-size: clamp(0.58rem, calc(var(--ts-u) * 3.05), 0.95rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--dark);
+  max-width: calc(var(--ts-u) * 82);
+  text-wrap: balance;          /* gleichmässige Zeilen statt Hänger */
+}
+
+/* ── CTA-Reihe: ein oder zwei Knöpfe, sonst nichts ───────────────── */
+.ts-cta-icon {
+  height: calc(var(--ts-u) * 5.4);
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+}
+/* Die Icons sind reines Schwarz auf Transparenz — hier auf die
+   Schriftfarbe des jeweiligen Buttons umgefärbt. */
+.ts-btn--primary .ts-cta-icon { filter: brightness(0) invert(1); }
+.ts-btn--second  .ts-cta-icon { filter: none; }
+
+/* Buttons mit Icon: Icon über dem Text, beides zentriert */
+.ts-btn--stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--ts-u) * 1.1);
+}
+
+.ts-cta {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 2.4);
+  margin-top: calc(var(--ts-u) * 1.2);
+  max-width: 100%;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────
+   Aufbau nach CLAUDE.md: top/left --dark (Lichtseite), right/bottom
+   Akzentfarbe, harter Offsetschatten, inset-Tiefenband.             */
+.ts-btn {
+  font-family: var(--font);
+  font-weight: 700;
+  color: #FFFFFF;
+  background: var(--blue);
+  font-size: clamp(0.6rem, calc(var(--ts-u) * 3), 0.95rem);
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.45), 2px);
+  padding: calc(var(--ts-u) * 1.7) calc(var(--ts-u) * 3.2);
+  border-top:    3px solid var(--dark);
+  border-left:   3px solid var(--dark);
+  border-right:  3px solid var(--pink);
+  border-bottom: 3px solid var(--pink);
+  box-shadow: 3px 3px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ts-btn:hover {
+  background: var(--pink);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+}
+.ts-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* Haupt-CTA (pink, gross) — genau EINER pro Titelbildschirm */
+.ts-btn--primary {
+  background: var(--pink);
+  font-size: clamp(0.68rem, calc(var(--ts-u) * 3.5), 1.1rem);
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.6), 3px);
+  padding: calc(var(--ts-u) * 2.2) calc(var(--ts-u) * 4.6);
+  border-width: 4px;
+  border-right-color: var(--pink);
+  border-bottom-color: var(--pink);
+  box-shadow: 4px 4px 0 var(--dark), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
+}
+.ts-btn--primary:hover {
+  background: var(--blue);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -4px 0 rgba(0, 0, 0, 0.28);
+}
+.ts-btn--primary:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -2px 0 rgba(0, 0, 0, 0.28);
+}
+
+/* Zweite CTA — gleiche Grösse wie die erste, ruhigere Farbe */
+.ts-btn--second {
+  background: var(--cream);
+  color: var(--dark);
+  font-size: clamp(0.68rem, calc(var(--ts-u) * 3.5), 1.1rem);
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.6), 3px);
+  padding: calc(var(--ts-u) * 2.2) calc(var(--ts-u) * 4.6);
+  border-width: 4px;
+  border-right-color: var(--blue);
+  border-bottom-color: var(--blue);
+  box-shadow: 4px 4px 0 var(--dark), inset 0 -4px 0 rgba(0, 0, 0, 0.15);
+}
+.ts-btn--second:hover {
+  background: var(--blue-light);
+  color: var(--dark);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -4px 0 rgba(0, 0, 0, 0.15);
+}
+.ts-btn--second:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   ZWEITER SCHRITT (.ts-inner--step)
+   Alles, was NICHT auf die Landing-Page gehört: Schwierigkeit, Codes,
+   Optionen. Gleiche Bausteine, nur dichter gesetzt.
+   ════════════════════════════════════════════════════════════════════ */
+.ts-inner--step {
+  gap: calc(var(--ts-u) * 2);
+  justify-content: center;
+}
+
+/* Kopfzeile des Schritts: Zurück-Pfeil + Name des Modus */
+.ts-step-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 1.6);
+}
+
+.ts-step-title {
+  font-family: var(--font);
+  font-size: clamp(0.62rem, calc(var(--ts-u) * 3.3), 1.05rem);
+  font-weight: 700;
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.6), 3px);
+  color: var(--blue);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.ts-back {
+  font-family: var(--font);
+  font-size: clamp(0.5rem, calc(var(--ts-u) * 2.5), 0.78rem);
+  font-weight: 700;
+  color: var(--dark);
+  background: var(--blue-light);
+  border-top:    2px solid var(--dark);
+  border-left:   2px solid var(--dark);
+  border-right:  2px solid var(--blue);
+  border-bottom: 2px solid var(--blue);
+  box-shadow: 2px 2px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  padding: calc(var(--ts-u) * 0.9) calc(var(--ts-u) * 1.8);
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.ts-back:hover {
+  background: var(--cream);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+}
+.ts-back:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--dark), inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   BAUSTEINE (Namensraum ts-)
+   ════════════════════════════════════════════════════════════════════ */
+
+.ts-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 1.8);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.ts-label {
+  font-family: var(--font);
+  font-size: clamp(0.52rem, calc(var(--ts-u) * 2.6), 0.82rem);
+  font-weight: 700;
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.45), 2px);
+  color: var(--blue);
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+}
+.ts-label--pink { color: var(--pink); }
+
+/* ── Segmentierte Auswahl (Schwierigkeit, Modus, …) ───────────────── */
+.ts-seg {
+  display: flex;
+  gap: calc(var(--ts-u) * 1.4);
+}
+.ts-seg-btn {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: clamp(0.53rem, calc(var(--ts-u) * 2.7), 0.85rem);
+  letter-spacing: clamp(1px, calc(var(--ts-u) * 0.45), 2px);
+  color: var(--dark);
+  background: var(--cream);
+  padding: calc(var(--ts-u) * 1.3) calc(var(--ts-u) * 2.4);
+  border-top:    3px solid var(--dark);
+  border-left:   3px solid var(--dark);
+  border-right:  3px solid var(--blue);
+  border-bottom: 3px solid var(--blue);
+  box-shadow: 3px 3px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+}
+.ts-seg-btn:hover { background: var(--blue-light); }
+.ts-seg-btn.is-active {
+  color: #FFFFFF;
+  background: var(--pink);
+  border-right-color: var(--pink);
+  border-bottom-color: var(--pink);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--dark), inset 0 -3px 0 rgba(0, 0, 0, 0.28);
+}
+
+/* ── Panel: abgesetzte Unterbox (Rennen-Code, Optionen, …) ────────── */
+.ts-panel {
+  background: var(--cream);
+  border: 3px solid var(--blue);
+  box-shadow: 3px 3px 0 var(--dark);
+  padding: calc(var(--ts-u) * 1.4) calc(var(--ts-u) * 2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 1.6);
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* ── Texteingabe ─────────────────────────────────────────────────── */
+.ts-input {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: clamp(0.58rem, calc(var(--ts-u) * 2.9), 0.92rem);
+  letter-spacing: 2px;
+  color: var(--dark);
+  background: #FFFFFF;
+  border: 3px solid var(--dark);
+  padding: calc(var(--ts-u) * 1.1) calc(var(--ts-u) * 1.4);
+  width: calc(var(--ts-u) * 22);
+  min-width: 0;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  line-height: 1;
+}
+.ts-input:focus { border-color: var(--pink); }
+
+/* ── Hinweis-/Fehlerzeile (immer einzeilig) ──────────────────────── */
+.ts-note {
+  font-family: var(--font);
+  font-size: clamp(0.48rem, calc(var(--ts-u) * 2.4), 0.75rem);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--pink);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.ts-note--muted { color: var(--dark); font-weight: 400; }
+.ts-note.ok     { color: var(--blue); }
+
+/* Optionaler Ladehinweis (nur sichtbar, wenn .visible gesetzt wird). */
+#loading { display: none; }
+#loading.visible { display: block; }
+
+/* ── Auswahl-Karussell ─────────────────────────────────────────────
+   Quadratischer Pfeil-Knopf, Figur dazwischen, Name darunter.
+   Übernommen aus bbzb-hub-tictactoe.                              */
+.ts-btn--icon {
+  width:  calc(var(--ts-u) * 7);
+  height: calc(var(--ts-u) * 7);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.5rem, calc(var(--ts-u) * 2.6), 0.8rem);
+  letter-spacing: 0;
+  border-width: 3px;
+}
+
+.ts-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--ts-u) * 1.2);
+  min-width: 0;
+}
+
+.ts-pick-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--ts-u) * 1.4);
+}
+
+.ts-pick-icon {
+  width:  calc(var(--ts-u) * 11);
+  height: calc(var(--ts-u) * 11);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.ts-pick-name {
+  font-family: var(--font);
+  font-size: clamp(0.48rem, calc(var(--ts-u) * 2.4), 0.75rem);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--dark);
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.ts-vs {
+  font-family: var(--font);
+  font-size: clamp(0.7rem, calc(var(--ts-u) * 4.2), 1.4rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--pink);
+  text-shadow: 2px 2px 0 var(--dark);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* Bildschirm 2 trägt hier eine Zeile mehr als bei TicTacToe (Gegner-
+   wahl), also die Reihen etwas enger setzen.                       */
+.ts-inner--step .ts-row + .ts-row { margin-top: calc(var(--ts-u) * -0.4); }
+
+
+/* ════════════════════════════════════════════════════════════════════
+   ENGER MODUS — greift nur unter ~230px Containerhöhe (350×250).
+   Container-Query, keine Media-Query → funktioniert auch im iframe.
+   ════════════════════════════════════════════════════════════════════ */
+@container ts (max-height: 230px) {
+  .ts-hide-tight { display: none !important; }
+  .ts-icon       { box-shadow: 2px 2px 0 var(--dark); }
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   APP-BILDSCHIRM — Brett links, Anzeigespalte rechts
+   ════════════════════════════════════════════════════════════════════ */
+
+#game-screen {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Brett ──────────────────────────────────────────────────────────
+   7 Spalten × 6 Reihen. Die Zelle ist quadratisch (--cell), das Brett
+   ergibt sich daraus — nicht umgekehrt.                             */
+/* ── Brett ──────────────────────────────────────────────────────────
+   Die Platte kommt als Bild: icons/viergewinnt-bg.png ist exakt
+   2520×2160, also genau 7×6 Zellen zu 360px. Bei background-size
+   100% 100% deckt es sich deshalb pixelgenau mit dem Raster, ohne
+   dass hier etwas gerechnet werden müsste.
+
+   Die Löcher im Bild sind transparent — durch sie scheint der dunkle
+   Grund der Karte. Deshalb darf das Brett KEINE eigene
+   Hintergrundfarbe haben, sonst sind die Löcher zu.               */
+.board {
+  display: grid;
+  grid-template-columns: repeat(7, var(--cell));
+  grid-template-rows:    repeat(6, var(--cell));
+  /* Der Versatz des Schattens hängt an --cell, nicht an einer festen
+     Pixelzahl: bei 350×250 ist die Zelle nur 29px, dort würden 2px
+     die Löcher umranden statt sie nur zu kanten.                    */
+  --edge: max(1px, calc(var(--cell) * 0.05));
+
+  /* Das Polster ist genau so breit wie der Schattenversatz. Ohne das
+     würde overflow: hidden den Schatten der Platte am Brettrand
+     abschneiden — und overflow braucht es, damit der fallende Stein
+     nicht über dem Brett schwebt.                                   */
+  padding: var(--edge);
+  width:  calc(var(--board-w) + var(--edge) * 2);
+  height: calc(var(--board-h) + var(--edge) * 2);
+  background: none;   /* die Platte liegt in ::after, siehe unten */
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;   /* der fallende Stein wird am Brettrand geclippt */
+}
+
+/* Die Platte als eigene Lage statt als Hintergrund des Bretts. Nur so
+   kann die Spalten-Hervorhebung DAHINTER liegen: der Hintergrund eines
+   Elements wird immer unter seinen Kindern gezeichnet, ein Kind kann
+   also nie dahinter.                                                */
+.board::after {
+  content: '';
+  position: absolute;
+  inset: var(--edge);          /* deckungsgleich mit dem Zellraster */
+  background: url('../_shared/icons/viergewinnt-bg.png') center / 100% 100% no-repeat;
+  z-index: 1;
+  pointer-events: none;
+
+  /* Kein Rahmen: ein rechteckiger Rand passt nicht zu den abgerundeten
+     Ecken des Brettbilds und schneidet dort quer durch. Zwei
+     drop-shadow ohne Weichzeichnung folgen stattdessen der Alphamaske
+     und damit exakt der Silhouette. Lichtquelle oben links wie im
+     ganzen BBZB-Stil.
+
+     Der Filter gehört HIERHIN und nicht auf .board — dort würde er
+     auf den gesamten gerenderten Inhalt wirken und jedem Spielstein
+     einen blau/pinken Doppelrand verpassen.                        */
+  filter: drop-shadow(calc(var(--edge) * -1) calc(var(--edge) * -1) 0 var(--blue))
+          drop-shadow(var(--edge) var(--edge) 0 var(--pink));
+}
+
+/* ── Spalten-Hervorhebung ───────────────────────────────────────────
+   Ein hohes Rechteck hinter der Platte. Weil die Löcher im Brettbild
+   transparent sind, leuchtet es nur durch sie hindurch — die Spalte
+   zeigt sich als Reihe heller Löcher, nicht als Balken.
+   Position setzt script.js in Vielfachen von --cell.               */
+#col-hl {
+  /* Die Platte ist an den Ecken um 60px gerundet (bei 360px Zelle,
+     also 16.7%). Ein glatt rechteckiges Feld ragt in der ersten und
+     letzten Spalte dort heraus, wo die Platte schon aufhört. Deshalb
+     die Ecken abschrägen — grosszügiger als die Rundung, das Mehr
+     liegt ohnehin unter der Platte und der Schnitt kommt keinem Loch
+     nahe. border-radius ginge nicht: im BBZB-Stil verboten, und
+     verify.js schlägt darauf an.                                   */
+  --hl-r: calc(var(--cell) * 0.2);
+  clip-path: polygon(
+    0 var(--hl-r),
+    var(--hl-r) 0,
+    calc(100% - var(--hl-r)) 0,
+    100% var(--hl-r),
+    100% calc(100% - var(--hl-r)),
+    calc(100% - var(--hl-r)) 100%,
+    var(--hl-r) 100%,
+    0 calc(100% - var(--hl-r))
+  );
+  position: absolute;
+  top: var(--edge);
+  height: calc(100% - var(--edge) * 2);
+  width: var(--cell);
+  background: var(--blue-light);
+  z-index: 0;
+  display: none;
+  pointer-events: none;
+}
+#col-hl.visible { display: block; }
+
+/* ── Zelle ──────────────────────────────────────────────────────────
+   Das Loch zeichnet das Brettbild, die Zelle ist nur noch Klickfläche
+   und Anker für den Stein. Sie muss über der Platte liegen, damit die
+   Steine sichtbar sind. ::before bleibt als Fläche für das
+   Gewinn-Blinken erhalten — normal unsichtbar.
+
+   Bewusst OHNE overflow: hidden — sonst schneidet die Zelle den
+   fallenden Stein ab und man sieht nur die letzte Zelle Fallweg.   */
+.cell {
+  position: relative;
+  z-index: 2;                /* über der Platte (::after, z-index 1) */
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  min-width: 0;
+  min-height: 0;
+}
+
+.cell::before {
+  content: '';
+  position: absolute;
+  inset: 5.55%;              /* deckungsgleich mit dem Loch (320/360) */
+  background: transparent;
+  clip-path: polygon(
+    32% 0, 68% 0, 100% 32%, 100% 68%,
+    68% 100%, 32% 100%, 0 68%, 0 32%
+  );
+}
+
+/* Der Stein liegt über dem Loch. */
+.cell .disc { position: relative; z-index: 1; }
+
+.cell.filled           { cursor: default; }
+.board.is-locked .cell { cursor: default; }
+
+/* ── Spielstein ─────────────────────────────────────────────────────
+   Zwei Lagen: die Ring-Textur (../_shared/icons/ring-blue.png bzw. ring-pink.png)
+   und die Figur darin. Die Ringe haben eine vollständig transparente
+   Mitte, deshalb scheint die Zellfläche durch und gibt der Figur ihren
+   hellen Grund.
+
+   Die Figur darf den Ring leicht überragen — sie sitzt absolut in der
+   Mitte und wird von nichts geclippt.                              */
+.disc {
+  position: relative;
+  /* 320/360 — die Ring-Textur ist exakt so gross wie das Loch im
+     Brettbild. Beide Assets sind aufeinander abgestimmt, der Stein
+     füllt sein Loch also genau aus.                                */
+  width:  88.89%;
+  height: 88.89%;
+  flex-shrink: 0;
+  transform-origin: bottom center;   /* für die Stauchung beim Aufprall */
+}
+
+.disc-ring {
+  position: absolute;
+  inset: 0;
+  width:  100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.disc-fig {
+  position: absolute;
+  left: 50%;
+  top:  50%;
+  transform: translate(-50%, -50%);
+  width:  54%;
+  height: 54%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* ── Fallanimation ──────────────────────────────────────────────────
+   Der Stein soll Masse haben: beschleunigen, aufschlagen, stauchen,
+   zweimal abprallen, liegen bleiben.
+
+   PHASE A (0–55 %) — der Fall.
+   Die acht Stützstellen folgen der Fallgleichung s ∝ t², die Position
+   ist also 1 − (i/8)² der Fallhöhe. Dadurch beschleunigt der Stein
+   sichtbar. Alles läuft in steps(1, end) — die Zwischenwerte springen
+   hart um statt zu gleiten. Eine cubic-bezier wäre weich und würde
+   gegen den Pixel-Stil arbeiten.
+
+   PHASE B (55–100 %) — der Aufprall.
+   Klassische Squash-and-Stretch-Posen. Weil die Skalierung auf .disc
+   liegt und dort transform-origin: bottom center gilt, stauchen Ring
+   und Figur gemeinsam auf der Aufsetzkante.
+
+   --drop (Fallhöhe) und die Dauer setzt script.js, weil beide von der
+   Zeile abhängen, in der der Stein landet.                          */
+@keyframes discDrop {
+  0%     { transform: translateY(calc(var(--drop) * -1))     scale(1, 1); }
+  6.9%   { transform: translateY(calc(var(--drop) * -0.984)) scale(1, 1); }
+  13.8%  { transform: translateY(calc(var(--drop) * -0.938)) scale(1, 1); }
+  20.6%  { transform: translateY(calc(var(--drop) * -0.859)) scale(1, 1); }
+  27.5%  { transform: translateY(calc(var(--drop) * -0.750)) scale(1, 1); }
+  34.4%  { transform: translateY(calc(var(--drop) * -0.609)) scale(1, 1); }
+  41.3%  { transform: translateY(calc(var(--drop) * -0.438)) scale(1, 1); }
+  48.1%  { transform: translateY(calc(var(--drop) * -0.234)) scale(1, 1); }
+
+  55%    { transform: translateY(0) scale(1, 1); }                    /* Aufsetzen  */
+  62%    { transform: translateY(0) scale(1.16, 0.80); }              /* gestaucht  */
+  70%    { transform: translateY(calc(var(--cell) * -0.22))
+                      scale(0.92, 1.10); }                            /* Absprung   */
+  80%    { transform: translateY(0) scale(1.08, 0.90); }              /* 2. Aufprall*/
+  88%    { transform: translateY(calc(var(--cell) * -0.07))
+                      scale(0.97, 1.04); }
+  95%    { transform: translateY(0) scale(1.04, 0.96); }
+  100%   { transform: translateY(0) scale(1, 1); }
+}
+
+/* ── Ruckler des Bretts beim Aufsetzen ──────────────────────────────
+   Zwei Pixel, hart gerastert. Kostet fast nichts und verstärkt den
+   Eindruck, dass da etwas Schweres aufgeschlagen ist.              */
+.board.thud { animation: boardThud 0.12s steps(2) 1; }
+
+@keyframes boardThud {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+
+/* Gewinnsteine blinken hart — kein weicher Übergang. Das Blinken
+   liegt auf dem Loch (::before), nicht auf der Zelle, sonst blinkt
+   die Platte statt der Fläche unter dem Stein.                     */
+.cell.win-cell::before { animation: winFlash 0.3s steps(2) 4 forwards; }
+
+@keyframes winFlash {
+  0%, 100% { background: var(--yellow); }
+  50%      { background: var(--cream); }
+}
+
+/* ── Gewinnlinie ────────────────────────────────────────────────────
+   Anders als bei TicTacToe (8 feste Linien) gibt es hier 69 mögliche
+   Vierer. Die Linie wird deshalb aus den Koordinaten der ersten und
+   letzten Gewinnzelle gerechnet — in Vielfachen von --cell, damit sie
+   bei jeder Fenstergrösse sitzt, ohne dass JS etwas messen muss.    */
+#win-line {
+  position: absolute;
+  background: var(--yellow);
+  border: 2px solid var(--dark);
+  transform-origin: left center;
+  pointer-events: none;
+  display: none;
+  opacity: 0;
+  z-index: 3;
+}
+
+#win-line.visible {
+  display: block;
+  animation: lineAppear 0.35s steps(5) forwards;
+}
+
+@keyframes lineAppear {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Anzeigespalte rechts ── */
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: clamp(3px, 1.2vh, 9px);
+  width: var(--side-w);
+  height: var(--board-h);
+  flex-shrink: 0;
+  padding: clamp(2px, 1vh, 6px) 0;
+}
+
+.side-turn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(2px, 0.9vh, 6px);
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.side-cap {
+  font-size: clamp(0.54rem, 3.4vh, 0.9rem);
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--blue);
+}
+
+.status-icon {
+  width:  clamp(20px, 8vh, 38px);
+  height: clamp(20px, 8vh, 38px);
+  object-fit: contain;
+}
+
+#status-text {
+  font-size: clamp(0.58rem, 3.8vh, 1rem);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--dark);
+  white-space: nowrap;
+}
+
+/* ── Punktestand ── */
+.score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(3px, 1.2vw, 8px);
+  font-size: clamp(0.62rem, 3.8vh, 1.05rem);
+  font-weight: 700;
+  color: var(--dark);
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  background: var(--cream);
+  border: 2px solid var(--blue);
+  box-shadow: 3px 3px 0 var(--dark);
+  padding: clamp(3px, 1.1vh, 6px) clamp(4px, 1.6vw, 9px);
+}
+
+.score-icon {
+  width:  clamp(13px, 3vh, 20px);
+  height: clamp(15px, 3.4vh, 24px);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.score-sep { color: var(--blue); }
+
+.score-val {
+  color: var(--pink);
+  font-size: clamp(0.74rem, 4.6vh, 1.35rem);
+  min-width: 1ch;
+  text-align: center;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   Gewinn-/Unentschieden-Overlay — legt sich über .card-body
+   ════════════════════════════════════════════════════════════════════ */
+
+#win-banner {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(5px, 2vh, 14px);
+  background: rgba(255, 249, 230, 0.93);
+  border: 3px solid var(--yellow);
+}
+
+#win-banner.visible {
+  display: flex;
+  animation: bannerPop 0.22s steps(3) forwards;
+}
+
+@keyframes bannerPop {
+  from { transform: scale(0.7); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.win-icon-large {
+  width:  clamp(30px, 15vh, 62px);
+  height: clamp(30px, 15vh, 62px);
+  object-fit: contain;
+}
+
+.win-text {
+  font-size: clamp(0.62rem, 3.6vh, 1rem);
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--pink);
+  text-align: center;
+  line-height: 1.7;
+  white-space: pre-line;
+  text-shadow: 2px 2px 0 var(--dark);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   NACHTBLAU — eigenes Farbschema ab Bildschirm 2
+   ════════════════════════════════════════════════════════════════════
+   Alle anderen BBZB-Embeds sind durchgehend creme. Damit sich dieses
+   Spiel im SharePoint-Flow anders anfühlt, werden Einrichtung und
+   Brett dunkel. Der Titelbildschirm bleibt hell — er ist das Gesicht
+   in der Kachelreihe und soll zur Familie gehören.
+
+   Umgesetzt als Überschreibung unter .card-body.is-dark, gesetzt von
+   script.js. Die Tokens und der .ts-*-Block bleiben unangetastet,
+   wie CLAUDE.md Abschnitt 9 es verlangt.
+
+   Zu den Schatten: alle box-shadow-Offsets im System sind var(--dark)
+   und werden auf dunklem Grund unsichtbar. Das ist Absicht und kein
+   Versehen — bbzb-hub-suchspiel-auswertung macht es im Terminal-
+   Overlay genauso und trägt die Tiefe über helle Blöcke auf dunklem
+   Grund und die asymmetrischen Farbrahmen.
+   ════════════════════════════════════════════════════════════════════ */
+
+.card-body.is-dark {
+  background-color: var(--dark);
+  background-image:
+    linear-gradient(rgba(200, 214, 232, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 214, 232, 0.10) 1px, transparent 1px);
+}
+
+/* Das Brett braucht hier keine Sonderregel: die Platte kommt als Bild
+   und ist in beiden Schemata dieselbe. Durch ihre transparenten
+   Löcher scheint der dunkle Grund der Karte.                       */
+
+/* ── Text auf dunklem Grund ── */
+.card-body.is-dark .ts-step-title,
+.card-body.is-dark .ts-label,
+.card-body.is-dark .side-cap    { color: var(--blue-light); }
+
+.card-body.is-dark .ts-sub,
+.card-body.is-dark .ts-pick-name,
+.card-body.is-dark #status-text { color: var(--cream); }
+
+/* .ts-label--pink und .ts-vs bleiben pink — auf #1A1A2E gut lesbar. */
+.card-body.is-dark .ts-label--pink { color: var(--pink); }
+
+/* Punktestand: heller Block auf dunklem Grund statt umgekehrt. */
+.card-body.is-dark .score-row {
+  background: var(--blue-vivid);
+  border-color: var(--blue-light);
+  color: var(--cream);
+}
+.card-body.is-dark .score-sep { color: var(--blue-light); }
+
+/* ── Gewinn-Overlay ── */
+.card-body.is-dark #win-banner {
+  background: rgba(26, 26, 46, 0.94);
+}
