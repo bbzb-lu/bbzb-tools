@@ -83,3 +83,14 @@ test('Kopfleiste bleibt beim Scrollen oben, Logo der Startseite zeigt «BBZB Too
   expect((await page.locator('.bbzb-header').boundingBox())!.y).toBe(0);
   await expect(logo).toBeInViewport();
 });
+
+test('jede Seite hat Favicon und Apple-Touch-Icon im eigenen Pfad, beide laden', async ({ page, request }) => {
+  for (const p of seiten) {
+    await page.goto(p);
+    for (const rel of ['icon', 'apple-touch-icon']) {
+      const href = await page.locator(`link[rel="${rel}"]`).getAttribute('href');
+      expect(href, `${p} ${rel}`).toMatch(/^\/([a-z-]+\/)?(favicon|apple-touch-icon)\.png$/);
+      expect((await request.get(href!)).headers()['content-type'], `${p} ${rel}`).toBe('image/png');
+    }
+  }
+});

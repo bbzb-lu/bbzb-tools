@@ -34,7 +34,7 @@ test('Logo im Kopf und auf der Startseite: Schrift aus dem Entwurf, lokal gelade
   expect(outside).toEqual([]);
 });
 
-test('Favicon und Apple-Touch-Icon aus dem «st»-Monogramm, lokal, scharf in 32 und 180 px', async ({ page }) => {
+test('Favicon und Apple-Touch-Icon im Schild-Stil (scripts/favicons.mjs), lokal, scharf in 32 und 180 px', async ({ page }) => {
   await page.goto('');
   for (const [rel, size] of [['icon', 32], ['apple-touch-icon', 180]] as const) {
     const href = await page.locator(`link[rel="${rel}"]`).getAttribute('href');

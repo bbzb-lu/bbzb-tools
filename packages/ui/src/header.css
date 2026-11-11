@@ -1,4 +1,4 @@
-/* Kopf: weiss, bleibt oben, 62 px hoch wie vorher (Platz für Editoren auf 720 px). Logo nach dem Pen-Entwurf: Quadrat wie die Namensschilder, 56 px, sein Schatten ragt unter die Leiste. */
+/* Kopf: weiss, bleibt oben, 62 px hoch wie vorher (Platz für Editoren auf 720 px). Logo nach dem Pen-Entwurf: Quadrat wie die Namensschilder, 56 px, Schatten wie die Tasten. */
 .bbzb-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 0.75rem; padding: 2px 1rem 3px; border-bottom: 1px solid var(--line); background: var(--table); }
 .bbzb-wordmark {
   position: relative;
@@ -7,15 +7,15 @@
   width: 56px;
   height: 56px;
   margin-right: auto;
-  border: 1.5px solid var(--ink);
+  border: 1px solid var(--ink);
   background: var(--paper);
-  box-shadow: 5px 5px 0 var(--ink);
+  box-shadow: 3px 3px 0 var(--ink); /* wie die Tasten in kit.css */
   color: var(--ink);
   font-family: var(--font-ui);
   font-weight: 800;
   letter-spacing: -0.3px;
   text-decoration: none;
-  transition: transform 110ms ease-out, box-shadow 110ms ease-out;
+  transition: transform 110ms ease-out; /* nur transform animieren, Regel aus kit.css */
 }
 .bbzb-logo-tool, .bbzb-logo-suite {
   grid-area: 1 / 1;
@@ -29,8 +29,8 @@
 .bbzb-logo-suite { opacity: 0; transform: translateY(40%); }
 .bbzb-wordmark:is(:hover, :focus-visible) .bbzb-logo-tool { opacity: 0; transform: translateY(-40%); }
 .bbzb-wordmark:is(:hover, :focus-visible) .bbzb-logo-suite, .bbzb-wordmark.fest .bbzb-logo-suite { opacity: 1; transform: none; }
-.bbzb-wordmark:hover { transform: translate(-1px, -1px); box-shadow: 6px 6px 0 var(--ink); }
-.bbzb-wordmark:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+.bbzb-wordmark:hover { transform: translate(-1px, -1px); }
+.bbzb-wordmark:active { transform: translate(3px, 3px); box-shadow: none; }
 .bbzb-wordmark:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) { .bbzb-wordmark, .bbzb-logo-tool, .bbzb-logo-suite { transition: none; } }
 .bbzb-feedback { flex: none; font-size: 14px; font-weight: 600; color: var(--ink); text-underline-offset: 0.2em; white-space: nowrap; }

@@ -1,4 +1,4 @@
-import { Header, Zeilen, zuletzt } from '@bbzb/ui';
+import { Header, Zeilen, zeilen, zuletzt } from '@bbzb/ui';
 import { IconExternalLink } from '@tabler/icons-react';
 import { Fuss } from './Fuss';
 import { Illustration } from './Illustration';
@@ -35,7 +35,7 @@ export function Start() {
       <Header feedback="Startseite" />
       <main className="seite">
         <h1 className="titel">
-          Werkzeuge
+          Tools
           <br />
           fürs BBZB
         </h1>
@@ -54,7 +54,13 @@ export function Start() {
                   <a href={`${e.t.pfad}?projekt=${encodeURIComponent(e.id)}`}>
                     <span className="zuletzt-name">{e.name}</span>
                     <span className="muted">
-                      {e.t.name}, {wann(e.geaendert)}
+                      <span className="sr-only">{e.t.name}, </span>
+                      {wann(e.geaendert)}
+                    </span>
+                    <span className={`mini-schild${Math.max(...zeilen(e.t.name).map((z) => z.length)) > 6 ? ' lang' : ''}`} aria-hidden="true">
+                      <span>
+                        <Zeilen name={e.t.name} />
+                      </span>
                     </span>
                   </a>
                 </li>
