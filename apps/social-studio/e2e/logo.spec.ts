@@ -4,21 +4,21 @@ import { newProject } from './fixtures';
 
 const NAME = 'BBZB Tools, Social Studio, zur Startseite';
 
-/** Wortmarke der Suite: Schrift statt Bilddatei, «BBZB Tools», darunter «Social Studio» in Akzent, Host Grotesk 800 lokal. */
+/** Logo der Suite: Quadrat mit Toolnamen (Schrift, keine Bilddatei, Host Grotesk 800 lokal); Zeigen blendet «BBZB Tools» ein. */
 async function expectLogo(logo: Locator) {
   await expect(logo).toBeVisible();
   await expect(logo).toHaveAccessibleName(NAME);
   expect(await logo.evaluate((e) => e.tagName)).not.toBe('IMG');
-  await expect(logo).toHaveText('BBZB ToolsSocial Studio');
-  const s = await logo.evaluate((e) => {
-    const [name, sub] = [...e.children].map((c) => getComputedStyle(c));
-    const root = getComputedStyle(document.documentElement);
-    return { w: name!.fontWeight, sub: sub!.color, accent: root.getPropertyValue('--accent').trim(), loaded: document.fonts.check('800 22px "Host Grotesk"') };
-  });
-  expect(s.w).toBe('800');
-  expect(s.loaded).toBe(true);
-  const hex = s.accent.match(/[0-9a-f]{2}/gi)!.map((h) => parseInt(h, 16));
-  expect(s.sub).toBe(`rgb(${hex.join(', ')})`);
+  const [tool, suite] = [logo.locator('.bbzb-logo-tool'), logo.locator('.bbzb-logo-suite')];
+  await expect(tool).toHaveText('Social Studio');
+  expect(await logo.evaluate((e) => [getComputedStyle(e).fontWeight, document.fonts.check('800 16px "Host Grotesk"')])).toEqual(['800', true]);
+  const opacity = (l: Locator) => l.evaluate((e) => getComputedStyle(e).opacity);
+  await expect.poll(() => opacity(suite)).toBe('0');
+  await logo.hover();
+  await expect.poll(() => opacity(suite)).toBe('1');
+  await expect.poll(() => opacity(tool)).toBe('0');
+  await logo.page().mouse.move(0, 400);
+  await expect.poll(() => opacity(tool)).toBe('1');
 }
 
 test('Logo im Kopf und auf der Startseite: Schrift aus dem Entwurf, lokal geladen, keine Bilddatei', async ({ page }) => {
@@ -34,7 +34,7 @@ test('Logo im Kopf und auf der Startseite: Schrift aus dem Entwurf, lokal gelade
   expect(outside).toEqual([]);
 });
 
-test('Favicon und Apple-Touch-Icon aus dem «st»-Monogramm, lokal, scharf in 32 und 180 px', async ({ page }) => {
+test('Favicon und Apple-Touch-Icon im Schild-Stil (scripts/favicons.mjs), lokal, scharf in 32 und 180 px', async ({ page }) => {
   await page.goto('');
   for (const [rel, size] of [['icon', 32], ['apple-touch-icon', 180]] as const) {
     const href = await page.locator(`link[rel="${rel}"]`).getAttribute('href');

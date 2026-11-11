@@ -1,7 +1,39 @@
-.bbzb-header { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; background: var(--table); }
-.bbzb-wordmark { display: flex; flex-direction: column; gap: 2px; font-family: var(--font-ui); font-weight: 800; white-space: nowrap; text-decoration: none; }
-.bbzb-wordmark-name { font-size: 22px; line-height: 29px; letter-spacing: -0.5px; color: var(--ink); }
-.bbzb-wordmark-tool { font-size: 11px; line-height: 15px; letter-spacing: 3px; color: var(--accent); }
-.bbzb-wordmark { margin-right: auto; }
+/* Kopf: weiss, bleibt oben, 62 px hoch wie vorher (Platz für Editoren auf 720 px). Logo nach dem Pen-Entwurf: Quadrat wie die Namensschilder, 56 px, Schatten wie die Tasten. */
+.bbzb-header { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 0.75rem; padding: 2px 1rem 3px; border-bottom: 1px solid var(--line); background: var(--table); }
+.bbzb-wordmark {
+  position: relative;
+  display: grid;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  margin-right: auto;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink); /* wie die Tasten in kit.css */
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  text-decoration: none;
+  transition: transform 110ms ease-out; /* nur transform animieren, Regel aus kit.css */
+}
+.bbzb-logo-tool, .bbzb-logo-suite {
+  grid-area: 1 / 1;
+  place-self: center;
+  font-size: 16px;
+  line-height: 0.85;
+  transition: opacity 160ms ease-out, transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bbzb-logo-tool.mittel { font-size: 12.5px; line-height: 0.88; }
+.bbzb-logo-tool.lang { font-size: 10px; line-height: 0.95; }
+.bbzb-logo-suite { opacity: 0; transform: translateY(40%); }
+.bbzb-wordmark:is(:hover, :focus-visible) .bbzb-logo-tool { opacity: 0; transform: translateY(-40%); }
+.bbzb-wordmark:is(:hover, :focus-visible) .bbzb-logo-suite, .bbzb-wordmark.fest .bbzb-logo-suite { opacity: 1; transform: none; }
+.bbzb-wordmark:hover { transform: translate(-1px, -1px); }
+.bbzb-wordmark:active { transform: translate(3px, 3px); box-shadow: none; }
+.bbzb-wordmark:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .bbzb-wordmark, .bbzb-logo-tool, .bbzb-logo-suite { transition: none; } }
 .bbzb-feedback { flex: none; font-size: 14px; font-weight: 600; color: var(--ink); text-underline-offset: 0.2em; white-space: nowrap; }
 .bbzb-feedback:hover { color: var(--accent); }
+.bbzb-zeile { display: block; }
+.bbzb-leer { position: absolute; width: 1px; overflow: hidden; clip-path: inset(50%); } /* Leerzeichen nur für Text und Vorleser */

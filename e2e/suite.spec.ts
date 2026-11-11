@@ -72,3 +72,25 @@ test('Startseite: Datenschutz-Satz, Feedback, LegicCard verlinkt GitHub in neuem
   await expect(legic).toHaveAttribute('target', '_blank');
   await expect(page.getByRole('region', { name: 'Zuletzt bearbeitet' })).toHaveCount(0); // leer: kein Bereich
 });
+
+test('Kopfleiste bleibt beim Scrollen oben, Logo der Startseite zeigt «BBZB Tools»', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await page.goto('/');
+  const logo = page.getByRole('link', { name: 'BBZB Tools, Startseite' });
+  await expect(logo).toHaveText('BBZB Tools');
+  await page.mouse.wheel(0, 1500);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(500);
+  expect((await page.locator('.bbzb-header').boundingBox())!.y).toBe(0);
+  await expect(logo).toBeInViewport();
+});
+
+test('jede Seite hat Favicon und Apple-Touch-Icon im eigenen Pfad, beide laden', async ({ page, request }) => {
+  for (const p of seiten) {
+    await page.goto(p);
+    for (const rel of ['icon', 'apple-touch-icon']) {
+      const href = await page.locator(`link[rel="${rel}"]`).getAttribute('href');
+      expect(href, `${p} ${rel}`).toMatch(/^\/([a-z-]+\/)?(favicon|apple-touch-icon)\.png$/);
+      expect((await request.get(href!)).headers()['content-type'], `${p} ${rel}`).toBe('image/png');
+    }
+  }
+});
