@@ -21,7 +21,7 @@ export function Datenschutz() {
         <p>Das Social Studio lädt beim Freistellen KI-Modelle von Hugging Face herunter. Dabei wird nichts von dir gesendet, deine Bilder bleiben im Browser.</p>
         <p>
           Zwei SharePoint Embeds laden etwas von aussen: Sudoku holt Rätsel von sudoku-api.vercel.app (ohne Antwort nimmt es ein eigenes Rätsel), der
-          Radio-Player spielt den Stream von stream.streambase.ch. Dabei gehen keine Eingaben von dir mit. Wie bei jedem Abruf sieht der Anbieter nur
+          Radio-Player spielt den Stream von stream.streambase.ch (weitergeleitet zu streamabc.net). Dabei gehen keine Eingaben von dir mit. Wie bei jedem Abruf sieht der Anbieter nur
           deine IP-Adresse.
         </p>
         <p>Die SharePoint Embeds dürfen nur in SharePoint der Schule (sluz.sharepoint.com) eingebettet werden, die übrigen Seiten nirgends.</p>
