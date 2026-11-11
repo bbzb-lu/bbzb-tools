@@ -4,10 +4,6 @@ on:
   pull_request:
   push:
     branches: [main]
-  # Windows-Lauf (Zielplattform): wöchentlich und auf Knopfdruck, sonst Linux, weil schneller
-  schedule:
-    - cron: '0 4 * * 1'
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -53,7 +49,8 @@ jobs:
 
   e2e:
     needs: changes
-    runs-on: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && 'windows-latest' || 'ubuntu-latest' }}
+    # Windows mit Edge ist die Zielplattform; Linux war nicht schneller und weicht bei Video und Pixeln ab
+    runs-on: windows-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false
@@ -71,16 +68,9 @@ jobs:
           repository: bbzb-lu/bbzb-tools-fonts
           path: fonts-private
           ssh-key: ${{ secrets.FONTS_DEPLOY_KEY }}
-      # Windows hat Edge vorinstalliert, Linux nicht
-      - if: runner.os == 'Linux'
-        run: npx playwright install --with-deps msedge
       - name: ffmpeg
-        if: runner.os == 'Windows'
         shell: pwsh
         run: if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue)) { choco install ffmpeg -y --no-progress }
-      - name: ffmpeg
-        if: runner.os == 'Linux'
-        run: command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
       - name: Testvideos
         shell: bash
         run: sh apps/social-studio/scripts/make-test-videos.sh
@@ -91,7 +81,7 @@ jobs:
       - uses: actions/upload-artifact@v5
         if: failure()
         with:
-          name: playwright-report-${{ runner.os }}-${{ matrix.shard }}
+          name: playwright-report-${{ matrix.shard }}
           path: playwright-report/
 
   deploy:

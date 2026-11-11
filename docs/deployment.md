@@ -2,8 +2,8 @@
 
 Projekt `bbzb-tools` (Production-Branch `main`), öffentlich, ohne Cloudflare Access. Live: https://bbzb-tools.pages.dev
 
-- Deployt wird nur aus GitHub Actions (`.github/workflows/ci.yml`): Push auf `main`, nachdem die Jobs `test` und `e2e` (Edge, 3 Runner) grün sind. Nie von Hand.
-- e2e läuft im PR und auf `main` unter Linux; im PR nur für geänderte Tools (`scripts/e2e-projects.mjs`), bei gemeinsamen Teilen für alle. Windows (Zielplattform) läuft montags und von Hand über «Run workflow». Auf Windows bekannte Abweichungen sind `test.fixme` mit Issue-Link.
+- Deployt wird nur aus GitHub Actions (`.github/workflows/ci.yml`): Push auf `main`, nachdem die Jobs `test` und `e2e` (Windows, Edge, 3 Runner) grün sind. Nie von Hand.
+- e2e läuft auf Windows (Zielplattform), verteilt auf 3 Runner; im PR nur für geänderte Tools (`scripts/e2e-projects.mjs`), bei gemeinsamen Teilen und auf `main` für alle. Auf Windows bekannte Abweichungen sind `test.fixme` mit Issue-Link.
 - Secrets im Repo `bbzb-lu/bbzb-tools`: `CLOUDFLARE_API_TOKEN` (Berechtigung «Cloudflare Pages: Edit») und `CLOUDFLARE_ACCOUNT_ID` (Konto des Projekts, steht in `npx wrangler whoami`).
 - Das Projekt einmalig per API anlegen: `POST /accounts/<id>/pages/projects` mit `{"name":"bbzb-tools","production_branch":"main"}`.
 - **Nie `wrangler pages project create` ausführen:** wrangler startet dann eine Autokonfiguration, ändert Projektdateien, legt `wrangler.jsonc` an und veröffentlicht einen Worker statt Pages. Bleibt `.wrangler/deploy/config.json` übrig, scheitert jedes Deploy: Ordner `.wrangler` löschen. Den Hinweis auf `wrangler deploy` nicht befolgen.
