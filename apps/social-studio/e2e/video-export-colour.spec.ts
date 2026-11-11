@@ -58,6 +58,7 @@ for (const clip of ['landscape-h264-aac.mp4', 'tagged-bt709.mp4', 'rotated-90.mo
 }
 
 test('Leistung: 10-s-Slide mit 4× CPU-Drosselung', async ({ page }) => {
+  test.fixme(process.platform === 'win32', 'Windows-Runner ohne GPU ist kein Zielgerät: github.com/bbzb-lu/bbzb-tools/issues/10');
   test.setTimeout(120_000);
   await newProject(page, 'Post 4:5');
   const id = await addVideo(page, `${DIR}/portrait-h264-aac.mp4`);

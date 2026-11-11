@@ -59,6 +59,7 @@ test('Liste und Hinweis bleiben aktuell, wenn sich das Dokument bei offenem Dial
 });
 
 test('Prozent im Fortschritt, Abbrechen stoppt ohne ZIP, danach geht ein Export', async ({ page }) => {
+  test.setTimeout(90_000); // gedrosselter 10-s-Export braucht auf dem Windows-Runner über 30 s
   await mixed(page, PORTRAIT);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 }); // 10-s-Clip: genug Zeit zum Abbrechen
