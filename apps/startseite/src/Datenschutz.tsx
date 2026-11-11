@@ -7,6 +7,12 @@ export function Datenschutz() {
       <Header tool="Datenschutz" feedback="Startseite" />
       <main className="seite text">
         <h1>Datenschutz</h1>
+        <p>
+          Alle BBZB Tools sind Web-Apps ohne serverseitige Datenspeicherung. Die App wird beim Aufruf in deinen Browser geladen und läuft danach
+          vollständig auf deinem Gerät. Ist ein Tool einmal offen, arbeitet es auch ohne Internetverbindung weiter. Ausnahme ist das Freistellen im
+          Social Studio, das sein KI-Modell beim ersten Mal herunterlädt.
+        </p>
+        <p>Trotzdem gilt: Sensible Daten, die nicht veröffentlicht werden sollen, gehören nicht auf Server ausserhalb der kantonalen M365-Umgebung.</p>
         <p>BBZB Tools läuft ganz in deinem Browser. Es gibt keinen Server, der deine Bilder, Texte oder Projekte bekommt.</p>
         <p>Wir speichern nichts bei uns. Wenn ein Tool deine Arbeit sichert, dann nur in deinem Browser auf deinem Gerät.</p>
         <p>Es gibt keine Analyse, kein Tracking und keine Cookies.</p>
