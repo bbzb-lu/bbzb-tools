@@ -44,7 +44,7 @@ export function Illustration({ tool }: { tool: string }) {
         </svg>
       </>
     );
-  else if (tool === 'sharepoint-embeds')
+  else if (tool === 'sharepoint')
     inhalt = [[18, 110], [170, 15], [215, 137]].map(([x, y]) => (
       <g key={x}>
         <rect x={x} y={y} width={154} height={88} fill={`url(#${ab})`} />

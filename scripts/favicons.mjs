@@ -5,7 +5,7 @@ import { chromium } from 'playwright';
 import { theme } from '../packages/ui/src/theme.ts';
 
 /** App-Ordner → Kürzel. Neues Tool: hier eintragen und das Skript laufen lassen. */
-export const KUERZEL = { startseite: 'BT', 'social-studio': 'SS', 'news-banner': 'IT' };
+export const KUERZEL = { startseite: 'BT', 'social-studio': 'SS', 'news-banner': 'IT', sharepoint: 'SE' };
 
 const font = readFileSync('packages/ui/src/fonts/host-grotesk-latin-800-normal.woff2').toString('base64');
 

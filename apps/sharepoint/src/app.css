@@ -1,0 +1,14 @@
+/* Übersicht der Embeds. Farben nur über die Variablen aus packages/ui/src/theme.ts */
+main { max-width: 72rem; margin: 0 auto; padding: 3rem 1rem 4rem; }
+main > h1 { margin: clamp(1rem, 4vw, 3rem) 0 1rem; font-size: clamp(2.25rem, 5vw, 3.5rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.03em; }
+.einleitung { max-width: 36rem; margin-bottom: 2rem; color: var(--ink-soft); font-size: 1.0625rem; }
+.steuerung { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin-bottom: 2.5rem; }
+.embeds { display: grid; gap: 3rem; margin: 0; padding: 0; list-style: none; }
+.embed { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem 2.5rem; align-items: start; padding-top: 2rem; border-top: 1px solid var(--line); }
+.embed-text { display: grid; gap: 0.5rem; justify-items: start; }
+.embed-meta { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; font-size: 0.875rem; color: var(--ink-soft); }
+.embed-aktionen { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; margin-top: 0.5rem; }
+.kopiert { font-size: 0.875rem; font-weight: 600; }
+/* Vorschau in Originalgrösse, wie im SharePoint-Webpart */
+.vorschau { display: block; max-width: 100%; border: 1px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); background: var(--paper); }
+@media (max-width: 52rem) { .embed { grid-template-columns: minmax(0, 1fr); } }

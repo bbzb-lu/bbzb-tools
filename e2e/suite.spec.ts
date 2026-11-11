@@ -43,7 +43,8 @@ test('Kachel öffnet das Tool, Logo führt zurück', async ({ page }) => {
 test('Unterpfad ohne Schrägstrich und Neuladen laden vollständig', async ({ page }) => {
   for (const t of tools) {
     const failed: string[] = [];
-    page.on('requestfailed', (r) => failed.push(r.url()));
+    // ERR_ABORTED: das Neuladen bricht laufende Ladevorgänge ab (z. B. Bilder in Vorschau-iframes), fehlende Dateien kommen als Status ≥ 400
+    page.on('requestfailed', (r) => r.failure()?.errorText !== 'net::ERR_ABORTED' && failed.push(r.url()));
     page.on('response', (r) => {
       if (r.status() >= 400) failed.push(`${r.status()} ${r.url()}`);
     });

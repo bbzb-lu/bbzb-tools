@@ -19,6 +19,14 @@ export const tools: readonly Tool[] = [
     vorschau: 'vorschau/news-banner.png',
     beta: true,
   },
+  {
+    id: 'sharepoint',
+    name: 'SharePoint Embeds',
+    satz: 'Spiele und Tools für SharePoint-Seiten: ansehen und Einbettungscode kopieren.',
+    pfad: '/sharepoint/',
+    vorschau: 'vorschau/sharepoint.png',
+    beta: true,
+  },
 ];
 
 /** Tools, die es noch nicht im Browser gibt; die Kachel führt zum bestehenden Projekt. */
