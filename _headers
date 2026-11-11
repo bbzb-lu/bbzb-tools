@@ -16,10 +16,10 @@
 /sharepoint/sudoku/*
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://sudoku-api.vercel.app; media-src 'self'; frame-ancestors 'self' https://sluz.sharepoint.com
-# Radio spielt den Stream ab
+# Radio spielt den Stream ab; stream.streambase.ch leitet auf einen Server von streamabc.net weiter (Name wechselt)
 /sharepoint/radio-player/*
   ! Content-Security-Policy
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self' https://stream.streambase.ch; frame-ancestors 'self' https://sluz.sharepoint.com
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self' https://stream.streambase.ch https://*.streamabc.net; frame-ancestors 'self' https://sluz.sharepoint.com
 # Übersicht der Embeds: streng wie die Startseite, nicht einbettbar
 /sharepoint/
   ! Content-Security-Policy

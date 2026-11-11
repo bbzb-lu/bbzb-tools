@@ -72,7 +72,7 @@ test('connect-src: nur Studio (Hugging Face) und Sudoku (Rätsel-API) dürfen fr
     expect(direktive(csp, 'connect-src'), p).toEqual([`connect-src 'self'${connect[p] ?? ''}`]);
     expect(direktive(csp, 'media-src').join(), p).not.toMatch(p === '/sharepoint/radio-player/' ? /^$/ : /https:/);
   }
-  expect(direktive((await request.get('/sharepoint/radio-player/')).headers()['content-security-policy']!, 'media-src')).toEqual(["media-src 'self' https://stream.streambase.ch"]);
+  expect(direktive((await request.get('/sharepoint/radio-player/')).headers()['content-security-policy']!, 'media-src')).toEqual(["media-src 'self' https://stream.streambase.ch https://*.streamabc.net"]);
 });
 
 test('frame-ancestors: nur Embeds dürfen in SharePoint eingebettet werden, alles andere nirgends', async ({ request }) => {
