@@ -1,15 +1,22 @@
 import { expect, test } from '@playwright/test';
 import { tools } from '../apps/startseite/src/tools';
+import { readdirSync } from 'node:fs';
 import { foreignRequests } from './helpers';
 
-const seiten = ['/', '/datenschutz/', ...tools.map((t) => t.pfad)];
+// wie scripts/embeds.mjs embedOrdner: Ordner ohne `_`
+const embeds = readdirSync('embeds', { withFileTypes: true }).filter((e) => e.isDirectory() && !e.name.startsWith('_')).map((e) => `/sharepoint/${e.name}/`);
+const seiten = ['/', '/datenschutz/', ...tools.map((t) => t.pfad), ...embeds];
+/** Einzige erlaubte fremde Hosts, je nur auf ihrem Pfad (spec: Sudoku-Rätsel, Radio-Stream). */
+const EXTERN: Record<string, string> = { '/sharepoint/sudoku/': 'https://sudoku-api.vercel.app', '/sharepoint/radio-player/': 'https://stream.streambase.ch' };
 
-test('jede Seite: keine fremden Requests', async ({ page }) => {
+test('jede Seite: keine fremden Requests (ausser Sudoku-API und Radio-Stream auf ihrem Pfad)', async ({ page }) => {
+  // offline testen: die zwei erlaubten Hosts nie wirklich anfragen
+  for (const host of Object.values(EXTERN)) await page.route(`${host}/**`, (r) => r.abort());
   for (const p of seiten) {
     const foreign = foreignRequests(page);
     await page.goto(p);
     await page.waitForLoadState('networkidle');
-    expect(foreign, p).toEqual([]);
+    expect(foreign.filter((u) => !EXTERN[p] || !u.startsWith(EXTERN[p])), p).toEqual([]);
   }
 });
 
@@ -55,11 +62,22 @@ test('unbekannter Pfad liefert 404', async ({ request }) => {
   expect((await request.get('/gibt-es-nicht/')).status()).toBe(404);
 });
 
-test('connect-src: nur das Social Studio darf KI-Modelle von Hugging Face laden', async ({ request }) => {
+const direktive = (csp: string, name: string) => csp.split(';').map((d) => d.trim()).filter((d) => d.startsWith(`${name} `));
+
+test('connect-src: nur Studio (Hugging Face) und Sudoku (Rätsel-API) dürfen fremd laden, media-src nur Radio', async ({ request }) => {
+  const connect: Record<string, string> = { '/social-studio/': " https://huggingface.co https://*.hf.co", '/sharepoint/sudoku/': ' https://sudoku-api.vercel.app' };
   for (const p of seiten) {
     const csp = (await request.get(p)).headers()['content-security-policy']!;
-    const connect = csp.split(';').map((d) => d.trim()).filter((d) => d.startsWith('connect-src'));
-    expect(connect, p).toEqual([p === '/social-studio/' ? "connect-src 'self' https://huggingface.co https://*.hf.co" : "connect-src 'self'"]);
+    expect(direktive(csp, 'connect-src'), p).toEqual([`connect-src 'self'${connect[p] ?? ''}`]);
+    expect(direktive(csp, 'media-src').join(), p).not.toMatch(p === '/sharepoint/radio-player/' ? /^$/ : /https:/);
+  }
+  expect(direktive((await request.get('/sharepoint/radio-player/')).headers()['content-security-policy']!, 'media-src')).toEqual(["media-src 'self' https://stream.streambase.ch"]);
+});
+
+test('frame-ancestors: nur Embeds dürfen in SharePoint eingebettet werden, alles andere nirgends', async ({ request }) => {
+  for (const p of seiten) {
+    const csp = (await request.get(p)).headers()['content-security-policy']!;
+    expect(direktive(csp, 'frame-ancestors'), p).toEqual([embeds.includes(p) ? "frame-ancestors 'self' https://sluz.sharepoint.com" : "frame-ancestors 'none'"]);
   }
 });
 
@@ -84,8 +102,8 @@ test('Kopfleiste bleibt beim Scrollen oben, Logo der Startseite zeigt «BBZB Too
   await expect(logo).toBeInViewport();
 });
 
-test('jede Seite hat Favicon und Apple-Touch-Icon im eigenen Pfad, beide laden', async ({ page, request }) => {
-  for (const p of seiten) {
+test('jede Tool-Seite hat Favicon und Apple-Touch-Icon im eigenen Pfad, beide laden (Embeds behalten ihre Pixel-Icons)', async ({ page, request }) => {
+  for (const p of seiten.filter((p) => !embeds.includes(p))) {
     await page.goto(p);
     for (const rel of ['icon', 'apple-touch-icon']) {
       const href = await page.locator(`link[rel="${rel}"]`).getAttribute('href');
