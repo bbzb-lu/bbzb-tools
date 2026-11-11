@@ -24,3 +24,4 @@ rm /tmp/fonts-key /tmp/fonts-key.pub
 - Ohne Key oder Zugriff scheitert der Checkout, damit scheitern `test`, `e2e` und `deploy`. Pull Requests aus Forks sehen das Secret nicht und scheitern ebenso.
 - Vor dem Build prüft `node scripts/fonts.mjs --check`, dass `Braveold-Light.otf` da ist, sonst wird nicht deployt. Nach dem Build prüft `node scripts/check-live-build.mjs`, dass kein Testhaken im Build steckt.
 - Lokal holt `npm run fonts` die Schrift. Ohne Zugriff läuft das Studio, exportiert aber ohne Braveold nicht.
+- Vorschau: Jeder PR aus diesem Repo bekommt eine eigene Adresse (`<branch>.bbzb-tools.pages.dev`), der Link steht als Kommentar im PR. Die Live-Seite ändert sich erst mit dem Merge. Lokal: `npm run build && npx wrangler pages dev dist`, dann http://localhost:8788.

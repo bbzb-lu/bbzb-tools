@@ -1,4 +1,4 @@
-import { Header, zuletzt } from '@bbzb/ui';
+import { Header, Zeilen, zuletzt } from '@bbzb/ui';
 import { IconExternalLink } from '@tabler/icons-react';
 import { Fuss } from './Fuss';
 import { Illustration } from './Illustration';
@@ -15,13 +15,13 @@ export function wann(t: number, jetzt = Date.now()): string {
   return new Date(t).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-/** Zweizeilig wie im Entwurf: vor dem letzten Wort, sonst nach dem letzten Bindestrich. */
-export const zeilen = (name: string): string => (name.includes(' ') ? name.replace(/ (?=\S+$)/, '\n') : name.replace(/-(?=[^-]+$)/, '-\n'));
 
 /** Schild mit dem Namen, ragt unten rechts über die Kachel. Lange Namen etwas kleiner. */
 const Schild = ({ name }: { name: string }) => (
   <span className={`schild${name.length > 13 ? ' lang' : ''}`} aria-hidden="true">
-    {zeilen(name)}
+    <span>
+      <Zeilen name={name} />
+    </span>
   </span>
 );
 
@@ -32,16 +32,22 @@ export function Start() {
   });
   return (
     <>
-      <Header tool="Übersicht" feedback="Startseite" />
+      <Header feedback="Startseite" />
       <main className="seite">
-        <h1>Werkzeuge fürs BBZB</h1>
+        <h1 className="titel">
+          Werkzeuge
+          <br />
+          fürs BBZB
+        </h1>
         <p className="versprechen">
           Alles bleibt in deinem Browser: kein Upload, kein Tracking, keine Cookies. <a href="/datenschutz/">Mehr zum Datenschutz</a>
         </p>
 
         {letzte.length > 0 && (
           <section className="zuletzt" aria-labelledby="zuletzt-titel">
-            <h2 id="zuletzt-titel">Zuletzt bearbeitet</h2>
+            <h2 id="zuletzt-titel" className="abschnitt">
+              Zuletzt bearbeitet
+            </h2>
             <ul>
               {letzte.map((e) => (
                 <li key={`${e.tool}/${e.id}`}>
@@ -57,9 +63,10 @@ export function Start() {
           </section>
         )}
 
+        <h2 className="abschnitt">Tools</h2>
         <ul className="kacheln">
-          {tools.map((t) => (
-            <li key={t.id}>
+          {tools.map((t, i) => (
+            <li key={t.id} style={{ '--i': i } as React.CSSProperties}>
               <a className="kachel" href={t.pfad}>
                 <span className="kachel-bild">
                   <Illustration tool={t.id} />
@@ -74,8 +81,8 @@ export function Start() {
               </a>
             </li>
           ))}
-          {geplant.map((g) => (
-            <li key={g.id}>
+          {geplant.map((g, i) => (
+            <li key={g.id} style={{ '--i': tools.length + i } as React.CSSProperties}>
               <a className="kachel" href={g.link} target="_blank" rel="noopener noreferrer">
                 <span className="kachel-bild">
                   <Illustration tool={g.id} />

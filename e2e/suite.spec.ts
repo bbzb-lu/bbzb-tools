@@ -72,3 +72,14 @@ test('Startseite: Datenschutz-Satz, Feedback, LegicCard verlinkt GitHub in neuem
   await expect(legic).toHaveAttribute('target', '_blank');
   await expect(page.getByRole('region', { name: 'Zuletzt bearbeitet' })).toHaveCount(0); // leer: kein Bereich
 });
+
+test('Kopfleiste bleibt beim Scrollen oben, Logo der Startseite zeigt «BBZB Tools»', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await page.goto('/');
+  const logo = page.getByRole('link', { name: 'BBZB Tools, Startseite' });
+  await expect(logo).toHaveText('BBZB Tools');
+  await page.mouse.wheel(0, 1500);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(500);
+  expect((await page.locator('.bbzb-header').boundingBox())!.y).toBe(0);
+  await expect(logo).toBeInViewport();
+});

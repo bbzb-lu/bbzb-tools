@@ -1,6 +1,6 @@
 /** Einzige Quelle der Oberflächen-Tokens aller Tools. Banner-Farben stehen in apps/news-banner/src/tokens.ts. */
 export const theme = {
-  table: '#B5B5B5',
+  table: '#FFFFFF', // Arbeitsfläche aller Tools: weiss (Entscheid 11.11.2026, vorher Mittelgrau)
   paper: '#F2F2F2',
   'paper-shade': '#E3E3E3',
   ink: '#232323',

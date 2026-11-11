@@ -55,8 +55,6 @@ dialog .actions { justify-content: flex-end; }
 .editor:not(:has(.banner)) { grid-template-rows: auto 1fr; }
 /* Kopf und Wortmarke aus @bbzb/ui/header.css; im Editor folgen Übersicht und Name direkt der Wortmarke, nur die Aktionen stehen rechts */
 .editor-header .bbzb-wordmark { flex: none; margin-right: 0; }
-/* Wortmarke nur, wenn sie die Kopfzeile nicht drängt (gemessen in Task 3 mit dem alten Logo: es passt die Kopfzeile noch bei 1100 px). */
-@media (max-width: 1099px) { .editor-header .bbzb-wordmark { display: none; } }
 .project-name { flex: 0 1 22rem; min-width: 5rem; font-weight: 400; }
 .project-name:focus { border-color: var(--ink); }
 .editor-header button { white-space: nowrap; }
