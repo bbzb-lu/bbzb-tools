@@ -8,6 +8,7 @@ export const theme = {
   line: '#23232340',
   accent: '#0077B6',
   'on-accent': '#FFFFFF',
+  illu: '#4421DE', // Verläufe der Kachel-Illustrationen auf der Startseite
   'ink-disabled': '#646464',
   scrollbar: '14px',
   'font-ui': '"Host Grotesk", "Segoe UI", system-ui, sans-serif',

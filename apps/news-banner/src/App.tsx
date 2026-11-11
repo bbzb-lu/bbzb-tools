@@ -88,8 +88,8 @@ export function App() {
 
   return (
     <div className="app">
-      <Header tool="News-Banner">
-        <h1 className="sr-only">News-Banner für SharePoint erstellen</h1>
+      <Header tool="IT-News-Banner" feedback="IT-News-Banner">
+        <h1 className="sr-only">IT-News-Banner erstellen</h1>
         <div className="header-actions">
           <Button variant="primary" onClick={download} disabled={!assets}>PNG laden</Button>
         </div>

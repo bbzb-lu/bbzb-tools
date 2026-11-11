@@ -1,5 +1,5 @@
 import { IconCopy, IconFolderOpen, IconLock, IconPhoto, IconPlus, IconDeviceMobile, IconTrash } from '@tabler/icons-react';
-import { Header } from '@bbzb/ui';
+import { Header, vergissZuletzt } from '@bbzb/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './start.css';
 import { elementTypes, formats } from '../core/registries';
@@ -66,11 +66,22 @@ export function StartPage() {
         // vor dem ersten Zeichnen; gescheitert: Icons und Doodles zeigen Platzhalter und Meldung
         await Promise.all([ensureTablerFor(p).catch(() => undefined), ensureDoodlesFor(p).catch(() => undefined)]);
         load(p);
-      } else fail(null, 'Dieses Projekt gibt es nicht mehr.');
+      } else {
+        vergissZuletzt('social-studio', id);
+        fail(null, 'Dieses Projekt gibt es nicht mehr.');
+      }
     } catch (e) {
       fail(e, 'Das Projekt konnte nicht geöffnet werden.');
     }
   };
+
+  // Link von der Startseite («Zuletzt»): /social-studio/?projekt=<id> öffnet direkt, der Parameter verschwindet
+  useEffect(() => {
+    const id = new URLSearchParams(location.search).get('projekt');
+    if (!id) return;
+    history.replaceState(null, '', location.pathname);
+    void open(id); // nur beim ersten Anzeigen
+  }, []);
 
   const importFile = async (file: File) => {
     try {
@@ -146,7 +157,7 @@ export function StartPage() {
 
   return (
     <>
-      <Header tool="Social Studio" />
+      <Header tool="Social Studio" feedback="Social Studio" />
       <main className="start">
         <h1 className="sr-only">Social Studio</h1>
 
