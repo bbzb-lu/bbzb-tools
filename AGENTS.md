@@ -25,7 +25,8 @@ Arbeite im Ordner des Tools und lies dessen `AGENTS.md`, nicht die anderer Tools
 - Dateien unter 400 Zeilen, Notizen kurz, `AGENTS.md` je Ordner unter 60 Zeilen.
 - Commits klein und auf Englisch. Arbeit auf Branches, `main` bleibt lauffähig.
 - Issues mit einem Label pro Bereich (Tool oder Paket). Keine echten Fotos, Namen oder Projektdateien anhängen.
-- Hilfreich, aber freiwillig: Superpowers (Ablauf), Impeccable (UI), Ponytail (wenig Code).
+- Grössere Änderungen nach `docs/workflow.md`: Issue, Brainstorming, Plan, Subagents mit Review, PR mit Vorschau, Merge erst nach grüner CI und Rückfrage. Impeccable für UI, Ponytail für wenig Code.
+- Wünsche und Fehler stehen als Issues auf dem Board https://github.com/users/bbzb-lu/projects/2.
 
 ## Befehle
 `npm install`, `npm run dev:startseite`, `npm run build`
