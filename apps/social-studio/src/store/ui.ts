@@ -88,6 +88,8 @@ interface UiState {
   openSections: Record<string, boolean>;
   /** `def`: Zustand, solange der Abschnitt nie umgeschaltet wurde. */
   toggleSection(id: string, def?: boolean): void;
+  /** Eintrag `k` von `count` Zeilen mit Schlüsseln `${prefix}${n}` fällt weg: die Zustände der folgenden rücken nach, kein verwaister Eintrag. */
+  shiftSections(prefix: string, k: number, count: number): void;
   /** Ein Regler wird gerade bewegt: Effekte rechnen dann eine Vorschau in kleiner Auflösung. */
   sliding: boolean;
   setSliding(v: boolean): void;
@@ -148,6 +150,16 @@ export const useUi = create<UiState>()((set, get) => ({
   setLeftTab: (leftTab) => set({ leftTab }),
   openSections: {},
   toggleSection: (id, def = false) => set((s) => ({ openSections: { ...s.openSections, [id]: !(s.openSections[id] ?? def) } })),
+  shiftSections: (prefix, k, count) =>
+    set((s) => {
+      const o = { ...s.openSections };
+      for (let n = k; n < count; n++) {
+        const next = o[`${prefix}${n + 1}`];
+        if (next === undefined || n === count - 1) delete o[`${prefix}${n}`];
+        else o[`${prefix}${n}`] = next;
+      }
+      return { openSections: o };
+    }),
   sliding: false,
   setSliding: (sliding) => set({ sliding }),
   exportRequest: 0,

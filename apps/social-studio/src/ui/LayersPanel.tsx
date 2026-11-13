@@ -22,6 +22,12 @@ export function LayersPanel() {
   const refocus = useRef<string | null>(null);
   const cancelled = useRef(false); // Escape: das folgende Blur darf nicht übernehmen
   const listRef = useRef<HTMLUListElement>(null);
+  const anchor = useRef<string | null>(null); // Ankerzeile für Umschalt + Pfeil und Umschalt-Klick
+
+  // Auswahl von aussen (Leinwand, Kontextmenü): der Anker der Panel-Zeilen gilt nicht mehr
+  useEffect(() => {
+    if (!listRef.current?.contains(document.activeElement)) anchor.current = null;
+  }, [selectedIds]);
 
   // Nach Verschieben oder Umbenennen behält die Zeile den Fokus (React setzt verschobene Knoten um).
   useEffect(() => {
@@ -35,6 +41,22 @@ export function LayersPanel() {
     refocus.current = id;
     tryApply((d) => moveInOrder(d, id, orderIndexFor(d.order, id, neighbour, where)));
   };
+  // Auswahl der Zeilen von a bis b (Reihenfolge der Liste), Anker bleibt a.
+  const selectRange = (a: string, b: string) => {
+    const [i, j] = [ids.indexOf(a), ids.indexOf(b)];
+    if (i < 0 || j < 0) return;
+    useUi.getState().setSelectedIds(ids.slice(Math.min(i, j), Math.max(i, j) + 1));
+  };
+  const step = (id: string, dir: -1 | 1, extend: boolean) => {
+    const next = ids[ids.indexOf(id) + dir];
+    if (!next) return;
+    listRef.current?.querySelector<HTMLElement>(`[data-layer="${next}"]`)?.focus();
+    if (!extend) return useUi.getState().setSelectedId(next), void (anchor.current = next);
+    anchor.current = anchorOf(id);
+    selectRange(anchor.current, next);
+  };
+  // Anker, sonst erste gewählte Zeile, sonst die Zeile selbst; ein gelöschter Anker zählt nicht
+  const anchorOf = (id: string) => [anchor.current, useUi.getState().selectedIds[0]].find((a): a is string => !!a && ids.includes(a)) ?? id;
   const endEdit = (id: string, name?: string) => {
     if (cancelled.current) return;
     cancelled.current = name === undefined;
@@ -77,6 +99,9 @@ export function LayersPanel() {
               setDrop(null);
             }}
             onMove={(dir) => move(id, ids[i + dir], dir < 0 ? 'above' : 'below')}
+            onStep={(dir, extend) => step(id, dir, extend)}
+            onRange={() => selectRange((anchor.current = anchorOf(id)), id)}
+            onPick={() => (anchor.current = id)}
           />
         ))}
       </ul>
@@ -96,9 +121,12 @@ interface RowProps {
   onDragEnd(): void;
   onDrop(): void;
   onMove(dir: -1 | 1): void;
+  onStep(dir: -1 | 1, extend: boolean): void;
+  onRange(): void;
+  onPick(): void;
 }
 
-function Row({ id, selected, editing, drop, onEdit, onEndEdit, onDragStart, onDragOver, onDragEnd, onDrop, onMove }: RowProps) {
+function Row({ id, selected, editing, drop, onEdit, onEndEdit, onDragStart, onDragOver, onDragEnd, onDrop, onMove, onStep, onRange, onPick }: RowProps) {
   const el = useDoc((s) => s.project?.elements[id]);
   if (!el) return null;
   return (
@@ -142,6 +170,8 @@ function Row({ id, selected, editing, drop, onEdit, onEndEdit, onDragStart, onDr
           draggable
           onClick={(e) => {
             const ui = useUi.getState();
+            if (e.shiftKey && !e.ctrlKey && !e.metaKey) return onRange();
+            onPick();
             if (!e.ctrlKey && !e.metaKey && !e.shiftKey) return ui.setSelectedId(id);
             ui.setSelectedIds(ui.selectedIds.includes(id) ? ui.selectedIds.filter((x) => x !== id) : [...ui.selectedIds, id]);
           }}
@@ -159,6 +189,9 @@ function Row({ id, selected, editing, drop, onEdit, onEndEdit, onDragStart, onDr
             } else if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
               e.preventDefault();
               onMove(e.key === 'ArrowUp' ? -1 : 1);
+            } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+              e.preventDefault();
+              onStep(e.key === 'ArrowUp' ? -1 : 1, e.shiftKey);
             }
           }}
         >

@@ -5,6 +5,8 @@ import { Section } from './Section';
 
 export type EffectEntry = {
   id: string;
+  /** Dasselbe Icon wie in der Zeile (EffectRow). */
+  icon: ReactNode;
   label: string;
   /** Kurzhinweis in der Auswahl, z. B. «Filmkörnung». */
   hint: string;
@@ -79,6 +81,7 @@ export function EffectsSection({ entries, onAdd, children }: { entries: EffectEn
               onAdd(en.id);
             }}
           >
+            {en.icon}
             <span className="effects-menu-name">{en.label}</span>
             <span className="effects-menu-hint">{en.hint}</span>
             {en.limit && <span className="sr-only">{en.limit}</span>}

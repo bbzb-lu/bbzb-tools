@@ -33,7 +33,7 @@ test('Rechtsklick auf ein Foto: Menü mit Fotoeinträgen, Duplizieren kopiert, E
   await expect(menu(page).getByRole('menuitem')).toHaveCount(13);
   for (const n of ['Ausschnitt bearbeiten', 'Maske bearbeiten', 'Spiegeln', 'Kopieren', 'Löschen']) await expect(item(page, n)).toBeVisible();
   await expect(item(page, 'Text bearbeiten')).toHaveCount(0);
-  await expect(item(page, 'Einfügen')).toHaveAttribute('aria-disabled', 'true');
+  await expect(item(page, 'Einfügen')).not.toHaveAttribute('aria-disabled', 'true'); // immer aktiv: liest ohne eigenen Inhalt die Systemablage
   await expect(item(page, 'Kopieren')).toBeFocused();
   await page.screenshot({ path: `${SHOTS}/task-9-foto.png` });
   await item(page, 'Duplizieren').click();

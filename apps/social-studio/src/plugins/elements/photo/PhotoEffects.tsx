@@ -37,8 +37,8 @@ export function PhotoEffects({ el, empty = false }: { el: Element<PhotoProps>; e
   const scrims = empty ? [] : scrimsOf(el.props);
   const set = (next: Scrim[]) => setScrims(el.id, next);
   const entries: EffectEntry[] = [
-    { id: 'rahmen', label: 'Rahmen', hint: vid ? 'Rand ums Video' : 'Rand ums Foto', active: frame },
-    ...(empty ? [] : [{ id: 'korn', label: 'Korn', hint: 'Filmkörnung', active: grain }, scrimEntry(scrims)]),
+    { id: 'rahmen', icon: <IconFrame aria-hidden="true" />, label: 'Rahmen', hint: vid ? 'Rand ums Video' : 'Rand ums Foto', active: frame },
+    ...(empty ? [] : [{ id: 'korn', icon: <IconGrain aria-hidden="true" />, label: 'Korn', hint: 'Filmkörnung', active: grain }, scrimEntry(scrims)]),
   ];
   const add = (id: string) => {
     if (id === 'verlauf') return addScrim(scrims, set);

@@ -118,3 +118,36 @@ test('Bibliothek: Chipfarbe der Tags entspricht dem eingefügten Tag im Modus «
   expect(await list.evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true);
   await page.screenshot({ path: `${shot}/task-4-bibliothek-chips.png` });
 });
+
+test('Tag-Inspector: Text des Schalters ist klickbar, Farbwahl mit deutschen Namen, nichts abgeschnitten', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await insert(page, 'schul');
+  const location = page.getByLabel('Standort', { exact: true });
+  await expect(location.locator('option', { hasText: 'Ohne Standort' })).toHaveCount(1);
+  await location.selectOption('Bahnhof');
+  const sw = page.getByRole('switch', { name: 'Fachbereich zeigen' });
+  await page.getByText('Fachbereich zeigen').click();
+  await expect(sw).toHaveAttribute('aria-checked', 'true');
+  await page.getByText('Fachbereich zeigen').click();
+  await expect(sw).toHaveAttribute('aria-checked', 'false');
+
+  await page.keyboard.press('Escape');
+  await insert(page, 'frei');
+  const fill = page.getByLabel('Farbe', { exact: true });
+  expect(await fill.locator('option').allTextContents()).toEqual(['Blau', 'Orange', 'Warmweiss', 'Blauschwarz', 'Akzent', 'Bahnhof', 'Heimbach', 'Weggismatt', 'Dagmersellen', 'BM']);
+  for (const v of ['Warmweiss', 'Akzent', 'Dagmersellen']) {
+    await fill.selectOption({ label: v });
+    expect(await fill.evaluate((e) => e.scrollWidth <= e.clientWidth)).toBe(true);
+  }
+  await expect.poll(async () => ((await elements(page))[1]!.props as P).color).toBe('Dagmersellen');
+});
+
+test('Standort-Tag: «Fachbereich zeigen» hat dieselbe Schriftgrösse wie die Zeilenbeschriftungen', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await insert(page, 'schul');
+  await page.getByLabel('Standort', { exact: true }).selectOption('Bahnhof');
+  const size = (l: ReturnType<Page['locator']>) => l.evaluate((e) => getComputedStyle(e).fontSize);
+  const legend = await size(page.locator('legend', { hasText: 'Standort' }));
+  await expect(page.getByRole('switch', { name: 'Fachbereich zeigen' })).toBeVisible();
+  expect(await size(page.locator('.kit-switch-text', { hasText: 'Fachbereich zeigen' }))).toBe(legend);
+});

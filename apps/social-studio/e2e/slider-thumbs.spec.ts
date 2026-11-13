@@ -36,7 +36,7 @@ async function thumbOf(page: Page, name: string) {
   });
 }
 
-async function expectFader(page: Page, name: string) {
+async function expectFader(page: Page, name: string, locked = false) {
   const t = await thumbOf(page, name);
   expect(t, `${name}: Griff als eigenes Element`).not.toBeNull();
   expect(t!.w, `${name}: Breite`).toBeCloseTo(20, 1);
@@ -49,7 +49,7 @@ async function expectFader(page: Page, name: string) {
   expect([t!.shadow, t!.radius]).toEqual(['none', '0px']);
   expect(Math.abs(t!.dx), `${name}: Griff steht beim Wert`).toBeLessThan(0.6);
   expect(Math.abs(t!.dy), `${name}: Griff mittig auf der Bahn`).toBeLessThan(0.6);
-  expect(t!.covers, `${name}: Zeiger gehen durch den Griff an den Regler`).toBe(true);
+  if (!locked) expect(t!.covers, `${name}: Zeiger gehen durch den Griff an den Regler`).toBe(true); // gesperrt: Abschnitt ist inert
   expect(t!.track, `${name}: Bahn sichtbar`).toContain(rgb(theme.ink));
   expect(t!.trackSize).toContain('6px');
 }
@@ -75,7 +75,7 @@ test('Regler im Inspector: Text, Foto (Bildregler, Weiche Kante) und gesperrt ze
   // Gesperrt: Regler aus, Bahn und Griff bleiben sichtbar
   await page.evaluate((i) => window.__bbzbTest.patch(i, { locked: true }), photo);
   await expect(page.getByLabel('Eigenschaften').getByRole('slider', { name: 'Deckkraft' })).toBeDisabled();
-  await expectFader(page, 'Deckkraft');
+  await expectFader(page, 'Deckkraft', true);
 });
 
 test('Bereichsregler am Video: Klammern und Schiene wie im Entwurf', async ({ page }) => {

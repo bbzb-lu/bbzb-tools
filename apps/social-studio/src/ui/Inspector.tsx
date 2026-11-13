@@ -1,4 +1,4 @@
-import { IconAlertCircle, IconCheck, IconCopy, IconCopyPlus, IconStackBack, IconStackFront, IconTrash } from '@tabler/icons-react';
+import { IconAlertCircle, IconCheck, IconCopy, IconCopyPlus, IconLock, IconStackBack, IconStackFront, IconTrash } from '@tabler/icons-react';
 import { useRef, type ReactNode } from 'react';
 import { elementTypes } from '../core/registries';
 import { layerStep } from '../model/elements';
@@ -6,7 +6,7 @@ import type { Element } from '../model/types';
 import { useDoc } from '../store/document';
 import { useUi } from '../store/ui';
 import { akzent } from '../tokens';
-import { duplicate, markReviewed, remove, restack, tryApply } from './actions';
+import { duplicate, markReviewed, patchElement, remove, restack, tryApply } from './actions';
 import { KEYS, keysAttr } from './keys';
 import { applyToCurrentSlide, layoutsFor } from './layoutActions';
 import { LayoutSection } from './LayoutSection';
@@ -89,6 +89,15 @@ function ElementPanel({ el }: { el: Element }) {
   return (
     <>
       <h2>{el.name}</h2>
+      {el.locked && (
+        <p className="lock-note">
+          <IconLock aria-hidden="true" />
+          Gesperrt.
+          <button type="button" onClick={() => patchElement(el.id, { locked: false })}>Entsperren</button>
+        </p>
+      )}
+      {/* Gesperrt: Name und Hinweis bleiben bedienbar, alles darunter ist inert (kein Fokus, kein Klick) */}
+      <div className="inspector-body" inert={el.locked || undefined}>
       <LayerSection>
         <button type="button" className="icon-btn" aria-label="Duplizieren" data-tip="Duplizieren" data-keys={keysAttr(KEYS.duplicate)} onClick={() => duplicate(el.id)}>
           <IconCopy aria-hidden="true" />
@@ -109,7 +118,8 @@ function ElementPanel({ el }: { el: Element }) {
         </button>
       </LayerSection>
       {/* Darstellung, Bild, Effekte liefert der Elementtyp (mit OpacitySlider); ohne eigenes Panel nur die Deckkraft */}
-      {Panel ? <Panel el={el} /> : <Section heading="Darstellung" collapsible defaultOpen><OpacitySlider el={el} /></Section>}
+      {Panel ? <Panel el={el} /> : <Section heading="Darstellung" id={`darstellung-${el.type}`} collapsible defaultOpen><OpacitySlider el={el} /></Section>}
+      </div>
     </>
   );
 }

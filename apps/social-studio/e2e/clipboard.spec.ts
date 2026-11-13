@@ -65,3 +65,33 @@ test('paste mit nicht unterstützter Datei zeigt die Meldung', async ({ page }) 
   await expect(page.locator('.notice')).toContainText('Diese Datei kann ich nicht verwenden. Erlaubt sind Fotos.');
   expect(await elements(page)).toHaveLength(0);
 });
+
+const menuPaste = async (page: Page) => {
+  const at = await toScreen(page, 300, 300);
+  await page.mouse.click(at.x, at.y, { button: 'right' });
+  await page.getByRole('menu', { name: 'Kontextmenü' }).getByRole('menuitem', { name: 'Einfügen', exact: true }).click();
+};
+
+const putPng = (page: Page) => {
+  const f = png(800, 600);
+  return page.evaluate(async (bytes) => {
+    const blob = new Blob([new Uint8Array(bytes)], { type: 'image/png' });
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+  }, [...f.buffer]);
+};
+
+test('Rechtsklick «Einfügen» ohne internen Inhalt legt das Bild aus der Systemablage als Foto an', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await newProject(page, 'Post 4:5');
+  await putPng(page);
+  await menuPaste(page);
+  await expect.poll(async () => (await elements(page)).map((e) => e.type)).toEqual(['photo']);
+});
+
+test('Rechtsklick «Einfügen» ohne Berechtigung oder ohne Bild: Meldung «Einfügen: drücke Strg + V.»', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await page.evaluate(() => navigator.clipboard.read = () => Promise.reject(new DOMException('', 'NotAllowedError')));
+  await menuPaste(page);
+  await expect(page.getByRole('alert')).toContainText('Einfügen: drücke Strg + V.');
+  expect(await elements(page)).toHaveLength(0);
+});

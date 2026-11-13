@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { elementTypes } from '../core/registries';
 import type { ElementType } from '../core/types';
 import { referencedAssetIds, withReferencedAssets } from '../model/elements';
@@ -131,5 +131,49 @@ describe('clipboard Nachbesserungen', () => {
     useUi.getState().setSelectedIds(['a']);
     expect(cutSelection()).toBe(false);
     expect(els()).toHaveLength(2);
+  });
+
+  describe('Systemablage über das Menü', () => {
+    const NOTICE = 'Einfügen: drücke Strg + V.';
+    const clip = (read: () => Promise<unknown>) => vi.stubGlobal('navigator', { clipboard: { read } });
+    const flush = () => new Promise((r) => setTimeout(r));
+    afterEach(() => vi.unstubAllGlobals());
+    // der interne Speicher überlebt die Tests: ein anderes Projekt macht ihn für Einfügen unsichtbar (leer)
+    beforeEach(() => load({ ...project(2, [el({ id: 'a' }), photo()]), id: 'leer' }));
+
+    it('Bild in der Ablage wird wie eine eingefügte Datei verarbeitet', async () => {
+      const got: File[] = [];
+      const spy = vi.spyOn(elementTypes, 'all').mockReturnValue([{ acceptsFile: () => true, fromFile: async (f: File) => void got.push(f) } as unknown as ElementType]);
+      clip(async () => [{ types: ['text/plain', 'image/png'], getType: async () => new Blob(['x'], { type: 'image/png' }) }]);
+      pasteClipboard();
+      await flush();
+      expect(got.map((f) => f.type)).toEqual(['image/png']);
+      spy.mockRestore();
+    });
+
+    it('ohne Bild oder ohne Berechtigung: Meldung, nichts eingefügt', async () => {
+      clip(async () => [{ types: ['text/plain'], getType: async () => new Blob() }]);
+      pasteClipboard();
+      await flush();
+      expect(useUi.getState().notice?.text).toBe(NOTICE);
+      useUi.setState({ notice: null });
+      clip(() => Promise.reject(new DOMException('', 'NotAllowedError')));
+      pasteClipboard();
+      await flush();
+      expect(useUi.getState().notice?.text).toBe(NOTICE);
+      expect(els()).toHaveLength(2);
+    });
+
+    it('interner Speicher hat Vorrang, die Systemablage wird nicht gelesen', async () => {
+      const read = vi.fn();
+      clip(read);
+      load({ ...project(2, [el({ id: 'a' })]), id: 'p-intern' });
+      useUi.getState().setSelectedIds(['a']);
+      copySelection();
+      pasteClipboard();
+      await flush();
+      expect(read).not.toHaveBeenCalled();
+      expect(els()).toHaveLength(2);
+    });
   });
 });

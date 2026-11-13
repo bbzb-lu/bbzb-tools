@@ -57,8 +57,8 @@ describe('menuItemsFor', () => {
     expect(labels(['a'])).toContain('Einblenden');
   });
 
-  it('Einfügen ist deaktiviert, bis etwas kopiert wurde', () => {
-    expect(item(['a'], 'Einfügen')!.disabled).toMatch(/\S/);
+  it('Einfügen ist immer aktiv (ohne internen Inhalt liest es die Systemablage)', () => {
+    expect(item(['a'], 'Einfügen')!.disabled).toBeUndefined();
     useUi.getState().setSelectedIds(['a']);
     copySelection();
     expect(item(['a'], 'Einfügen')!.disabled).toBeUndefined();

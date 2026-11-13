@@ -120,7 +120,7 @@ export function App() {
                 <span><i className="swatch dashed" style={{ borderColor: guideColors.banner }} aria-hidden="true" />Banner-Zone</span>
               </>
             )}
-            <span className="switch-field legend-switch"><span aria-hidden="true">Hilfslinien</span><Switch label="Hilfslinien zeigen" checked={guides} onChange={setGuides} /></span>
+            <span className="switch-field legend-switch"><Switch checked={guides} onChange={setGuides}>Hilfslinien zeigen</Switch></span>
           </div>
         </main>
       </div>
