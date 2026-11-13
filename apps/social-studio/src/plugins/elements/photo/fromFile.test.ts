@@ -103,13 +103,14 @@ describe('Video', () => {
     expect([q.elements['a']!.name, q.elements['b']!.name]).toEqual(['Video 2', 'Mein Bild']);
   });
 
-  it('Video ersetzt Foto: Rahmen, Spiegeln, Bildregler fallen weg', async () => {
+  it('Video ersetzt Foto: Rahmen bleibt, Spiegeln und Bildregler fallen weg', async () => {
     okVideo();
     const adjust = { brightness: 5, contrast: 0, saturation: 0, warmth: 0 };
     const p = project(1, [el({ id: 'ph', type: 'photo', props: { assetId: 'a'.repeat(64), crop, frame: true, frameOutside: true, flipX: true, flipY: true, adjust } })]);
     await fillPhoto(p.elements['ph'] as Element<PhotoProps>, mp4(), setup(p));
     const props = (p.elements['ph'] as Element<PhotoProps>).props;
-    expect(['frame', 'frameOutside', 'flipX', 'flipY', 'adjust'].filter((k) => k in props)).toEqual([]);
+    expect(['flipX', 'flipY', 'adjust'].filter((k) => k in props)).toEqual([]);
+    expect([props.frame, props.frameOutside]).toEqual([true, true]);
   });
 
   it('Video ersetzt Video: Ausschnitt startet neu', async () => {

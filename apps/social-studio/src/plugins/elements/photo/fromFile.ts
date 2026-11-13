@@ -72,7 +72,7 @@ export const fillPhoto = (el: Element<PhotoProps>, file: File, ctx: EditorContex
       target.name = renameForStyle(target.name, img.video ? 'foto' : 'video', img.video ? 'video' : 'foto');
       delete target.props.mask; // die Maske gehört zum alten Bild (Alt-Asset und -Maske räumt die GC weg)
       if (!img.video) delete target.props.video; // Foto ersetzt Video: Ausschnitt und Ton fallen weg; neues Video startet bei 0
-      else for (const k of ['frame', 'frameOutside', 'flipX', 'flipY', 'adjust'] as const) delete target.props[k]; // gibt es am Video nicht
+      else for (const k of ['flipX', 'flipY', 'adjust'] as const) delete target.props[k]; // Spiegeln und Bildregler gibt es am Video nicht; der Rahmen bleibt
       filled = true;
     });
     if (filled) ctx.select(el.id);

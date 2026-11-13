@@ -110,7 +110,7 @@ export function PhotoNode({ el, editing }: ElementRenderProps<PhotoProps>) {
   const outside = frameOutsideOf(el.props);
   const outline = useOutline(
     // «Ergebnis»: Kontur nach jedem Strich neu (die Masken-Id wechselt mit jedem gespeicherten Strich)
-    outside && img ? `${el.props.assetId}${masked.key}${result ? maskOf(el.props) : ''} ${crop.x} ${crop.y} ${crop.scale} ${flip} ${flipY} ${width}x${height}` : null,
+    outside && img ? `${el.props.assetId}${masked.key}${result ? maskOf(el.props) : ''} ${crop.x} ${crop.y} ${crop.scale} ${flip} ${flipY} ${width}x${height}${vid ? ` @${still.time}` : ''}` : null,
     editing,
     width,
     height,
