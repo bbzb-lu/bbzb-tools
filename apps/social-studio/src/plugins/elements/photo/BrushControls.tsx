@@ -29,7 +29,7 @@ export function BrushControls() {
   const view = useUi((s) => s.maskView);
   return (
     <>
-      <Segmented legend="Pinsel" value={b.mode} options={[['hide', 'Ausblenden'], ['show', 'Einblenden']]} onChange={(mode) => set({ mode })} hint="X wechselt." />
+      <Segmented legend="Pinsel" value={b.mode} options={[['hide', 'Ausblenden'], ['show', 'Einblenden']]} onChange={(mode) => set({ mode })} hint="Taste X wechselt." />
       <Slider
         label="Grösse"
         tip="Kleiner: [ oder −, grösser: ] oder +"

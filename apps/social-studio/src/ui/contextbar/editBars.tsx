@@ -19,7 +19,7 @@ function MaskBar() {
   const set = useUi((s) => s.setBrush);
   return (
     <ContextBar ids={[id]} label="Maske" compact icon={<IconBrush aria-hidden="true" />} onDone={() => useUi.getState().setMaskEditId(null)}>
-      <Segmented legend="Modus" value={b.mode} options={[['hide', 'Ausblenden'], ['show', 'Einblenden']]} onChange={(mode) => set({ mode })} />
+      <Segmented legend="Modus" value={b.mode} options={[['hide', 'Ausblenden'], ['show', 'Einblenden']]} onChange={(mode) => set({ mode })} hint="Taste X wechselt." />
       <Slider label="Grösse" tip="Kleiner: [ oder −, grösser: ] oder +" variant="short" unit="px" value={b.size} min={tokens.size.min} max={tokens.size.max} defaultValue={tokens.size.default} onChange={(size) => set({ size })} />
       <Slider label="Härte" variant="short" unit="%" value={b.hardness} min={0} max={100} defaultValue={tokens.hardness.default} onChange={(hardness) => set({ hardness })} />
       <MaskViewChoice />

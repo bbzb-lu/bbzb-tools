@@ -30,7 +30,7 @@ test('Abschnitt «Maske» am Foto, Knöpfe mit Name und Tooltip', async ({ page 
     await expect(btn(page, n)).toHaveAttribute('data-tip', /.+/);
   await expect(section(page).getByRole('slider', { name: 'Weiche Kante' })).toBeVisible();
   await btn(page, 'Maske bearbeiten').click();
-  for (const n of ['Ausblenden', 'Einblenden']) await expect(section(page).getByRole('radio', { name: n })).toBeVisible();
+  for (const n of ['Ausblenden', 'Einblenden']) await expect(section(page).getByRole('radio', { name: n })).toHaveAccessibleDescription('Taste X wechselt.');
   await expect(section(page).getByRole('slider', { name: 'Grösse' })).toBeVisible();
   await expect(section(page).getByRole('slider', { name: 'Härte' })).toBeVisible();
   await page.keyboard.press('Escape');

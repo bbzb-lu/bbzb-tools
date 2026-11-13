@@ -152,3 +152,27 @@ test('«Ergebnis» zeigt den Look: Pixel wie nach «Fertig»; während eines Str
   const after = await shown();
   expect(after.every((v, k) => Math.abs(v - before[k]!) <= 2), `${after} wie ${before}`).toBe(true);
 });
+
+test('«Ergebnis» mit Look: mitten im Strich zeigt die Strichstelle den gemalten Stand, nach dem Strichende wieder den Effekt', async ({ page }) => {
+  const MID = [120, 140, 160];
+  await openPhoto(page, 'Wache', BOX, { crop: { x: 0, y: 0, scale: 0.8 }, look: true }, alphaPng(1000, 1000, MID, () => 255), [740, 675]);
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects())).toBe(0);
+  const c = await toScreen(page, 740, 675);
+  await page.mouse.click(c.x, c.y);
+  await page.getByRole('button', { name: 'Maske bearbeiten' }).click();
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.veils())).toBe(1);
+  await view(page, 'Ergebnis').check();
+  await expect.poll(async () => near(await screenAt(page, 540, 700), MID)).toBe(false); // Effekt steht
+  const [a, b] = [await toScreen(page, 300, 700), await toScreen(page, 780, 700)];
+  await page.mouse.move(a.x, a.y);
+  await page.mouse.down();
+  await page.mouse.move((a.x + b.x) / 2, a.y, { steps: 6 });
+  // Strich läuft: die Effekt-Canvas ist weg, die Strichstelle zeigt die Slide-Farbe (ausgeblendet), nicht das alte Effektbild
+  await expect.poll(async () => near(await screenAt(page, 450, 700), BLAU)).toBe(true);
+  await page.mouse.move(b.x, b.y, { steps: 6 });
+  await page.mouse.up();
+  await expect.poll(() => history(page)).toBeGreaterThan(0);
+  await expect.poll(async () => near(await screenAt(page, 540, 700), BLAU)).toBe(true); // Strichstelle nach dem Effekt (Look ändert Blau nicht ins Foto)
+  // daneben, am ungemalten Foto: der Effekt ist zurück (nicht die Rohfarbe)
+  await expect.poll(async () => near(await screenAt(page, 540, 500), MID)).toBe(false);
+});

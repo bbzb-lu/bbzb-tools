@@ -42,6 +42,7 @@ test('Leiste im Maskenmodus: über den Inspektor, Pinsel synchron, «Fertig» un
   expect(await bar(page).evaluate((e) => e.contains(document.activeElement))).toBe(false);
   const last = bar(page).locator('button, input').last();
   await expect(last).toHaveText('Fertig');
+  await expect(bar(page).getByRole('radio', { name: 'Einblenden' })).toHaveAccessibleDescription('Taste X wechselt.'); // Kürzel auch in der Leiste
   // Ansicht: Leiste und Inspektor teilen sie
   await bar(page).getByRole('radio', { name: 'Ergebnis' }).check();
   await expect(insp.getByRole('radio', { name: 'Ergebnis' })).toBeChecked();
@@ -159,3 +160,28 @@ test('Maskenleiste 1024 × 640: alle Bedienelemente liegen ganz im sichtbaren Be
   }
   if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/task-8-brush-1024.png` });
 });
+
+// 125 % Skalierung entspricht 1024 px bzw. 1280 px geteilt durch 1,25
+for (const [width, height] of [[1024, 640], [1280, 720], [820, 512], [1024, 576]] as const) {
+  test(`Pinselwahl im Inspector ${width} × ${height}: Ausblenden | Einblenden und Ansicht nicht abgeschnitten`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await open(page, 'Passt');
+    await toggle(page).click();
+    await expect(bar(page)).toBeVisible();
+    const fit = await page.locator('.inspector').evaluate((insp) => {
+      const edge = insp.getBoundingClientRect().left + insp.clientWidth;
+      return [...insp.querySelectorAll<HTMLElement>('.mask-nested fieldset > .segmented')].map((s) => ({
+        right: Math.round(s.getBoundingClientRect().right),
+        width: Math.round(s.getBoundingClientRect().width),
+        edge: Math.round(edge),
+        clipped: [...s.querySelectorAll('span')].some((l) => l.scrollWidth > l.clientWidth),
+      }));
+    });
+    expect(fit).toHaveLength(2);
+    for (const f of fit) {
+      expect(f.right).toBeLessThanOrEqual(f.edge);
+      expect(f.width).toBeGreaterThanOrEqual(200); // Beschriftung steht darüber: die Wahl bekommt die ganze Spalte, nicht den Rest neben der Beschriftung
+      expect(f.clipped).toBe(false);
+    }
+  });
+}
