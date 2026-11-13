@@ -1,14 +1,14 @@
 import { iconStyle } from '../tokens';
 import { iconSvg, type IconRef } from './catalog';
 
-/** Icon auf Inhaltsgrösse zugeschnitten, bereit zum Einpassen. `tinted`: Effekte (Schein, Relief) gelten nur für einfarbige Strichicons. */
-export type Prepared = { src: CanvasImageSource; w: number; h: number; tinted: boolean };
+/** Icon auf Inhaltsgrösse zugeschnitten, bereit zum Einpassen. `effects`: Schein und Relief gelten für Strichicons und Bilder mit durchsichtigen Flächen, nicht für deckende Fotos. */
+export type Prepared = { src: CanvasImageSource; w: number; h: number; effects: boolean };
 
 export class ImageError extends Error {}
 
 const cache = new Map<string, Promise<Prepared>>();
 
-function trim(c: HTMLCanvasElement): Prepared {
+function trim(c: HTMLCanvasElement, effects: boolean): Prepared {
   const { width: W, height: H } = c;
   const d = c.getContext('2d')!.getImageData(0, 0, W, H).data;
   let x0 = W, y0 = H, x1 = -1, y1 = -1;
@@ -20,7 +20,25 @@ function trim(c: HTMLCanvasElement): Prepared {
   out.width = x1 - x0 + 1;
   out.height = y1 - y0 + 1;
   out.getContext('2d')!.drawImage(c, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
-  return { src: out, w: out.width, h: out.height, tinted: true };
+  return { src: out, w: out.width, h: out.height, effects };
+}
+
+/** Mindestens 1 % der Pixel mit Alpha unter 250. */
+export function hasTransparentPixels(d: Uint8ClampedArray): boolean {
+  let n = 0;
+  for (let i = 3; i < d.length; i += 4) if (d[i]! < 250) n++;
+  return n > 0 && n * 100 >= d.length / 4;
+}
+
+/** Auf höchstens 256 px verkleinert prüfen. */
+export function hasTransparency(src: CanvasImageSource, w: number, h: number): boolean {
+  const k = Math.min(1, 256 / Math.max(w, h));
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(w * k));
+  c.height = Math.max(1, Math.round(h * k));
+  const x = c.getContext('2d', { willReadFrequently: true })!;
+  x.drawImage(src, 0, 0, c.width, c.height);
+  return hasTransparentPixels(x.getImageData(0, 0, c.width, c.height).data);
 }
 
 function load(src: string) {
@@ -33,7 +51,15 @@ function load(src: string) {
 }
 
 export function prepareIcon(ref: IconRef, color: string): Promise<Prepared> {
-  if (ref.kind === 'image') return Promise.resolve({ src: ref.bitmap, w: ref.bitmap.width, h: ref.bitmap.height, tinted: false });
+  if (ref.kind === 'image') {
+    const { bitmap: b } = ref;
+    if (!hasTransparency(b, b.width, b.height)) return Promise.resolve({ src: b, w: b.width, h: b.height, effects: false });
+    const c = document.createElement('canvas');
+    c.width = b.width;
+    c.height = b.height;
+    c.getContext('2d')!.drawImage(b, 0, 0);
+    return Promise.resolve(trim(c, true));
+  }
   const key = `${ref.kind}:${ref.name}:${color}`;
   let p = cache.get(key);
   if (!p) {
@@ -41,7 +67,7 @@ export function prepareIcon(ref: IconRef, color: string): Promise<Prepared> {
       const c = document.createElement('canvas');
       c.width = c.height = iconStyle.raster;
       c.getContext('2d')!.drawImage(img, 0, 0, iconStyle.raster, iconStyle.raster);
-      return trim(c);
+      return trim(c, true);
     });
     p.catch(() => cache.delete(key));
     cache.set(key, p);
