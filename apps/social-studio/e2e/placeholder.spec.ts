@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { readFileSync } from 'node:fs';
 import { colors } from '../src/tokens';
 import type { LayoutPreset } from '../src/core/types';
 import { elements, exportPng, frames, gradientPng, mean, newProject, toScreen, addSlide, openSection } from './fixtures';
@@ -108,4 +109,16 @@ test('Platzhalter-Hinweis: hell auf Blauschwarz, dunkel auf dem Rahmen', async (
   await page.evaluate((i) => window.__bbzbTest.patch(i, { props: { ...(window.__bbzbTest.elements()[0]!.props as object), frame: true } }), id!);
   await expect.poll(fill).toBe(colors.blauschwarz);
   if (process.env.SHOT) await page.screenshot({ path: '.superpowers/sdd/2026-10-23-phase-2-4-gestaltung/screens/task-8-blauschwarz-rahmen.png' });
+});
+
+test('Titel-Layout: «Foto hierher ziehen» steht unter dem Titel, nicht dahinter', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  const preset = JSON.parse(readFileSync(`${import.meta.dirname}/../src/plugins/layouts/presets/titel.json`, 'utf8')) as LayoutPreset;
+  await applyLayout(page, preset);
+  await frames(page);
+  const title = (await elements(page)).find((e) => e.role === 'titel')!;
+  const box = await page.evaluate(() => window.__bbzbTest.hintBox());
+  const bottom = title.y + title.height;
+  expect(box!.top).toBeGreaterThanOrEqual(Math.max(bottom, 830)); // drei Zeilen Titel reichen bis etwa y 830
+  await page.screenshot({ path: '.superpowers/sdd/2026-11-13-phase-5-sammelrunde/screens/task-8-placeholder-titel.png' });
 });

@@ -1,11 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import { live, markLive, only, openReviewProject, sameLive, select, shot } from './contextBar';
 import { elements, frames, openSection, toScreen } from './fixtures';
-import { addVideo, twoTone } from './video';
+import { addVideo } from './video';
 
 // Echte Bildlaufleisten wie unter Windows (Playwright blendet sie sonst aus)
 test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] }, viewport: { width: 1280, height: 720 } });
-test.beforeAll(twoTone);
 
 const fake = (page: Page, ms: number) => page.evaluate((t) => window.__bbzbTest.fakeCutout('kreis', t), ms);
 const ai = (page: Page) => page.evaluate(() => window.__bbzbTest.ui().ai);

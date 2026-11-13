@@ -1,9 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { effectRemove, elements, exportPng, newProject, openSection, toScreen, view } from './fixtures';
 import { alphaPng, maskPng, photoProject, type Box } from './photoProject';
-import { addVideo, twoTone } from './video';
-
-test.beforeAll(twoTone);
+import { addVideo } from './video';
 
 /** Foto-Inspector seit 4c Task 11: Abschnitte zu (ausser «Ebene»), Spiegeln senkrecht, «Erweitert», Effekte über «+», Zustände der Maske. */
 
@@ -129,14 +127,14 @@ test('Maske: ohne Maske Grund sichtbar, Pinsel erst nach dem Klick, KI läuft: �
   const reason = panel(page).locator('.hint.reason');
   await expect(reason).toHaveText('Erst Hintergrund entfernen');
   for (const n of ['Als Sticker kopieren', 'Motiv vor Titel', 'Maske zurücksetzen']) await expect(button(page, n)).toHaveAttribute('aria-disabled', 'true');
-  await expect(button(page, 'Ausblenden')).toHaveCount(0);
+  await expect(panel(page).getByRole('radio', { name: 'Ausblenden', exact: true })).toHaveCount(0);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/task-11-maske-ruhe.png` });
   await button(page, 'Maske bearbeiten').click();
   await expect(button(page, 'Maske bearbeiten')).toHaveAttribute('aria-pressed', 'true');
-  for (const n of ['Ausblenden', 'Einblenden', 'Rote Folie', 'Ergebnis']) await expect(button(page, n)).toBeVisible();
+  for (const n of ['Ausblenden', 'Einblenden', 'Rote Folie', 'Ergebnis']) await expect(panel(page).getByRole('radio', { name: n, exact: true })).toBeVisible();
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/task-11-maske-pinsel.png` });
   await page.keyboard.press('Escape');
-  await expect(button(page, 'Ausblenden')).toHaveCount(0);
+  await expect(panel(page).getByRole('radio', { name: 'Ausblenden', exact: true })).toHaveCount(0);
 
   await page.evaluate(() => window.__bbzbTest.fakeCutout('kreis', 30000));
   const main = button(page, 'Hintergrund entfernen');

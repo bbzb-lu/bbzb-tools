@@ -3,19 +3,31 @@ import { video } from '../../../tokens';
 import { copyElements } from '../../../model/clipboard';
 import { duplicateElement } from '../../../model/elements';
 import { el, project } from '../../../model/fixtures';
+import type { Element } from '../../../model/types';
+import { photoType } from './index';
+import type { PhotoProps } from './schema';
 import { adjustOf, flipOf, frameOf, imageArea, isVideo, photoPropsSchema, videoOf } from './schema';
 
 const base = { crop: { x: 0, y: 0, scale: 1 } };
 const v = { start: 1, end: 5, sound: false, duration: 10 };
 
 describe('photo video', () => {
-  it('Rahmen, Spiegeln und Bildregler gelten am Video nicht, am Foto schon', () => {
+  it('Rahmen gilt am Video, Spiegeln und Bildregler nicht', () => {
     const extra = { frame: true, flipX: true, adjust: { brightness: 10, contrast: 0, saturation: 0, warmth: 0 } };
     const photo = { ...base, ...extra };
     const vid = { ...photo, video: v };
     expect([frameOf(photo), flipOf(photo), adjustOf(photo).brightness]).toEqual([true, true, 10]);
-    expect([frameOf(vid), flipOf(vid), adjustOf(vid).brightness]).toEqual([false, false, 0]);
-    expect(imageArea(vid, { width: 100, height: 80 })).toEqual({ x: 0, y: 0, width: 100, height: 80 });
+    expect([frameOf(vid), flipOf(vid), adjustOf(vid).brightness]).toEqual([true, false, 0]);
+    expect(imageArea(vid, { width: 100, height: 80 })).toEqual(imageArea(photo, { width: 100, height: 80 }));
+  });
+
+  it('Video im Platzhalter mit Rahmen übernimmt den Rahmen (takeContent)', () => {
+    const into = el({ type: 'photo', role: 'foto', width: 1080, height: 1350, props: { ...base, frame: true } }) as Element<PhotoProps>;
+    const from = el({ id: 'ph', type: 'photo', role: 'foto', props: { ...base, assetId: 'a'.repeat(64), video: v } }) as Element<PhotoProps>;
+    const p = project(1, []);
+    p.assets['a'.repeat(64)] = { mime: 'video/mp4', width: 320, height: 400, name: 'v.mp4' };
+    const r = photoType.takeContent!(into, from, p)!;
+    expect(frameOf(r.props)).toBe(true);
   });
 
   it('akzeptiert Foto ohne und mit video', () => {

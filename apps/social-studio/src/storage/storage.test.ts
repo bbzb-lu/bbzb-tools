@@ -143,11 +143,21 @@ describe('collectGarbage und Undo', () => {
 describe('OPFS-Namensraum', () => {
   // Fake-OPFS: Ordner sind Maps von Dateiname auf Datei, mehr braucht opfsAssetStore nicht.
   const root = new Map<string, Map<string, File>>();
+  let writes = 0;
   const dirHandle = (files: Map<string, File>) => ({
-    getFileHandle: async (name: string) => {
-      const f = files.get(name);
-      if (!f) throw new DOMException('fehlt', 'NotFoundError');
-      return { kind: 'file', getFile: async () => f };
+    getFileHandle: async (name: string, opts?: { create?: boolean }) => {
+      if (!files.has(name)) {
+        if (!opts?.create) throw new DOMException('fehlt', 'NotFoundError');
+        files.set(name, new File([], name));
+      }
+      return {
+        kind: 'file',
+        getFile: async () => files.get(name)!,
+        createWritable: async () => {
+          writes++;
+          return { write: async (b: Blob) => void files.set(name, new File([b], name, { lastModified: Date.now() })), close: async () => {}, abort: async () => {} };
+        },
+      };
     },
     removeEntry: async (name: string) => void files.delete(name),
     entries: async function* () {
@@ -156,6 +166,7 @@ describe('OPFS-Namensraum', () => {
   });
   beforeEach(() => {
     root.clear();
+    writes = 0;
     vi.stubGlobal('navigator', {
       storage: {
         getDirectory: async () => ({
@@ -177,5 +188,52 @@ describe('OPFS-Namensraum', () => {
     expect(await collectGarbage(opfsAssetStore(), GC_MIN_AGE_MS + 1)).toBe(1);
     expect([...root.get('social-studio-assets')!.keys()]).toEqual([]);
     expect([...root.get('news-banner')!.keys()]).toEqual([hash('b')]);
+  });
+
+  it('put schreibt dieselbe Datei nur einmal und schützt sie trotzdem vor der Bereinigung', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      vi.setSystemTime(1_000_000);
+      const store = opfsAssetStore();
+      await store.put(blob('video'));
+      vi.setSystemTime(1_000_000 + 9 * 60_000);
+      await store.put(blob('video'));
+      expect(writes).toBe(1);
+      expect(await collectGarbage(store, 1_000_000 + 11 * 60_000)).toBe(0);
+      expect(await collectGarbage(store, 1_000_000 + 20 * 60_000)).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('put während die Bereinigung löscht rettet die noch nicht gelöschte Datei', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      vi.setSystemTime(1_000_000);
+      const store = opfsAssetStore();
+      const first = await store.put(blob('eins'));
+      const second = await store.put(blob('zwei'));
+      const now = 1_000_000 + 11 * 60_000;
+      const del = store.delete.bind(store);
+      store.delete = async (id) => {
+        await del(id);
+        vi.setSystemTime(now);
+        await store.put(blob(id === first ? 'zwei' : 'eins')); // gleichzeitiges put: gültig, kein Schreiben
+      };
+      await collectGarbage(store, now);
+      expect(writes).toBe(2);
+      expect((await store.list()).map((a) => a.id)).toEqual([second]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('Datei gleicher ID, aber anderer Grösse wird neu geschrieben', async () => {
+    const store = opfsAssetStore();
+    const id = await store.put(blob('video'));
+    root.get('social-studio-assets')!.set(id, new File(['vi'], id));
+    await store.put(blob('video'));
+    expect(writes).toBe(2);
+    expect((await store.get(id)).size).toBe(5);
   });
 });

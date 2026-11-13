@@ -9,7 +9,7 @@ test('Wortmarke direkt nach einer Änderung: Name und neues Element sind beim Wi
   await page.getByRole('button', { name: 'Text hinzufügen' }).click();
   // sofort weg, ohne die Pause des Autosave (500 ms) abzuwarten
   await page.getByRole('link', { name: 'BBZB Tools, Social Studio, zur Startseite' }).click();
-  await expect(page).toHaveURL(/:8788\/$/);
+  await expect(page).toHaveURL(new RegExp(`:${process.env.PW_PORT ?? '8788'}/$`));
   await page.goto('');
   await page.getByRole('button', { name: '«Weg über die Wortmarke» öffnen', exact: true }).click();
   await expect(page.getByLabel('Projektname')).toHaveValue('Weg über die Wortmarke');
