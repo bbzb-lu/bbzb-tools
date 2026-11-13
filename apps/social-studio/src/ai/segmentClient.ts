@@ -7,7 +7,7 @@ export type ToWorker = { image: Blob; device: Device };
 export type FromWorker =
   | ({ type: 'progress' } & Progress)
   | ({ type: 'done' } & Alpha)
-  | { type: 'error'; network: boolean; message: string };
+  | { type: 'error'; reason: 'network' | 'missing' | undefined; message: string };
 
 /** Es läuft schon ein Freistellen: höchstens ein Lauf zugleich. */
 export class AiBusy extends Error {
@@ -18,9 +18,14 @@ export class AiNetworkError extends Error {
   name = 'AiNetworkError';
 }
 
+/** Modelldatei fehlt auf dem Host (404): Fehler der App, nicht des Netzes. */
+export class AiMissingError extends Error {
+  name = 'AiMissingError';
+}
+
 /**
  * Ein Worker je Lauf, danach beendet (gibt den Speicher des Modells frei, das Modell selbst liegt im Cache des Browsers).
- * Zuerst WebGPU; jeder Fehler ausser Netz führt zu einem neuen Worker mit WASM, und WASM bleibt für die Sitzung.
+ * Zuerst WebGPU; jeder Fehler ausser Netz und fehlender Datei führt zu einem neuen Worker mit WASM, und WASM bleibt für die Sitzung.
  */
 export function createSegmentClient(makeWorker: () => Worker) {
   let busy = false;
@@ -43,7 +48,7 @@ export function createSegmentClient(makeWorker: () => Worker) {
         if (m.type === 'progress') return opts.onProgress({ phase: m.phase, fraction: m.fraction });
         end();
         if (m.type === 'done') resolve({ width: m.width, height: m.height, alpha: m.alpha });
-        else reject(m.network ? new AiNetworkError(m.message) : new Error(m.message));
+        else reject(m.reason === 'network' ? new AiNetworkError(m.message) : m.reason === 'missing' ? new AiMissingError(m.message) : new Error(m.message));
       };
       // Absturz im Worker (z. B. Speicherabbruch von onnxruntime) kommt nicht als Nachricht
       w.onerror = (e) => {
@@ -63,7 +68,7 @@ export function createSegmentClient(makeWorker: () => Worker) {
           try {
             return await once(image, 'webgpu', opts);
           } catch (e) {
-            if (e instanceof AiNetworkError || (e as Error).name === 'AbortError') throw e;
+            if (e instanceof AiNetworkError || e instanceof AiMissingError || (e as Error).name === 'AbortError') throw e;
             gpuFailed = true;
           }
         }

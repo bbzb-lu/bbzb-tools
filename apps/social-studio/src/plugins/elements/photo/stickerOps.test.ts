@@ -59,6 +59,15 @@ describe('copyAsSticker', () => {
   });
 });
 
+describe('gesperrtes Foto', () => {
+  it('Sticker und Kopie hinter dem Titel sind ebenfalls gesperrt', () => {
+    set([text('t', 60), photo({ locked: true })]);
+    const sticker = copyAsSticker('p')!;
+    const behind = copyBehindTitle('p')!;
+    expect([doc().elements[sticker]!.locked, doc().elements[behind]!.locked]).toEqual([true, true]);
+  });
+});
+
 describe('copyBehindTitle', () => {
   it('deckungsgleiche Kopie direkt über dem Titel, auch wenn das Original schon darüber liegt; ein Undo', () => {
     set([text('t', 60), el({ id: 'z' }), photo()]);

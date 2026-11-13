@@ -1,4 +1,4 @@
-import { AiNetworkError } from '../../../ai/segmentClient';
+import { AiMissingError, AiNetworkError } from '../../../ai/segmentClient';
 import { hasSubject, maskFromAlpha } from '../../../ai/toMask';
 import { aiTools } from '../../../core/registries';
 import { maskSize } from '../../../model/mask';
@@ -13,6 +13,7 @@ import { isVideo, maskOf, type PhotoProps } from './schema';
 
 export const NO_SUBJECT = 'Kein Motiv gefunden. Die Maske bleibt, wie sie war.';
 export const AI_NETWORK = `Modell nicht erreichbar. Prüf die Verbindung oder frag die IT, ob ${new URL(cutout.model.host).host} und ${cutout.model.storageHost} freigegeben sind.`;
+export const AI_MISSING = 'Das KI-Modell wurde nicht gefunden. Das liegt an der App, nicht an deinem Netz. Bitte melde es über das Feedback-Formular.';
 /** Grund für gesperrte Maskenknöpfe und Menüeinträge des Fotos, das gerade freigestellt wird. */
 export const AI_RUNNING = 'Die Freistellung läuft noch';
 export const AI_FAILED = 'Das Freistellen hat nicht geklappt. Versuch es nochmals.';
@@ -62,8 +63,9 @@ export async function removeBackground(id: string): Promise<void> {
     await setMaskFromAi(id, m, from);
   } catch (e) {
     if ((e as Error).name === 'AbortError') return;
-    if (!(e instanceof AiNetworkError)) console.error(e);
-    useUi.getState().setNotice({ kind: 'error', text: e instanceof AiNetworkError ? AI_NETWORK : errorText(e, AI_FAILED) });
+    if (!(e instanceof AiNetworkError || e instanceof AiMissingError)) console.error(e);
+    const text = e instanceof AiNetworkError ? AI_NETWORK : e instanceof AiMissingError ? AI_MISSING : errorText(e, AI_FAILED);
+    useUi.getState().setNotice({ kind: 'error', text });
   } finally {
     off();
     if (ctl === own) ctl = undefined;
