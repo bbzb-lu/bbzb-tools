@@ -6,10 +6,9 @@ import { b64, exportFiles, noOpenExport, setVideo } from './video-export';
 /** Bildschirmposition des Dreh-Ankers (Mitte). */
 const rotater = (page: Page) =>
   page.evaluate(() => {
-    const t = window.Konva.stages[0]!.findOne('Transformer')!;
-    const a = (t as unknown as { findOne: (s: string) => { getClientRect: () => { x: number; y: number; width: number; height: number } } }).findOne('.rotater');
-    const r = a.getClientRect();
-    const b = window.Konva.stages[0]!.container().getBoundingClientRect();
+    const st = (window as unknown as { Konva: typeof import('konva').default }).Konva.stages[0]!;
+    const r = st.findOne<import('konva').default.Transformer>('Transformer')!.findOne('.rotater')!.getClientRect();
+    const b = st.container().getBoundingClientRect();
     return { x: b.left + r.x + r.width / 2, y: b.top + r.y + r.height / 2 };
   });
 
@@ -32,7 +31,7 @@ test('Video mit der Maus drehen: Anker erreichbar, Drehung gesetzt, Vorschau und
   const el = (await elements(page)).find((e) => e.id === id)!;
   expect(el.rotation).not.toBe(0);
   // Vorschau: der Konva-Knoten dreht mit
-  expect(await page.evaluate((id) => window.Konva.stages[0]!.findOne(`#${id}`)!.rotation(), id)).toBeCloseTo(el.rotation, 1);
+  expect(await page.evaluate((id) => (window as unknown as { Konva: typeof import('konva').default }).Konva.stages[0]!.findOne(`#${id}`)!.rotation(), id)).toBeCloseTo(el.rotation, 1);
   // Export: obere rechte Ecke liegt bei gedrehtem Video ausserhalb des Bilds (Hintergrund), ungedreht wäre sie Rot oder Blau
   const files = await exportFiles(page);
   const mp4 = Object.entries(files).find(([n]) => n.endsWith('.mp4'))![1];

@@ -20,7 +20,7 @@ async function framed(page: Page, outside: boolean) {
   await setVideo(page, id, { start: 0, end: 2.5 });
   await page.evaluate(([id, outside]) => {
     const e = window.__bbzbTest.elements().find((x) => x.id === id)!;
-    window.__bbzbTest.patch(id as string, { x: 200, y: 300, width: 680, height: 850, props: { ...e.props, frame: true, frameOutside: outside } } as never);
+    window.__bbzbTest.patch(id as string, { x: 200, y: 300, width: 680, height: 850, props: { ...(e.props as object), frame: true, frameOutside: outside } } as never);
   }, [id, outside] as const);
   await settled(page);
   const e = (await elements(page)).find((x) => x.id === id)!;
