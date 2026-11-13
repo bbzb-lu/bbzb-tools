@@ -25,7 +25,7 @@ const stream = (mp4: string, entries: string) =>
   execFileSync('ffprobe', ['-v', 'error', '-show_entries', entries, '-of', 'default=nw=1:nk=1', mp4]).toString().trim().split('\n').map(Number);
 
 /** Bild Nr. `k` (30 fps); die Suchzeit liegt knapp vor dem Zeitstempel, damit ffmpeg dieses und nicht das nächste Bild liefert. */
-const frameAt = (mp4: string, k: number) => frame(mp4, (k - 0.4) / 30);
+const frameAt = (mp4: string, k: number) => frame(mp4, Math.max(0, (k - 0.4) / 30));
 /** Grösste Kanalabweichung zwischen Spalte W-1 links und Spalte `dx` rechts, Zeilen 320 bis 820 (das Testbild ändert sich nur in x). */
 const seamDiff = (left: Buffer, right: Buffer, dx: number) => {
   let worst = 0;
@@ -58,15 +58,16 @@ test('Video über der Naht: beide MP4 gleich lang, beginnen bei 0, Spalte 1079 p
   expect(Math.abs(durA! - durB!)).toBeLessThanOrEqual(1 / 30);
   for (const f of [a, b]) expect(stream(f, 'stream=start_time')[0]).toBeCloseTo(0, 2);
 
-  // Das Testbild hat im Export etwa 4 Stufen Steigung je Pixel und wandert etwa 15 Stufen je Bild: gleiches Bild und richtige Spalte
-  // liegen unter der Grenze von 8 (gemessen 4), 3 Pixel Versatz (12) und ein Bild Versatz (15) darüber.
+  // Das Testbild (Skript: 1.1 Stufen je Quellpixel, im Export Massstab 0.5 und Farbraumdehnung, gemessen etwa 4 Stufen je Pixel)
+  // wandert etwa 15 Stufen je Bild: gleiches Bild und richtige Spalte liegen unter der Grenze von 8 (gemessen 4 bis 6), 8 Pixel Versatz (gemessen
+  // 23 bis 28) und zwei Bilder Versatz (30 bis 32) darüber. Grosse Abstände, damit ein anderer Encoder (Windows-CI) nichts kippt.
   for (const k of [0, 15]) {
     const left = frameAt(a, k);
     const right = frameAt(b, k);
     const real = seamDiff(left, right, 0);
-    const shifted = seamDiff(left, right, 3);
-    const next = seamDiff(left, frameAt(b, k + 1), 0);
-    const msg = `Bild ${k}: Naht ${real}, 3 px verschoben ${shifted}, nächstes Bild ${next}`;
+    const shifted = seamDiff(left, right, 8);
+    const next = seamDiff(left, frameAt(b, k + 2), 0);
+    const msg = `Bild ${k}: Naht ${real}, 8 px verschoben ${shifted}, übernächstes Bild ${next}`;
     expect(real, msg).toBeLessThanOrEqual(8);
     expect(shifted, msg).toBeGreaterThan(8);
     expect(next, msg).toBeGreaterThan(8);
