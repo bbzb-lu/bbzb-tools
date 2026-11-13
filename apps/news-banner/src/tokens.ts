@@ -45,6 +45,8 @@ export const iconStyle = {
   raster: 512,
   /** Eigene Bilder: längste Kante höchstens so gross (schwache Geräte). */
   maxImage: 4096,
+  /** Transparenzprüfung eigener Bilder: Kante des verkleinerten Prüfbilds, Alpha unter dem Grenzwert zählt als durchsichtig, ab diesem Anteil gilt das Bild als durchsichtig. */
+  transparency: { probe: 256, alpha: 250, share: 0.01 },
 } as const;
 
 /** Hilfslinien der Vorschau (nie im Export). */

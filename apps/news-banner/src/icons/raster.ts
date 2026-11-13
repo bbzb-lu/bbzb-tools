@@ -8,37 +8,60 @@ export class ImageError extends Error {}
 
 const cache = new Map<string, Promise<Prepared>>();
 
-function trim(c: HTMLCanvasElement, effects: boolean): Prepared {
-  const { width: W, height: H } = c;
-  const d = c.getContext('2d')!.getImageData(0, 0, W, H).data;
+type Box = { x0: number; y0: number; x1: number; y1: number };
+
+/** Rahmen um alle Pixel mit Alpha über 8 (Ränder eingeschlossen), null wenn leer. */
+export function contentBox(d: Uint8ClampedArray, W: number, H: number): Box | null {
   let x0 = W, y0 = H, x1 = -1, y1 = -1;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (d[(y * W + x) * 4 + 3]! > 8) {
     if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
   }
-  if (x1 < 0) throw new ImageError('Das Icon ist leer.');
+  return x1 < 0 ? null : { x0, y0, x1, y1 };
+}
+
+function crop(src: CanvasImageSource, x: number, y: number, w: number, h: number, effects: boolean): Prepared {
   const out = document.createElement('canvas');
-  out.width = x1 - x0 + 1;
-  out.height = y1 - y0 + 1;
-  out.getContext('2d')!.drawImage(c, x0, y0, out.width, out.height, 0, 0, out.width, out.height);
-  return { src: out, w: out.width, h: out.height, effects };
+  out.width = w;
+  out.height = h;
+  out.getContext('2d')!.drawImage(src, x, y, w, h, 0, 0, w, h);
+  return { src: out, w, h, effects };
 }
 
-/** Mindestens 1 % der Pixel mit Alpha unter 250. */
+function trim(c: HTMLCanvasElement, effects: boolean): Prepared {
+  const box = contentBox(c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data, c.width, c.height);
+  if (!box) throw new ImageError('Das Icon ist leer.');
+  return crop(c, box.x0, box.y0, box.x1 - box.x0 + 1, box.y1 - box.y0 + 1, effects);
+}
+
+/** Anteil der Pixel mit Alpha unter dem Grenzwert reicht für «durchsichtig». */
 export function hasTransparentPixels(d: Uint8ClampedArray): boolean {
+  const { alpha, share } = iconStyle.transparency;
   let n = 0;
-  for (let i = 3; i < d.length; i += 4) if (d[i]! < 250) n++;
-  return n > 0 && n * 100 >= d.length / 4;
+  for (let i = 3; i < d.length; i += 4) if (d[i]! < alpha) n++;
+  return n > 0 && n >= (d.length / 4) * share;
 }
 
-/** Auf höchstens 256 px verkleinert prüfen. */
-export function hasTransparency(src: CanvasImageSource, w: number, h: number): boolean {
-  const k = Math.min(1, 256 / Math.max(w, h));
+/** Verkleinertes Prüfbild: nie das ganze Bild auslesen (schwache Geräte). */
+function probe(src: CanvasImageSource, w: number, h: number) {
+  const k = Math.min(1, iconStyle.transparency.probe / Math.max(w, h));
   const c = document.createElement('canvas');
   c.width = Math.max(1, Math.round(w * k));
   c.height = Math.max(1, Math.round(h * k));
   const x = c.getContext('2d', { willReadFrequently: true })!;
   x.drawImage(src, 0, 0, c.width, c.height);
-  return hasTransparentPixels(x.getImageData(0, 0, c.width, c.height).data);
+  return { d: x.getImageData(0, 0, c.width, c.height).data, pw: c.width, ph: c.height };
+}
+
+/** Eigenes Bild: deckend unverändert, mit Transparenz auf den Inhalt zugeschnitten (Rahmen aus dem Prüfbild, um ein Prüfpixel erweitert). */
+function prepareImage(b: ImageBitmap): Prepared {
+  const { d, pw, ph } = probe(b, b.width, b.height);
+  if (!hasTransparentPixels(d)) return { src: b, w: b.width, h: b.height, effects: false };
+  const box = contentBox(d, pw, ph);
+  if (!box) throw new ImageError('Das Bild ist leer.');
+  const sx = b.width / pw, sy = b.height / ph;
+  const x0 = Math.max(0, Math.floor((box.x0 - 1) * sx)), y0 = Math.max(0, Math.floor((box.y0 - 1) * sy));
+  const x1 = Math.min(b.width, Math.ceil((box.x1 + 2) * sx)), y1 = Math.min(b.height, Math.ceil((box.y1 + 2) * sy));
+  return crop(b, x0, y0, x1 - x0, y1 - y0, true);
 }
 
 function load(src: string) {
@@ -51,15 +74,7 @@ function load(src: string) {
 }
 
 export function prepareIcon(ref: IconRef, color: string): Promise<Prepared> {
-  if (ref.kind === 'image') {
-    const { bitmap: b } = ref;
-    if (!hasTransparency(b, b.width, b.height)) return Promise.resolve({ src: b, w: b.width, h: b.height, effects: false });
-    const c = document.createElement('canvas');
-    c.width = b.width;
-    c.height = b.height;
-    c.getContext('2d')!.drawImage(b, 0, 0);
-    return Promise.resolve(trim(c, true));
-  }
+  if (ref.kind === 'image') return Promise.resolve(prepareImage(ref.bitmap));
   const key = `${ref.kind}:${ref.name}:${color}`;
   let p = cache.get(key);
   if (!p) {
