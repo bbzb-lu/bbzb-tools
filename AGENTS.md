@@ -28,6 +28,14 @@ Arbeite im Ordner des Tools und lies dessen `AGENTS.md`, nicht die anderer Tools
 - Grössere Änderungen nach `docs/workflow.md`: Issue, Brainstorming, Plan, Subagents mit Review, PR mit Vorschau, Merge erst nach grüner CI und Rückfrage. Impeccable für UI, Ponytail für wenig Code.
 - Wünsche und Fehler stehen als Issues auf dem Board https://github.com/users/bbzb-lu/projects/2.
 
+## Skills (Superpowers, Ponytail, Impeccable)
+Nur laden, wenn die Aufgabe sie braucht. Einfache Fragen und kleine Änderungen: direkt antworten, ohne Skill.
+- Neue Funktion oder Verhaltensänderung: `superpowers:brainstorming`, dann `superpowers:writing-plans`, Umsetzung mit `superpowers:subagent-driven-development`.
+- Logik: `superpowers:test-driven-development`. Bugs: `superpowers:systematic-debugging`.
+- Vor «fertig» oder Commit: `superpowers:verification-before-completion`, bei grösseren Schritten `superpowers:requesting-code-review` oder `ponytail:ponytail-review`.
+- Code schreiben oder ändern: `ponytail:ponytail`, erst prüfen, ob es schon existiert.
+- UI: `impeccable:impeccable`.
+
 ## Befehle
 `npm install`, `npm run dev:startseite`, `npm run build`
 Neues Tool: `npm run neues-tool -- <id> "<Name>"`, danach Satz und Vorschaubild in der Startseite ersetzen (`apps/startseite/AGENTS.md`).
