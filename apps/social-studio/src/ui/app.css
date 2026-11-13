@@ -102,7 +102,7 @@ dialog .actions { justify-content: flex-end; }
 .left-tabs .slide-hl-in { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .left-tabs .slide-hl-in i { display: flex; align-items: center; justify-content: center; font-weight: 600; }
 .left-tabs .slide-hl-in i.sel { font-weight: 700; }
-.left-tabs .slide-hl-in i::before, .segmented .slide-hl-in span::before { content: attr(data-t); }
+.left-tabs .slide-hl-in i::before { content: attr(data-t); }
 .left-tabpanel { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; }
 .left-tabpanel[hidden] { display: none; }
 /* Wechsel: kurzes Einblenden mit leichtem Versatz, nur transform und opacity */
@@ -130,10 +130,6 @@ dialog .actions { justify-content: flex-end; }
   outline-offset: -0.5em;
 }
 
-/* Inspector-Auswahlen: native Radios, eckig gezeichnet */
-.choice { margin: 0; padding: 0; border: 0; display: grid; gap: 0.375rem; min-width: 0; }
-.choice legend { padding: 0; margin-bottom: 0.375rem; font-size: 0.8125rem; font-weight: 400; color: var(--ink-soft); }
-.choice input[type='radio'] { position: absolute; opacity: 0; margin: 0; width: 1px; height: 1px; }
 .loading { padding: 1rem; }
 
 /* Slide-Leiste */
@@ -194,7 +190,7 @@ dialog .actions { justify-content: flex-end; }
 .export-slides { margin: 0; padding: 0.25rem 0.5rem 0.25rem 0; list-style: none; max-height: 11rem; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 0.625rem; }
 .export-slides li { display: grid; justify-items: center; gap: 0.125rem; font-size: 0.8125rem; }
 .slide-chip { display: grid; justify-items: center; align-content: center; gap: 0.125rem; width: 2.75rem; height: 3.25rem; border: 1px solid var(--ink); background: var(--paper-shade); font-weight: 700; }
-.export-dialog .info-line { display: flex; gap: 0.5rem; font: 400 0.9375rem/1.4 var(--font-serif); }
+.export-dialog .info-line { display: flex; gap: 0.5rem; font: 400 0.9375rem/1.4 var(--font-ui); }
 .export-dialog .info-line .tabler-icon { margin-top: 0.125rem; }
 .export-dialog .infos { display: grid; gap: 0.5rem; }
 .export-dialog [role='status'] { min-height: 1.5rem; margin: 0; font-weight: 600; font-size: 0.875rem; } /* kein Sprung, wenn der Text erscheint */
@@ -249,7 +245,7 @@ dialog .actions { justify-content: flex-end; }
 /* Layout-Wahl: Schema-Kacheln aus den Layoutdaten, ruhig umrandet; die Farbe tragen die Kacheln selbst */
 .review-note { display: grid; gap: 0.5rem; justify-items: start; margin-bottom: 0.5rem; padding: 0.75rem; border: 1px solid var(--ink); background: var(--riso-mustard); color: var(--ink); }
 .review-note h3 { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 1rem; }
-.review-note p { margin: 0; font-family: var(--font-serif); }
+.review-note p { margin: 0; font-family: var(--font-ui); }
 .hint { font-size: 0.875rem; }
 .layout-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.375rem; }
 .layout-grid li[data-wide] { grid-column: span 2; }
@@ -259,13 +255,13 @@ dialog .actions { justify-content: flex-end; }
 .layout-tile[aria-current='true'] { outline: 3px solid var(--ink); outline-offset: 1px; font-weight: 700; }
 .layout-tile:focus-visible { outline-color: var(--accent); }
 .layout-thumb { display: block; width: 100%; height: auto; border: 1px solid var(--ink-soft); }
-.layout-label .muted { font: 400 0.8125rem var(--font-serif); }
+.layout-label .muted { font: 400 0.8125rem var(--font-ui); }
 .side .layout-tile { font-size: 0.75rem; hyphens: none; overflow-wrap: normal; }
 /* «Slide hinzufügen»: Popover über der Slide-Leiste, rechts bündig */
 .layout-popover { inset: auto 1rem 5.5rem auto; position-anchor: --add-slide; bottom: calc(anchor(top) + 0.5rem); width: min(36rem, calc(100vw - 2rem)); max-height: calc(100vh - 7rem); overflow-y: auto; margin: 0; padding: 1rem; display: none; gap: 0.5rem; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); box-shadow: 6px 6px 0 var(--ink); }
 .layout-popover:popover-open { display: grid; grid-template-columns: auto 1fr; }
 .layout-popover > h2 { grid-row: 1; font-size: 1.125rem; }
-.layout-popover > .hint { grid-row: 1; justify-self: end; align-self: end; font: 400 0.9375rem/1.3 var(--font-serif); }
+.layout-popover > .hint { grid-row: 1; justify-self: end; align-self: end; font: 400 0.9375rem/1.3 var(--font-ui); }
 .layout-popover > .layout-grid { grid-row: 2; grid-column: 1 / -1; margin-top: 0.5rem; }
 /* Drei Spalten, dicht gepackt: 7 einfache Layouts + ein Panorama (2 Plätze) ergeben 3 volle Reihen, «Leer» steht nie allein */
 .layout-grid { grid-auto-flow: dense; }

@@ -1,14 +1,14 @@
 import { expect, test } from '@playwright/test';
 import { newProject } from './fixtures';
 
-const FILES = ['host-grotesk-OFL.txt', 'newsreader-OFL.txt', 'tabler-MIT.txt', 'heic-to-LGPL-3.0.txt', 'GPL-3.0.txt', 'mediabunny-MPL-2.0.txt', 'transformers-js-Apache-2.0.txt', 'onnxruntime-web-MIT.txt', 'isnet-DIS-Apache-2.0.txt'];
+const FILES = ['host-grotesk-OFL.txt', 'tabler-MIT.txt', 'heic-to-LGPL-3.0.txt', 'GPL-3.0.txt', 'mediabunny-MPL-2.0.txt', 'transformers-js-Apache-2.0.txt', 'onnxruntime-web-MIT.txt', 'isnet-DIS-Apache-2.0.txt'];
 
 test('Startseite: «Lizenzen» zeigt alle freien Bestandteile mit Lizenztext und Quelle', async ({ page }) => {
   await page.goto('');
   await page.getByRole('button', { name: 'Lizenzen', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Lizenzen und Quellen' });
-  await expect(dialog.getByRole('listitem')).toHaveCount(9);
-  for (const name of [/Host Grotesk/, /Newsreader/, /Tabler Icons/, /Doodles von Khushmeen/, /heic-to 1\.6\.6 mit libheif 1\.23\.6 und libde265 1\.0\.16/, /Mediabunny 1\.62\.1/, /Transformers\.js 3\.8\.1/, /ONNX Runtime Web 1\.22/, /ISNet/]) {
+  await expect(dialog.getByRole('listitem')).toHaveCount(8);
+  for (const name of [/Host Grotesk/, /Tabler Icons/, /Doodles von Khushmeen/, /heic-to 1\.6\.6 mit libheif 1\.23\.6 und libde265 1\.0\.16/, /Mediabunny 1\.62\.1/, /Transformers\.js 3\.8\.1/, /ONNX Runtime Web 1\.22/, /ISNet/]) {
     await expect(dialog.getByRole('listitem').filter({ hasText: name })).toHaveCount(1);
   }
   // Externe Links nur per Klick und mit rel; Lizenztexte liegen als Dateien im Studio

@@ -12,7 +12,6 @@ export const theme = {
   'ink-disabled': '#646464',
   scrollbar: '14px',
   'font-ui': '"Host Grotesk", "Segoe UI", system-ui, sans-serif',
-  'font-serif': '"Newsreader", Georgia, serif',
 } as const;
 
 /** Schreibt alle `--…`-Variablen auf `root`. */

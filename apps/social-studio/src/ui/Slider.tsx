@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useId, type CSSProperties } from 'react';
 import { NumberField } from './NumberField';
 import { useSliderGesture } from './sliderGesture';
 
@@ -35,12 +35,14 @@ export function Slider({ label, tip, value, min, max, step = 1, defaultValue, fo
   onChange(v: number): void;
 }) {
   const gesture = useSliderGesture();
+  const labelId = useId();
   const at = fillPercent(value, min, max);
   const zero = fillPercent(0, min, max);
   const text = (format ?? ((v: number) => `${String(v).replace('-', '−')}${unit ? ` ${unit}` : ''}`))(value);
   return (
-    <fieldset className={`choice slider slider-${variant}${center ? ' slider-center' : ''}`} data-tip={tip}>
-      <legend>{label}</legend>
+    // Kein fieldset: dessen Legende liegt in Flex-Leisten je nach Browser (Firefox, Chromium) über dem Inhalt statt daneben
+    <div role="group" aria-labelledby={labelId} className={`choice slider slider-${variant}${center ? ' slider-center' : ''}`} data-tip={tip}>
+      <span id={labelId} className="slider-label">{label}</span>
       <span className="slider-row">
         <span className="slider-track slider-ticks">
           <input
@@ -73,6 +75,6 @@ export function Slider({ label, tip, value, min, max, step = 1, defaultValue, fo
           <span className="slider-unit" aria-hidden="true">{unit}</span>
         </span>
       </span>
-    </fieldset>
+    </div>
   );
 }
