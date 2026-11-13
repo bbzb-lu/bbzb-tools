@@ -8,7 +8,8 @@ dialog {
   background: var(--paper);
   color: var(--ink);
   display: grid;
-  gap: 1.25rem;
+  --dialog-gap: 1.25rem;
+  gap: var(--dialog-gap);
   box-shadow: 6px 6px 0 var(--ink); /* Overlay: harter Versatz wie im Entwurf */
 }
 dialog > h2 { font-size: 1.5rem; }
@@ -185,7 +186,7 @@ dialog .actions { justify-content: flex-end; }
 .layers-empty { padding: 0.75rem; }
 
 /* Export nach Entwurf: nummerierte Slide-Kacheln, Hinweiszeilen mit Icon, Fortschrittsbalken */
-.export-dialog { width: min(36rem, calc(100vw - 2rem)); max-width: none; }
+.export-dialog { width: min(46rem, calc(100vw - 2rem)); max-width: none; }
 .export-count { font-size: 0.875rem; font-weight: 600; }
 .export-slides { margin: 0; padding: 0.25rem 0.5rem 0.25rem 0; list-style: none; max-height: 11rem; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 0.625rem; }
 .export-slides li { display: grid; justify-items: center; gap: 0.125rem; font-size: 0.8125rem; }
@@ -197,7 +198,7 @@ dialog .actions { justify-content: flex-end; }
 .export-state { display: grid; gap: 0.25rem; }
 .export-progress { height: 0.75rem; border: 1px solid var(--ink); background: var(--paper-shade); }
 .export-progress > span { display: block; height: 100%; width: 100%; background: var(--accent); transform-origin: left; transform: scaleX(var(--p, 0)); }
-.export-dialog .actions { flex-wrap: nowrap; }
+.export-dialog .actions { flex-wrap: nowrap; gap: var(--dialog-gap); }
 .export-dialog [role='alert'] { font-weight: 400; }
 .export-dialog fieldset.choice { display: grid; gap: 0.5rem; border: 0; margin: 0; padding: 0; min-width: 0; }
 .export-dialog fieldset.choice legend { padding: 0; font-weight: 600; font-size: 0.875rem; }

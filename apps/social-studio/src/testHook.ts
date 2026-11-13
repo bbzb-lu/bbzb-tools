@@ -94,6 +94,12 @@ declare global {
       videoProbe(b64: string, t: number, pts: [number, number][], width?: number): Promise<VideoProbe>;
       /** Export wie der Dialog, ohne Download; bricht ab, sobald ein Video-Slide `abortAt` Prozent erreicht. */
       runExport(format: string, abortAt?: number): Promise<{ files?: string[]; error?: string; progress: number }>;
+      /** Ordner-Export: ersetzt den Ordnerdialog durch einen OPFS-Ordner, einen mit AbortError oder einen mit SecurityError. */
+      fakePicker(mode: 'opfs' | 'abort' | 'security'): void;
+      /** Dateien im OPFS-Ersatzordner (Pfad relativ, Unterordner = Projektname) mit SHA-256; `clear` löscht den Ordner. */
+      folderFiles(clear?: boolean): Promise<Record<string, string>>;
+      /** Hält die Wartezeit auf Effekte im Export offen (ein Platzhalterknoten in der Ebene), bis `holdEffects(false)`. */
+      holdEffects(on: boolean): void;
       /** Offene Video-Exporte (Decoder, Encoder, Canvases); nach Ende oder Abbruch 0. */
       videoExportOpen(): number;
       /** Maske malen, in OPFS speichern, wieder lesen: Pixelwerte vorher und nachher. */
@@ -116,6 +122,7 @@ declare global {
   }
 }
 
+const TEST_FOLDER = 'social-studio-export-test';
 let kitRoot: Root | undefined;
 
 export function installTestHook(): void {
@@ -303,14 +310,38 @@ export function installTestHook(): void {
       const ctl = new AbortController();
       let progress = 0;
       try {
-        const zip = await exportZip(getContentLayer()!, useDoc.getState().project!, exporters.get(format), (_, __, percent) => {
-          progress++;
+        const zip = await exportZip(getContentLayer()!, useDoc.getState().project!, exporters.get(format), (slide, __, percent) => {
+          if (slide > 0) progress++; // 0 = Vorbereitung
           if (abortAt !== undefined && (percent ?? 0) >= abortAt) ctl.abort();
         }, ctl.signal);
         return { files: Object.keys(unzipSync(new Uint8Array(await zip.arrayBuffer()))), progress };
       } catch (e) {
         return { error: e instanceof Error ? `${e.name}: ${e.message}` : String(e), progress };
       }
+    },
+    fakePicker: (mode) => {
+      const fail = (name: string) => () => Promise.reject(new DOMException('test', name));
+      window.showDirectoryPicker =
+        mode === 'abort' ? fail('AbortError') : mode === 'security' ? fail('SecurityError') : async () => (await navigator.storage.getDirectory()).getDirectoryHandle(TEST_FOLDER, { create: true });
+    },
+    folderFiles: async (clear) => {
+      const root = await navigator.storage.getDirectory();
+      const out: Record<string, string> = {};
+      const dir = await root.getDirectoryHandle(TEST_FOLDER, { create: true });
+      for await (const [sub, handle] of dir.entries()) {
+        if (handle.kind !== 'directory') continue;
+        for await (const [name, file] of (handle as FileSystemDirectoryHandle).entries()) {
+          const bytes = await (await (file as FileSystemFileHandle).getFile()).arrayBuffer();
+          out[`${sub}/${name}`] = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (b) => b.toString(16).padStart(2, '0')).join('');
+        }
+      }
+      if (clear) await root.removeEntry(TEST_FOLDER, { recursive: true });
+      return out;
+    },
+    holdEffects: (on) => {
+      const layer = getContentLayer()!;
+      if (on) layer.add(new Konva.Group({ name: EFFECT_PENDING_NODE, id: 'hold-effects' }));
+      else layer.findOne('#hold-effects')?.destroy();
     },
     videoExportOpen: () => videoExportStats.open,
     putMask: async (width, height, split) => {
