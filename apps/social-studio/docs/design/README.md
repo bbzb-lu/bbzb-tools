@@ -15,3 +15,4 @@ Stand 29.10.2026: Phase 4c hat die Oberfläche nach `editor.pen` gebaut. Die geb
 
 ## Ohne eigenen Entwurf
 Direkt nach den Bauteilen gebaut: Projekteinstellungen, Lizenzen, Meldungen, Rahmen-Einstellungen, Bibliothek ausser Tags, Text-Bearbeiten, Unterlage-Popover.
+- `headset.png`, `code-xml.png`, `image*.png` und die `*.glsl`-Shader gehören zum Rahmen «Ideas/Experimentation» (Kacheln der Startseite).
