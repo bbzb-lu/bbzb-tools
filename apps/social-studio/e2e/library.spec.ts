@@ -54,6 +54,20 @@ test('Klick setzt mittig auf die aktuelle Slide, Ziehen an den Ablagepunkt, auch
   await expect.poll(() => elements(page)).toHaveLength(3);
 });
 
+test('Zwei Klicks auf dieselbe Kachel: zweites Element 40 px rechts unten, Hinweis unter den Tabs, Kachelrand dunkler als --line', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await expect(library(page).locator('.muted.hint')).toHaveText('Klicken oder auf die Slide ziehen.');
+  await item(page, 'Scribble 1').click();
+  await item(page, 'Scribble 1').click();
+  await expect.poll(() => elements(page)).toHaveLength(2);
+  const [a, b] = (await elements(page)).map(center);
+  expect([b![0]! - a![0]!, b![1]! - a![1]!]).toEqual([40, 40]);
+  await page.mouse.move(0, 0); // Hover färbt den Rand in Tinte
+  const border = await item(page, 'Scribble 1').evaluate((e) => getComputedStyle(e).borderTopColor);
+  const line = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--ink-soft').trim());
+  expect(border).toBe(`rgb(${[1, 3, 5].map((i) => parseInt(line.slice(i, i + 2), 16)).join(', ')})`);
+});
+
 test('Tastatur: Pfeile wechseln den Tab, Enter und Leertaste fügen mittig ein', async ({ page }) => {
   await newProject(page, 'Post 4:5');
   await tab(page, 'Scribbles').focus();
@@ -75,7 +89,8 @@ test('Tastatur: Pfeile wechseln den Tab, Enter und Leertaste fügen mittig ein',
   await item(page, 'Ort').focus();
   await page.keyboard.press(' ');
   await expect.poll(() => elements(page)).toHaveLength(2);
-  for (const e of await elements(page)) expect(center(e)).toEqual([540, 675]);
+  // der zweite Klick liegt auf belegter Stelle und weicht aus
+  expect((await elements(page)).map(center)).toEqual([[540, 675], [580, 715]]);
 
   // zurück über Freier Tag, Fachbereich-Tag und Standort-Tag zum Tab
   for (let i = 0; i < 4; i++) await page.keyboard.press('Shift+Tab');

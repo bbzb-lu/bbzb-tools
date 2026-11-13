@@ -1,5 +1,6 @@
 import { ensureDoodles } from '../brand/doodles';
 import { ensureTabler } from '../brand/tabler';
+import { DUPLICATE_OFFSET } from '../model/elements';
 import { editorContext } from '../canvas/editorContext';
 import { assetPacks, elementTypes } from '../core/registries';
 
@@ -22,9 +23,23 @@ export function readLibraryItem(dt: DataTransfer): LibraryItem | null {
 
 const UNKNOWN = 'Dieses Markenbild gibt es nicht mehr. Lade die Seite neu.';
 
-/** Einfügen: ohne `at` mittig auf die aktuelle Slide, sonst mit der Mitte bei `at` (globale Koordinaten). */
+/** Mitte der aktuellen Slide, je belegtem Treffer um den Duplizier-Versatz nach rechts unten verschoben; nichts belegt: undefined (Typ setzt mittig). */
+function freeCenter(ctx: ReturnType<typeof editorContext>): { x: number; y: number } | undefined {
+  const { width: W, height: H } = ctx.project.format;
+  const taken = Object.values(ctx.project.elements).map((e) => [e.x + e.width / 2, e.y + e.height / 2] as const);
+  const at = { x: ctx.currentSlide * W + W / 2, y: H / 2 };
+  const start = { ...at };
+  while (taken.some(([x, y]) => Math.abs(x - at.x) < 1 && Math.abs(y - at.y) < 1)) {
+    at.x += DUPLICATE_OFFSET;
+    at.y += DUPLICATE_OFFSET;
+  }
+  return at.x === start.x ? undefined : at;
+}
+
+/** Einfügen: ohne `at` mittig auf die aktuelle Slide (bei belegter Stelle versetzt), sonst mit der Mitte bei `at` (globale Koordinaten). */
 export async function insertLibraryItem(item: LibraryItem, at?: { x: number; y: number }): Promise<void> {
   const ctx = editorContext();
+  at ??= freeCenter(ctx);
   if (item.kind === 'asset') {
     await Promise.all([ensureTabler([item.id]), ensureDoodles([item.id])]).catch(() => undefined); // fehlt die Datei, meldet UNKNOWN unten
     const asset = assetPacks.all().flatMap((p) => p.assets).find((a) => a.id === item.id);

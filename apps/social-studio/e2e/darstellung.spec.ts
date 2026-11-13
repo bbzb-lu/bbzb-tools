@@ -80,6 +80,7 @@ test('Gesperrt: Zeile «Gesperrt.» mit «Entsperren», Regler nicht erreichbar,
   await expect(panel(page).getByRole('heading', { level: 2 })).toHaveText(photo!.name);
   const inert = () => opacity(page).evaluate((e) => !!e.closest('[inert]'));
   expect(await inert()).toBe(true);
+  await expect(panel(page).locator('[inert] button').first()).toHaveCSS('color', 'rgb(100, 100, 100)'); // ink-disabled: gesperrt sieht gedimmt aus
   await opacity(page).focus({ timeout: 500 }).catch(() => {});
   expect(await page.evaluate(() => document.activeElement?.getAttribute('aria-label'))).not.toBe('Deckkraft');
   await page.keyboard.press('Tab');

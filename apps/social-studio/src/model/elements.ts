@@ -30,8 +30,11 @@ export function removeElement(p: Project, id: string): void {
   p.order = p.order.filter((o) => o !== id);
 }
 
-/** `offset` 40: sichtbares Duplikat, 0: deckungsgleich. */
-export function duplicateElement(p: Project, id: string, offset = 40): string {
+/** Versatz eines sichtbaren Duplikats; auch die Bibliothek weicht so aus. */
+export const DUPLICATE_OFFSET = 40;
+
+/** `offset` DUPLICATE_OFFSET: sichtbares Duplikat, 0: deckungsgleich. */
+export function duplicateElement(p: Project, id: string, offset = DUPLICATE_OFFSET): string {
   const src = get(p, id);
   const copy = clone({ ...src, id: crypto.randomUUID(), x: src.x + offset, y: src.y + offset, name: `${src.name} Kopie` });
   addElement(p, copy, id);
@@ -44,7 +47,7 @@ export function removeElements(p: Project, ids: string[]): void {
 }
 
 /** Neue Ids in Eingabereihenfolge; jede Kopie liegt über ihrem Original, Abstände bleiben. */
-export function duplicateElements(p: Project, ids: string[], offset = 40): string[] {
+export function duplicateElements(p: Project, ids: string[], offset = DUPLICATE_OFFSET): string[] {
   return ids.map((id) => duplicateElement(p, id, offset));
 }
 
