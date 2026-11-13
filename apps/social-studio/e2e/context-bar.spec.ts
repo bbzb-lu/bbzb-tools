@@ -161,7 +161,7 @@ test('Maskenleiste 1024 × 640: alle Bedienelemente liegen ganz im sichtbaren Be
   if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/task-8-brush-1024.png` });
 });
 
-// 125 % Skalierung entspricht 1024 px bzw. 1280 px geteilt durch 1,25
+// 125 % Skalierung: 820 px entsprechen 1024 px, 1024 px entsprechen 1280 px (geteilt durch 1,25)
 for (const [width, height] of [[1024, 640], [1280, 720], [820, 512], [1024, 576]] as const) {
   test(`Pinselwahl im Inspector ${width} × ${height}: Ausblenden | Einblenden und Ansicht nicht abgeschnitten`, async ({ page }) => {
     await page.setViewportSize({ width, height });
@@ -185,3 +185,20 @@ for (const [width, height] of [[1024, 640], [1280, 720], [820, 512], [1024, 576]
     }
   });
 }
+
+test('Maskenleiste: Tooltip «Ausblenden oder Einblenden» mit Taste X bei Maus und Tastaturfokus', async ({ page }) => {
+  await open(page, 'Leiste Tipp');
+  await toggle(page).click();
+  const tip = page.locator('.tooltip');
+  const shown = () => tip.evaluate((e) => e.matches(':popover-open'));
+  await bar(page).locator('.tip-wrap').hover();
+  await expect.poll(shown).toBe(true);
+  await expect(tip).toContainText('Ausblenden oder Einblenden');
+  await expect(tip.locator('kbd')).toHaveText(['X']);
+  await page.mouse.move(5, 400);
+  await expect.poll(shown).toBe(false);
+  await page.keyboard.press('Shift'); // Tastatur zuletzt benutzt: :focus-visible gilt
+  await bar(page).getByRole('radio', { name: 'Ausblenden' }).focus();
+  await expect.poll(shown).toBe(true);
+  await expect(tip).toContainText('Ausblenden oder Einblenden');
+});
