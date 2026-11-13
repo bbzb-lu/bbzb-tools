@@ -21,13 +21,14 @@ export const EFFECT_MAX = 4096;
 // Vorschau, solange ein Regler bewegt wird: etwa ein Sechstel der Pixel einer Slide, danach einmal in voller Auflösung.
 export const PREVIEW_MAX = 540;
 /** Video-Vorschau (Inspector): gezeichnete Bilder und offene Video-Elemente, für e2e; liegt hier, weil der Test-Hook keine Plugins importiert. */
-export const previewStats = { frames: 0, open: 0 };
+export const previewStats = { frames: 0, open: 0, composites: 0 };
 
 /**
  * Canvas in Elementgrösse (Slide-Pixel = Export-Pixel), Grundbild von `draw`, darauf die aktiven Effekte der Reihe nach.
  * Editor und Export zeigen dieselbe Canvas. `clip` (Foto mit Maske): Effekte nur, wo das Grundbild deckt; ausgeblendete Flächen bleiben durchsichtig.
  */
 export async function composite(width: number, height: number, draw: (ctx: CanvasRenderingContext2D) => void, steps: EffectStep[], max: number, clip = false) {
+  previewStats.composites++;
   const scale = Math.min(1, max / Math.max(width, height));
   const c = document.createElement('canvas');
   c.width = Math.max(1, Math.round(width * scale));

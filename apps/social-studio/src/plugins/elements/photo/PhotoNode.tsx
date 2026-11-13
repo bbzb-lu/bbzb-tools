@@ -11,8 +11,8 @@ import { updateElement } from '../../../model/elements';
 import type { Crop, Element } from '../../../model/types';
 import { apply, endGesture, startGesture, useDoc } from '../../../store/document';
 import { useUi } from '../../../store/ui';
-import { colors, cropLine, photoFrame, placeholderStyle as ph, rgba, uiFamily } from '../../../tokens';
-import { baseOf, hintColor } from './hint';
+import { colors, cropLine, photoFrame, placeholderStyle as ph, uiFamily } from '../../../tokens';
+import { PlaceholderHint } from './PlaceholderHint';
 import { CARD_RECT, fitFrame, FRAME_RECT, InsetFrame, OutsideFrame } from './FrameRing';
 import { cancelRing, finishRing, liteSource, liveRing, resetRing, RING_IMAGE } from './liveRing';
 import { useMaskedImage } from './maskLayer';
@@ -66,6 +66,7 @@ export function PhotoNode({ el, editing }: ElementRenderProps<PhotoProps>) {
   const masking = useUi((s) => s.maskEditId === el.id) && !vid;
   // «Ergebnis»: statt Foto und Folie die maskierte Canvas, die der Pinsel ohnehin live nachmalt
   const result = useUi((s) => s.maskView === 'ergebnis') && masking;
+  const stroking = useUi((s) => s.strokes > 0);
   const veil = useMaskTool(el, masking ? photo.img : undefined, masked.img);
   // Während einer Geste: letzte Skalierung (am Ende ist sie am Knoten schon zurückgesetzt) und verkleinerte Bildkopie für die Kontur
   const gesture = useRef<{ sx: number; sy: number; lite: ReturnType<typeof liteSource> } | null>(null);
@@ -88,8 +89,10 @@ export function PhotoNode({ el, editing }: ElementRenderProps<PhotoProps>) {
   const frameCrop = (c: Crop) => sourceRect(c, { width, height }, kx, ky);
 
   // Effekte erst nach dem Ausschnittmodus rechnen: dort ändert sich der Ausschnitt bei jedem Rad-Schritt.
+  // «Ergebnis»: Effekte am Strichende (Maskenversion im Schlüssel), nie während eines Strichs
+  const fxOn = !editing && (!masking || (result && !stroking));
   const fx = useEffectCanvas(
-    img && !editing && !masking ? `${el.props.assetId}${masked.key} ${crop.x} ${crop.y} ${crop.scale}${vid ? ` @${still.time}` : ''}` : null,
+    img && fxOn ? `${el.props.assetId}${masked.key}${result ? maskOf(el.props) : ''} ${crop.x} ${crop.y} ${crop.scale}${vid ? ` @${still.time}` : ''}` : null,
     width,
     height,
     photoSteps(el.props),
@@ -99,7 +102,7 @@ export function PhotoNode({ el, editing }: ElementRenderProps<PhotoProps>) {
     },
     masked.key !== '',
   );
-  const showFx = !!fx.canvas && !editing && !masking;
+  const showFx = !!fx.canvas && fxOn;
   const flip = flipOf(el.props);
   const flipY = flipYOf(el.props);
   /** Kontur-Canvas wie die Anzeige spiegeln (w × h). */
@@ -247,31 +250,7 @@ export function PhotoNode({ el, editing }: ElementRenderProps<PhotoProps>) {
       {/* Rahmen auch beim leeren Platzhalter: gehört zum Layout und wird exportiert (wie früher die Fläche darunter) */}
       {outside && ring && <OutsideFrame ring={ring} width={el.width} height={el.height} />}
       {frameOf(el.props) && !outside && <InsetFrame width={el.width} height={el.height} />}
-      {el.props.assetId === undefined && (
-        // Leerer Platzhalter: nur im Editor sichtbar, der Export entfernt die Gruppe (Slide-Hintergrund bleibt).
-        <Group name={EDITOR_ONLY_NODE} x={area.x} y={area.y}>
-          <Rect
-            width={width}
-            height={height}
-            fill={rgba(ph.color, ph.fillAlpha)}
-            stroke={rgba(ph.color, ph.edgeAlpha)}
-            strokeWidth={ph.edgeWidth}
-            dash={[...ph.edgeDash]}
-          />
-          <Text
-            text="Foto hierher ziehen"
-            width={width}
-            height={height}
-            align="center"
-            verticalAlign="middle"
-            padding={ph.fontSize / 2}
-            fontFamily={uiFamily}
-            fontSize={ph.fontSize}
-            fill={colors[hintColor(baseOf(slideBg, frameOf(el.props)))]}
-            listening={false}
-          />
-        </Group>
-      )}
+      {el.props.assetId === undefined && <PlaceholderHint el={el} area={area} slideBg={slideBg} />}
       {failed && <Rect name={vid ? MISSING_VIDEO_NODE : MISSING_IMAGE_NODE} notice={still.error} x={area.x} y={area.y} width={width} height={height} fill={colors.blauschwarz} />}
       {failed && vid && (
         <Text

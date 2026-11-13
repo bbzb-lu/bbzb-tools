@@ -30,19 +30,23 @@ test('Leiste im Maskenmodus: über den Inspektor, Pinsel synchron, «Fertig» un
   await insp.getByRole('slider', { name: 'Härte' }).fill('20');
   await expect(bar(page).getByRole('slider', { name: 'Härte' })).toHaveValue('20');
   await bar(page).getByRole('radio', { name: 'Einblenden' }).check();
-  await expect(insp.getByRole('button', { name: 'Einblenden' })).toHaveAttribute('aria-pressed', 'true');
-  await insp.getByRole('button', { name: 'Ausblenden' }).click();
+  await expect(insp.getByRole('radio', { name: 'Einblenden' })).toBeChecked();
+  await insp.getByRole('radio', { name: 'Ausblenden' }).check();
   await expect(bar(page).getByRole('radio', { name: 'Ausblenden' })).toBeChecked();
   // Inspektor: Pinselwerte, Umkehren usw. stehen eingerückt unter «Maske bearbeiten»
   const nested = insp.locator('.mask-nested');
   const tx = (await toggle(page).boundingBox())!.x;
-  for (const l of [nested.getByRole('slider', { name: 'Grösse' }), nested.getByRole('button', { name: 'Maske umkehren' }), nested.getByRole('button', { name: 'Ausblenden' })])
+  for (const l of [nested.getByRole('slider', { name: 'Grösse' }), nested.getByRole('button', { name: 'Maske umkehren' }), nested.getByRole('radio', { name: 'Ausblenden' })])
     expect((await l.boundingBox())!.x).toBeGreaterThanOrEqual(tx + 8);
   // Fokus bleibt, die Leiste ist per Tab erreichbar, «Fertig» zuletzt
   expect(await bar(page).evaluate((e) => e.contains(document.activeElement))).toBe(false);
   const last = bar(page).locator('button, input').last();
   await expect(last).toHaveText('Fertig');
-  await expect(bar(page).getByRole('radio', { name: 'Ergebnis' })).toHaveCount(0); // die Ansicht bleibt im Inspektor (Platz bei 1280 px)
+  // Ansicht: Leiste und Inspektor teilen sie
+  await bar(page).getByRole('radio', { name: 'Ergebnis' }).check();
+  await expect(insp.getByRole('radio', { name: 'Ergebnis' })).toBeChecked();
+  await insp.getByRole('radio', { name: 'Rote Folie' }).check();
+  await expect(bar(page).getByRole('radio', { name: 'Rote Folie' })).toBeChecked();
   await bar(page).getByRole('button', { name: 'Fertig' }).click();
   await expect(bar(page)).toHaveCount(0);
   expect(await page.evaluate(() => window.__bbzbTest.ui().maskEditId)).toBeNull();
@@ -133,4 +137,25 @@ test('Maskenleiste: ein Strich über die Leiste malt weiter, die Leiste fängt i
   // ein Druck auf die Leiste malt nichts und lässt den Modus an
   await page.mouse.click(barMid.x, barMid.y - 2);
   await expect(bar(page)).toBeVisible();
+});
+
+test('Maskenleiste 1024 × 640: alle Bedienelemente liegen ganz im sichtbaren Bereich der Leinwand', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 640 });
+  await open(page, 'Leiste klein');
+  await toggle(page).click();
+  await expect(bar(page)).toBeVisible();
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+  const canvas = (await page.locator('.canvas-scroll').boundingBox())!;
+  const items = bar(page).locator('button, input, legend:visible, .context-bar-title');
+  const n = await items.count();
+  expect(n).toBeGreaterThanOrEqual(7); // Titel, 2 + 2 Optionen, 2 Regler mit Zahlfeld, Fertig
+  for (let i = 0; i < n; i++) {
+    const b = await items.nth(i).boundingBox();
+    if (!b) continue; // Radios hinter der Beschriftung haben eine Fläche, ausgeblendete Legenden nicht
+    expect.soft(b.x, `Element ${i} links`).toBeGreaterThanOrEqual(canvas.x);
+    expect.soft(b.y, `Element ${i} oben`).toBeGreaterThanOrEqual(canvas.y);
+    expect.soft(b.x + b.width, `Element ${i} rechts`).toBeLessThanOrEqual(canvas.x + canvas.width);
+    expect.soft(b.y + b.height, `Element ${i} unten`).toBeLessThanOrEqual(canvas.y + canvas.height);
+  }
+  if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/task-8-brush-1024.png` });
 });

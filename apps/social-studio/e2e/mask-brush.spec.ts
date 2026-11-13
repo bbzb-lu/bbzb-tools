@@ -97,8 +97,8 @@ test('Ausblenden und Einblenden: ein Strich ist ein Undo-Schritt, Redo stellt ih
   expect((await t(page).ui()).brush.mode).toBe('show');
   // im Inspector (das Ebenen-Panel hat eigene Knöpfe «Ausblenden»)
   const inspector = page.getByLabel('Eigenschaften');
-  await expect(inspector.getByRole('button', { name: 'Einblenden' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(inspector.getByRole('button', { name: 'Ausblenden' })).toHaveAttribute('aria-pressed', 'false');
+  await expect(inspector.getByRole('radio', { name: 'Einblenden' })).toBeChecked();
+  await expect(inspector.getByRole('radio', { name: 'Ausblenden' })).not.toBeChecked();
   const h1 = await t(page).history();
   await stroke(page, [[460, 675], [620, 675]]);
   await expect.poll(() => t(page).history()).toBe(h1 + 1);

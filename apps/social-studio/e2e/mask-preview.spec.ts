@@ -7,7 +7,7 @@ const DARK = [15, 27, 38];
 const BLAU = [0, 159, 226];
 const BOX = { x: 140, y: 275, width: 800, height: 800 };
 const history = (page: Page) => page.evaluate(() => window.__bbzbTest.history());
-const view = (page: Page, name: 'Rote Folie' | 'Ergebnis') => page.getByRole('group', { name: 'Ansicht' }).getByRole('button', { name });
+const view = (page: Page, name: 'Rote Folie' | 'Ergebnis') => page.locator('.inspector').getByRole('radio', { name, exact: true });
 
 /** Farbe auf dem Bildschirm am Weltpunkt (Mitte eines 3 × 3-Flecks). */
 async function screenAt(page: Page, x: number, y: number) {
@@ -37,8 +37,7 @@ test('«Ergebnis» zeigt das Foto mit der Maske live, «Rote Folie» die Folie; 
   await page.mouse.click(c.x, c.y);
   await page.getByRole('button', { name: 'Maske bearbeiten' }).click();
   await expect.poll(() => page.evaluate(() => window.__bbzbTest.veils())).toBe(1);
-  await expect(view(page, 'Rote Folie')).toHaveAttribute('aria-pressed', 'true');
-  await expect(view(page, 'Ergebnis')).toHaveAttribute('data-tip', /.+/);
+  await expect(view(page, 'Rote Folie')).toBeChecked();
   const h0 = await history(page);
 
   // Strich in «Rote Folie»: rot an der Strichstelle
@@ -48,8 +47,8 @@ test('«Ergebnis» zeigt das Foto mit der Maske live, «Rote Folie» die Folie; 
 
   // Umschalten per Tastatur: keine Folie, an der Strichstelle die Slide-Farbe, daneben das Foto
   await view(page, 'Ergebnis').focus();
-  await page.keyboard.press('Enter');
-  await expect(view(page, 'Ergebnis')).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Space');
+  await expect(view(page, 'Ergebnis')).toBeChecked();
   await expect.poll(() => page.evaluate(() => window.__bbzbTest.veils())).toBe(0);
   await expect.poll(async () => near(await screenAt(page, 540, 400), BLAU)).toBe(true);
   expect(near(await screenAt(page, 540, 600), DARK)).toBe(true);
@@ -58,7 +57,7 @@ test('«Ergebnis» zeigt das Foto mit der Maske live, «Rote Folie» die Folie; 
   await stroke(page, 600, async () => {
     expect(near(await screenAt(page, 400, 600), BLAU), 'live beim Malen').toBe(true);
     await view(page, 'Rote Folie').focus();
-    await page.keyboard.press('Enter');
+    await page.keyboard.press('Space');
   });
   await expect.poll(() => history(page)).toBe(h0 + 2);
   await expect.poll(async () => red(await screenAt(page, 700, 600))).toBe(true);
@@ -71,7 +70,7 @@ test('«Ergebnis» zeigt das Foto mit der Maske live, «Rote Folie» die Folie; 
   expect(red(await screenAt(page, 540, 400))).toBe(true);
 
   // Strg + Z in «Ergebnis» ebenso
-  await view(page, 'Ergebnis').click();
+  await view(page, 'Ergebnis').check();
   await stroke(page, 800);
   await expect.poll(() => history(page)).toBe(h0 + 2);
   await expect.poll(async () => near(await screenAt(page, 540, 800), BLAU)).toBe(true);
@@ -87,7 +86,7 @@ test('«Ergebnis» zeigt das Foto mit der Maske live, «Rote Folie» die Folie; 
   const px = await page.evaluate(() => window.__bbzbTest.slidePixels(0, [[540 / 1080, 400 / 1350], [540 / 1080, 600 / 1350], [540 / 1080, 800 / 1350]]));
   expect(px.map((p) => p.slice(36, 39))).toEqual([BLAU, DARK, DARK]);
   await page.getByRole('button', { name: 'Maske bearbeiten' }).click();
-  await expect(view(page, 'Ergebnis')).toHaveAttribute('aria-pressed', 'true');
+  await expect(view(page, 'Ergebnis')).toBeChecked();
   await expect.poll(async () => near(await screenAt(page, 540, 400), BLAU)).toBe(true);
   expect(await page.evaluate(() => window.__bbzbTest.veils())).toBe(0);
   expect(errors).toEqual([]);
@@ -99,7 +98,7 @@ test('«Ergebnis» mit Rahmen aussen: die Kontur folgt nach dem Strich der Maske
   await page.mouse.click(c.x, c.y);
   await page.getByRole('button', { name: 'Maske bearbeiten' }).click();
   await expect.poll(() => page.evaluate(() => window.__bbzbTest.veils())).toBe(1);
-  await view(page, 'Ergebnis').click();
+  await view(page, 'Ergebnis').check();
   await page.locator('.inspector').getByRole('spinbutton', { name: 'Grösse' }).fill('200');
   await page.locator('.inspector').getByRole('spinbutton', { name: 'Grösse' }).press('Enter');
   // im Rahmen links neben der Box: vor dem Strich Warmweiss
@@ -117,4 +116,39 @@ test('«Ergebnis» mit Rahmen aussen: die Kontur folgt nach dem Strich der Maske
   await page.keyboard.press('Escape');
   await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects())).toBe(0);
   expect(near(await screenAt(page, 128, 500), shown), `${await screenAt(page, 128, 500)} wie ${shown}`).toBe(true);
+});
+
+test('«Ergebnis» zeigt den Look: Pixel wie nach «Fertig»; während eines Strichs keine Effektrechnung', async ({ page }) => {
+  const MID = [120, 140, 160];
+  await openPhoto(page, 'Effekte', BOX, { crop: { x: 0, y: 0, scale: 0.8 }, look: true }, alphaPng(1000, 1000, MID, () => 255), [740, 675]);
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects())).toBe(0);
+  const c = await toScreen(page, 740, 675);
+  await page.mouse.click(c.x, c.y);
+  await page.getByRole('button', { name: 'Maske bearbeiten' }).click();
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.veils())).toBe(1);
+  await view(page, 'Ergebnis').check();
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects())).toBe(1); // Pinselmodus hält den Export an
+  const runs = () => page.evaluate(() => window.__bbzbTest.preview().composites);
+  const shown = async () => screenAt(page, 540, 700);
+  await expect.poll(async () => near(await shown(), MID)).toBe(false); // Look wirkt schon in der Ansicht
+  const before = await shown();
+
+  // Strich: kein Aufruf der Effektrechnung, solange er läuft
+  const n0 = await runs();
+  const [a, b] = [await toScreen(page, 300, 400), await toScreen(page, 780, 400)];
+  await page.mouse.move(a.x, a.y);
+  await page.mouse.down();
+  await page.mouse.move(b.x, b.y, { steps: 12 });
+  await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
+  expect(await runs()).toBe(n0);
+  await page.mouse.up();
+  await expect.poll(runs).toBeGreaterThan(n0); // am Strichende
+  await expect.poll(() => history(page)).toBeGreaterThan(0);
+  await expect.poll(async () => near(await screenAt(page, 540, 400), BLAU)).toBe(true);
+  await expect.poll(async () => near(await shown(), before)).toBe(true);
+
+  await page.keyboard.press('Escape');
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects())).toBe(0);
+  const after = await shown();
+  expect(after.every((v, k) => Math.abs(v - before[k]!) <= 2), `${after} wie ${before}`).toBe(true);
 });
