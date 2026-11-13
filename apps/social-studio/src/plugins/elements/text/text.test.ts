@@ -1,8 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { textStyles } from '../../../tokens';
 import { textType } from './index';
-import { textConfig } from './measure';
+import { measureTextHeight, textConfig } from './measure';
 import { textPropsSchema, type TextProps } from './schema';
+
+// Konva misst im Node-Test nicht (kein Canvas): zwei Zeilen je Schriftgrösse genügen für das Verhältnis.
+vi.mock('./measure', async (orig) => ({ ...(await orig<typeof import('./measure')>()), measureTextHeight: (p: { fontSize: number }) => p.fontSize * 2 }));
 
 const base: TextProps = { text: 'Kunst Lust', style: 'kommentar', color: 'blauschwarz', fontSize: 100, align: 'left' };
 
@@ -39,5 +42,21 @@ describe('Text beim Layoutwechsel', () => {
     const at = (props: TextProps) => ({ id: 'x', type: 'text', name: 'T', x: 0, y: 0, width: 10, height: 10, rotation: 0, opacity: 1, visible: true, locked: false, props });
     const r = textType.takeContent!(at(base), at({ ...base, text: 'Mein Text', style: 'titel', color: 'orange', tracking: 10 }), {} as never)!;
     expect(r.props).toEqual({ ...base, text: 'Mein Text' });
+  });
+});
+
+describe('Text beim Skalieren', () => {
+  const el = { id: 'x', type: 'text', name: 'T', x: 0, y: 0, width: 400, height: measureTextHeight(base, 400), rotation: 0, opacity: 1, visible: true, locked: false, props: base };
+
+  it('Gruppe (Breite und Höhe im selben Verhältnis): Schriftgrösse skaliert mit', () => {
+    const patch = textType.afterTransform(el, { x: 0, y: 0, width: 200, height: el.height / 2, rotation: 0 });
+    expect(patch.props).toEqual({ ...base, fontSize: 50 });
+    expect(patch.height).toBe(measureTextHeight({ ...base, fontSize: 50 }, 200));
+  });
+
+  it('nur die Breite ändert sich (Seitenanker): Schriftgrösse bleibt', () => {
+    const patch = textType.afterTransform(el, { x: 0, y: 0, width: 200, height: el.height, rotation: 0 });
+    expect(patch.props).toBeUndefined();
+    expect(patch.height).toBe(measureTextHeight(base, 200));
   });
 });

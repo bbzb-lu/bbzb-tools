@@ -165,8 +165,7 @@ test('Strg- und Shift-Klick auf Zeilen schaltet um, gewöhnlicher Klick wählt e
   const marked = page.locator('.layer-name[aria-pressed="true"]');
   await btn(a!).click();
   await expect(marked).toHaveCount(1);
-  await btn(b!).click({ modifiers: ['ControlOrMeta'] });
-  await btn(c!).click({ modifiers: ['Shift'] });
+  await btn(c!).click({ modifiers: ['Shift'] }); // Bereich von a bis c
   await expect(marked).toHaveCount(3);
   await page.screenshot({ path: '.superpowers/sdd/2026-10-27-phase-2-10-bedienung/screens/task-7-layers.png' });
   await btn(b!).click({ modifiers: ['ControlOrMeta'] });
@@ -185,4 +184,25 @@ test('Strg- und Shift-Klick auf Zeilen schaltet um, gewöhnlicher Klick wählt e
   await btn(a!).dragTo(btn(c!));
   await expect.poll(async () => (await orderNames(page)).indexOf(a!)).toBe(2);
   expect((await orderNames(page)).slice(0, 2)).toEqual([b, c]);
+});
+
+test('Pfeile im Ebenen-Panel wählen die Nachbarzeile, Umschalt erweitert, Umschalt-Klick wählt den Bereich', async ({ page }) => {
+  await withTexts(page, 4);
+  const ids = (await elements(page)).map((e) => e.id).reverse(); // Zeilenreihenfolge, oberste zuerst
+  const btn = (i: number) => page.locator(`[data-layer="${ids[i]}"]`);
+  const selected = () => page.evaluate(() => window.__bbzbTest.ui().selectedIds);
+  await btn(0).click();
+  await page.keyboard.press('ArrowDown');
+  await expect(btn(1)).toBeFocused();
+  expect(await selected()).toEqual([ids[1]]);
+  await page.keyboard.press('ArrowUp');
+  expect(await selected()).toEqual([ids[0]]);
+  await page.keyboard.press('Shift+ArrowDown');
+  await page.keyboard.press('Shift+ArrowDown');
+  expect(new Set(await selected())).toEqual(new Set([ids[0], ids[1], ids[2]]));
+  await btn(3).click({ modifiers: ['Shift'] });
+  expect(new Set(await selected())).toEqual(new Set(ids));
+  await btn(1).click();
+  await btn(3).click({ modifiers: ['Shift'] });
+  expect(new Set(await selected())).toEqual(new Set([ids[1], ids[2], ids[3]]));
 });

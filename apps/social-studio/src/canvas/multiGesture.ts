@@ -77,3 +77,17 @@ export function tooSmall(nodes: Konva.Node[], kx: number, ky: number, min: numbe
     return !!e && ((kx < 1 && e.width * n.scaleX() * kx < min) || (ky < 1 && e.height * n.scaleY() * ky < min));
   });
 }
+
+const NO_RECT = { x: 0, y: 0, width: 0, height: 0 };
+/** Live beim Skalieren einer Gruppe: `inner` bleibt unverzerrt und zählt nicht zur Box, die der Transformer misst (sie liefert ein unsichtbares Rect). */
+export function keepSize(inner: Konva.Node | null, group: Konva.Node): void {
+  if (!inner) return;
+  const { x, y } = group.scale();
+  inner.scale({ x: 1 / x, y: 1 / y });
+  Object.assign(inner, { getClientRect: () => NO_RECT });
+}
+export function releaseSize(inner: Konva.Node | null): void {
+  if (!inner) return;
+  inner.scale({ x: 1, y: 1 });
+  delete (inner as { getClientRect?: unknown }).getClientRect;
+}

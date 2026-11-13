@@ -76,6 +76,8 @@ declare global {
       /** Bildschirmpunkt eines Transformer-Anfassers (z. B. «bottom-right») und Skalierung des Knotens eines Elements. */
       anchorScreen(name: string): { x: number; y: number };
       nodeScale(id: string): { x: number; y: number };
+      /** Höhe, die der Elementtyp (Text: measureTextHeight) für das Element bei seiner Breite misst. */
+      textHeight(id: string): number;
       /** Sichtbare Randbreite des Fotorahmens (links, oben, rechts, unten) in Slide-Pixeln (Rechteck, Kontur oder alter Innenrahmen), null ohne Rahmen. */
       frameInset(id: string): { left: number; top: number; right: number; bottom: number } | null;
       hintFill(): string | null;
@@ -210,6 +212,10 @@ export function installTestHook(): void {
     },
     /** Wie die Brand Library (Task 9): Tag-Variante (schul, ort, cta) einfügen. */
     insertTag: (variant, at) => elementTypes.get('tag').insertVariant!(variant, editorContext(), at),
+    textHeight: (id) => {
+      const e = useDoc.getState().project!.elements[id]!;
+      return elementTypes.get(e.type).afterTransform(e, e).height ?? e.height;
+    },
     anchorScreen: (name) => {
       const s = Konva.stages[0]!;
       const r = s.container().getBoundingClientRect();
