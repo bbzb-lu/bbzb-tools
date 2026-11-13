@@ -141,3 +141,13 @@ test('Tag-Inspector: Text des Schalters ist klickbar, Farbwahl mit deutschen Nam
   }
   await expect.poll(async () => ((await elements(page))[1]!.props as P).color).toBe('Dagmersellen');
 });
+
+test('Standort-Tag: «Fachbereich zeigen» hat dieselbe Schriftgrösse wie die Zeilenbeschriftungen', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await insert(page, 'schul');
+  await page.getByLabel('Standort', { exact: true }).selectOption('Bahnhof');
+  const size = (l: ReturnType<Page['locator']>) => l.evaluate((e) => getComputedStyle(e).fontSize);
+  const legend = await size(page.locator('legend', { hasText: 'Standort' }));
+  await expect(page.getByRole('switch', { name: 'Fachbereich zeigen' })).toBeVisible();
+  expect(await size(page.locator('.kit-switch-text', { hasText: 'Fachbereich zeigen' }))).toBe(legend);
+});

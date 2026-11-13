@@ -83,14 +83,26 @@ test('Fortschrittsbalken: aria-valuenow vorhanden, aria-valuetext gleich dem sic
   const group = dialog.getByRole('group', { name: 'Format' });
   const hintId = await group.getByRole('radio', { name: 'PNG' }).getAttribute('aria-describedby');
   await expect(dialog.locator(`[id="${hintId}"]`)).toHaveText('Während des Exports gesperrt.');
-  await page.waitForTimeout(1000);
   const box = (l: ReturnType<Page['locator']>) => l.evaluate((e) => { const r = e.getBoundingClientRect(); return [r.x, r.width] as [number, number]; });
-  const [hx, hw] = await box(group.locator('.slide-hl'));
-  const [ox, ow] = await box(group.locator('label:has(input:checked)').first());
-  expect(Math.abs(hx - ox)).toBeLessThan(1);
-  expect(Math.abs(hw - ow)).toBeLessThan(1);
+  await expect.poll(async () => {
+    const [hx, hw] = await box(group.locator('.slide-hl'));
+    const [ox, ow] = await box(group.locator('label:has(input:checked)').first());
+    return Math.max(Math.abs(hx - ox), Math.abs(hw - ow));
+  }).toBeLessThan(1);
   expect((await box(group.locator('.segmented').first()))[1]).toBe(busyFreeWidth);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/task-10-busy.png` });
   await dialog.getByRole('button', { name: 'Abbrechen' }).click();
   await page.evaluate(() => window.__bbzbTest.holdEffects(false));
+});
+
+test('720 px breites Fenster: der Dialog läuft im Leerlauf und beim Export nicht waagrecht über', async ({ page }) => {
+  const dialog = await open(page);
+  await page.setViewportSize({ width: 720, height: 720 }); // erst nach dem Aufbau: der Editor selbst braucht mehr Breite
+  const overflow = () => dialog.evaluate((d) => d.scrollWidth - d.clientWidth);
+  expect(await overflow()).toBeLessThanOrEqual(0);
+  await page.evaluate(() => window.__bbzbTest.holdEffects(true));
+  await dialog.getByRole('button', { name: 'ZIP herunterladen' }).click();
+  await expect(dialog.getByRole('button', { name: 'Abbrechen' })).toBeVisible();
+  expect(await overflow()).toBeLessThanOrEqual(0);
+  await dialog.getByRole('button', { name: 'Abbrechen' }).click();
 });

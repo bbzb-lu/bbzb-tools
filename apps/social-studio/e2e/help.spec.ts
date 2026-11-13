@@ -25,6 +25,17 @@ test('Kurzanleitung von der Startseite, ohne fremde Requests', async ({ page }) 
   expect(outside).toEqual([]);
 });
 
+test('Startseite: «Schliessen» in Kurzanleitung und Lizenzen ist ein normaler Knopf mit Rand', async ({ page }) => {
+  await page.goto('');
+  for (const name of ['Kurzanleitung', 'Lizenzen']) {
+    await page.locator('.start footer').getByRole('button', { name, exact: true }).click();
+    const close = page.getByRole('dialog').getByRole('button', { name: 'Schliessen' });
+    await expect(close).toBeVisible();
+    expect(await close.evaluate((e) => getComputedStyle(e).borderTopWidth)).not.toBe('0px');
+    await page.keyboard.press('Escape');
+  }
+});
+
 test('Kurzanleitung aus der Kopfzeile, ohne fremde Requests', async ({ page }) => {
   const outside = foreignRequests(page);
   await newProject(page, 'Post 4:5');

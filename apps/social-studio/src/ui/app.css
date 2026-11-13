@@ -186,7 +186,7 @@ dialog .actions { justify-content: flex-end; }
 .layers-empty { padding: 0.75rem; }
 
 /* Export nach Entwurf: nummerierte Slide-Kacheln, Hinweiszeilen mit Icon, Fortschrittsbalken */
-.export-dialog { width: min(48rem, calc(100vw - 2rem)); max-width: none; }
+.export-dialog { width: min(48rem, calc(100vw - 2rem)); max-width: none; grid-template-columns: minmax(0, 1fr); } /* die Knopfzeile weitet den Dialog nie */
 .export-count { font-size: 0.875rem; font-weight: 600; }
 .export-slides { margin: 0; padding: 0.25rem 0.5rem 0.25rem 0; list-style: none; max-height: 11rem; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 0.625rem; }
 .export-slides li { display: grid; justify-items: center; gap: 0.125rem; font-size: 0.8125rem; }
@@ -198,7 +198,7 @@ dialog .actions { justify-content: flex-end; }
 .export-state { display: grid; gap: 0.25rem; }
 .export-progress { height: 0.75rem; border: 1px solid var(--ink); background: var(--paper-shade); }
 .export-progress > span { display: block; height: 100%; width: 100%; background: var(--accent); transform-origin: left; transform: scaleX(var(--p, 0)); }
-.export-dialog .actions { flex-wrap: nowrap; gap: var(--dialog-gap); }
+.export-dialog .actions { flex-wrap: wrap; gap: 0.5rem var(--dialog-gap); } /* schmales Fenster: die Zeile bricht um, statt zu überlaufen */
 .export-dialog [role='alert'] { font-weight: 400; }
 .export-dialog fieldset.choice { display: grid; gap: 0.5rem; border: 0; margin: 0; padding: 0; min-width: 0; }
 .export-dialog fieldset.choice legend { padding: 0; font-weight: 600; font-size: 0.875rem; }
@@ -285,7 +285,6 @@ dialog .actions { justify-content: flex-end; }
 .license-list li { display: grid; gap: 0.25rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 0.875rem; }
 .license-list li:first-child { padding-top: 0; border-top: 0; }
 .help-dialog { max-width: min(32rem, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); overflow-y: auto; --dialog-gap: 0.75rem; }
-.help-dialog > h2:focus { outline: none; } /* nur Startpunkt des Fokus oben im Dialog */
 .help-steps { margin: 0; padding-left: 1.5rem; display: grid; gap: 0.5rem; }
 .help-steps li { padding-left: 0.25rem; }
 .help-steps li::marker { font-weight: 700; }
