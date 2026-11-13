@@ -1,8 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { addEffect, addSlide, elements, newProject } from './fixtures';
-import { addVideo, probe, settled, twoTone } from './video';
-
-test.beforeAll(twoTone);
+import { addVideo, probe, settled } from './video';
 
 type Vid = { start: number; end: number; sound: boolean; duration: number };
 const vid = async (page: Page) => ((await elements(page))[0]!.props as { video: Vid }).video;

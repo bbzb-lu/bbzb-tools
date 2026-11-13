@@ -5,6 +5,7 @@ import { useDoc } from '../../../store/document';
 import { useUi } from '../../../store/ui';
 import { AI_RUNNING } from './cutoutOps';
 import { fillPhoto, photoFromFile, pickImage } from './fromFile';
+import { isHeic } from './importImage';
 import { isVideoFile } from './importVideo';
 import { PhotoInspector } from './PhotoInspector';
 import { setProps } from './setProps';
@@ -52,7 +53,7 @@ export const photoType: ElementType<PhotoProps> = {
     return { ...box, props: { ...el.props, crop } };
   },
   add: { label: 'Foto oder Video hinzufügen', icon: IconPhotoPlus, run: (ctx) => pickImage((file) => photoFromFile(file, ctx)) },
-  acceptsFile: (file) => file.type.startsWith('image/') || /\.hei[cf]$/i.test(file.name) || isVideoFile(file),
+  acceptsFile: (file) => file.type.startsWith('image/') || isHeic(file) || isVideoFile(file),
   fromFile: photoFromFile,
   fillFromFile: fillPhoto,
   // Layoutdaten haben für den leeren Platzhalter keinen Ausschnitt. Korn und Look ausdrücklich an (R10);

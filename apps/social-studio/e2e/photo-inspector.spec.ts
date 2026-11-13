@@ -1,9 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { effectRemove, elements, exportPng, newProject, openSection, toScreen, view } from './fixtures';
 import { alphaPng, maskPng, photoProject, type Box } from './photoProject';
-import { addVideo, twoTone } from './video';
-
-test.beforeAll(twoTone);
+import { addVideo } from './video';
 
 /** Foto-Inspector seit 4c Task 11: Abschnitte zu (ausser «Ebene»), Spiegeln senkrecht, «Erweitert», Effekte über «+», Zustände der Maske. */
 

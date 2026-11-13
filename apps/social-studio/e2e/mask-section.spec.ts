@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { elements, newProject, openAllSections, toScreen } from './fixtures';
 import { alphaPng, maskPng, openPhoto } from './photoProject';
-import { addVideo, twoTone } from './video';
+import { addVideo } from './video';
 
 const SHOTS = '.superpowers/sdd/2026-10-28-phase-4a-maske-pinsel/screens';
 const BOX = { x: 140, y: 275, width: 800, height: 800 };
@@ -21,8 +21,6 @@ async function select(page: Page, name: string, withMask = false) {
   await expect(section(page)).toBeVisible();
   await openAllSections(page);
 }
-
-test.beforeAll(twoTone);
 
 test('Abschnitt «Maske» am Foto, Knöpfe mit Name und Tooltip', async ({ page }) => {
   await select(page, 'Einfach');

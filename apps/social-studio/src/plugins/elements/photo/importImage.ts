@@ -10,7 +10,7 @@ export class ImportError extends Error {
 }
 
 const MAX = 4096;
-const isHeic = (f: File) => /^image\/hei[cf]$/.test(f.type) || /\.hei[cf]$/i.test(f.name);
+export const isHeic = (f: File) => /^image\/hei[cf]$/.test(f.type) || /\.hei[cf]$/i.test(f.name);
 
 /**
  * Dekodiert (mit EXIF-Drehung), verkleinert auf höchstens 4096 px und kodiert immer neu:

@@ -1,11 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 import { addPhoto, addSlide, channelBtn, newProject, png, selectCta } from './fixtures';
-import { addVideo, settled, twoTone } from './video';
+import { addVideo, settled } from './video';
 import { noOpenExport } from './video-export';
 
 const SHOTS = process.env.SHOTS; // Screenshots nur auf Wunsch
 const PORTRAIT = `${import.meta.dirname}/fixtures/video/portrait-h264-aac.mp4`;
-test.beforeAll(twoTone);
 
 /** Slide 1 Foto, Slide 2 Video. */
 async function mixed(page: Page, clip?: string) {

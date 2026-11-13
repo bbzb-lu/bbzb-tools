@@ -1,14 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 import { elements, newProject } from './fixtures';
-import { addVideo, settled, twoTone } from './video';
+import { addVideo, settled } from './video';
 import { b64, exportFiles, noOpenExport, setVideo } from './video-export';
 
 // Box kleiner als die Slide (sonst läge der äussere Rahmen ausserhalb des Exports). Warmweisser Rahmen (photoFrame.color = warmweiss 251/248/243). Video: 2 s Rot, dann Blau.
 const WARMWEISS = [251, 248, 243];
 const W = 1080;
 const H = 1350;
-
-test.beforeAll(twoTone);
 
 const probe = (page: Page, bytes: Uint8Array, t: number, pts: [number, number][]) =>
   page.evaluate(([s, t, pts]) => window.__bbzbTest.videoProbe(s, t, pts), [b64(bytes), t, pts] as const);

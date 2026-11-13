@@ -1,9 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { elements, newProject } from './fixtures';
-import { addVideo, settled, twoTone } from './video';
+import { addVideo, settled } from './video';
 import { b64, exportFiles, noOpenExport, setVideo } from './video-export';
-
-test.beforeAll(twoTone);
 
 /** Bildschirmposition des Dreh-Ankers (Mitte). */
 const rotater = (page: Page) =>

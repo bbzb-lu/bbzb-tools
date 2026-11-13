@@ -1,8 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { addScrim, bbzbsocial, elements, newProject, toggleEffect, toScreen } from './fixtures';
-import { addVideo, probe, setStart, settled, twoTone } from './video';
-
-test.beforeAll(twoTone);
+import { addVideo, probe, setStart, settled } from './video';
 
 test('Video zeigt das Startbild mit Look; anderer Start zeigt ein anderes Bild', async ({ page }) => {
   await newProject(page, 'Post 4:5');

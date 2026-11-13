@@ -1,8 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { addPhoto, elements, newProject, png } from './fixtures';
-import { addVideo, twoTone } from './video';
-
-test.beforeAll(twoTone);
+import { addVideo } from './video';
 
 /** Am Video ist «Bild» ein eingerückter Unterabschnitt am Ende von «Video»; sein Auf/Zu gilt getrennt vom «Bild» am Foto. */
 test('Video: «Bild» liegt eingerückt in «Video», nach Vorschau und Ton, auf/zu getrennt vom Foto', async ({ page }) => {
