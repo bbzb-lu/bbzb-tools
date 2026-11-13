@@ -206,6 +206,28 @@ describe('OPFS-Namensraum', () => {
     }
   });
 
+  it('put während die Bereinigung löscht rettet die noch nicht gelöschte Datei', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      vi.setSystemTime(1_000_000);
+      const store = opfsAssetStore();
+      const first = await store.put(blob('eins'));
+      const second = await store.put(blob('zwei'));
+      const now = 1_000_000 + 11 * 60_000;
+      const del = store.delete.bind(store);
+      store.delete = async (id) => {
+        await del(id);
+        vi.setSystemTime(now);
+        await store.put(blob(id === first ? 'zwei' : 'eins')); // gleichzeitiges put: gültig, kein Schreiben
+      };
+      await collectGarbage(store, now);
+      expect(writes).toBe(2);
+      expect((await store.list()).map((a) => a.id)).toEqual([second]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('Datei gleicher ID, aber anderer Grösse wird neu geschrieben', async () => {
     const store = opfsAssetStore();
     const id = await store.put(blob('video'));

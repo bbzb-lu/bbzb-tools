@@ -83,7 +83,7 @@ export function opfsAssetStore(): AssetStore {
       } catch (e) {
         await w?.abort().catch(() => {});
         // Teildatei nicht stehen lassen, gültige Datei behalten (auch eine, die inzwischen ein paralleles `put` geschrieben hat)
-        const nowValid = valid || (await d.getFileHandle(id).then((h) => h.getFile()).then((f) => f.size === blob.size, () => false));
+        const nowValid = await d.getFileHandle(id).then((h) => h.getFile()).then((f) => f.size === blob.size, () => false);
         if (!nowValid) await d.removeEntry(id).catch(() => {});
         throw toStorageError(e);
       }
