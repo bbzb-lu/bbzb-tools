@@ -284,6 +284,15 @@ dialog .actions { justify-content: flex-end; }
 .license-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
 .license-list li { display: grid; gap: 0.25rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 0.875rem; }
 .license-list li:first-child { padding-top: 0; border-top: 0; }
+.help-dialog { max-width: min(32rem, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); overflow-y: auto; --dialog-gap: 0.75rem; }
+.help-dialog > h2:focus { outline: none; } /* nur Startpunkt des Fokus oben im Dialog */
+.help-steps { margin: 0; padding-left: 1.5rem; display: grid; gap: 0.5rem; }
+.help-steps li { padding-left: 0.25rem; }
+.help-steps li::marker { font-weight: 700; }
+.help-steps li > * { display: block; }
+.help-data { display: grid; gap: 0.25rem; padding-top: 0.75rem; border-top: 1px solid var(--line); }
+.help-data h3 { font-size: 1rem; margin: 0; }
+.help-data p { margin: 0; }
 .license-links { display: grid; gap: 0.125rem; }
 .license-links a { color: inherit; }
 .icon-credit { margin: 0.75rem 0 0; font-size: 0.8125rem; }

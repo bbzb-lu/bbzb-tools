@@ -14,6 +14,7 @@ import { opfsAssetStore } from '../storage/assets';
 import { deleteProject, listProjects, loadProject, saveProject, type ProjectSummary } from '../storage/db';
 import { collectGarbage } from '../storage/gc';
 import { errorText } from './errors';
+import { HelpDialog } from './HelpDialog';
 import { LicensesDialog } from './LicensesDialog';
 import { copyRules, fontsLoaded } from './layoutActions';
 
@@ -255,6 +256,7 @@ export function StartPage() {
         </section>
 
         <footer>
+          <HelpDialog />
           <LicensesDialog />
         </footer>
 

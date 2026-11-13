@@ -9,6 +9,7 @@ import { useUi } from '../store/ui';
 import { ERROR_TEXT } from '../storage/autosave';
 import { saveProject } from '../storage/db';
 import { ExportDialog } from './ExportDialog';
+import { HelpDialog } from './HelpDialog';
 import { SettingsDialog } from './SettingsDialog';
 import { saveProjectFile } from './projectFileActions';
 import { KEYS, keysAttr } from './keys';
@@ -83,6 +84,7 @@ export function Header() {
         <button type="button" className="icon-btn" aria-label="Projektdatei sichern" aria-disabled={saving} data-tip="Projektdatei sichern" data-keys={keysAttr(KEYS.save)} onClick={saveFile}>
           <IconDeviceFloppy aria-hidden="true" />
         </button>
+        <HelpDialog icon />
         <SettingsDialog />
         <ExportDialog />
       </div>
