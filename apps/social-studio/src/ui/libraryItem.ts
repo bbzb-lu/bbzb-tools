@@ -39,16 +39,17 @@ function freeCenter(ctx: ReturnType<typeof editorContext>): { x: number; y: numb
 /** Einfügen: ohne `at` mittig auf die aktuelle Slide (bei belegter Stelle versetzt), sonst mit der Mitte bei `at` (globale Koordinaten). */
 export async function insertLibraryItem(item: LibraryItem, at?: { x: number; y: number }): Promise<void> {
   const ctx = editorContext();
-  at ??= freeCenter(ctx);
+  // Lazy: die Typen warten (Bild, Schrift) und fragen den freien Platz erst unmittelbar vor dem Einfügen, sonst landen schnelle Klicks aufeinander.
+  const place = at ?? (() => freeCenter(editorContext()));
   if (item.kind === 'asset') {
     await Promise.all([ensureTabler([item.id]), ensureDoodles([item.id])]).catch(() => undefined); // fehlt die Datei, meldet UNKNOWN unten
     const asset = assetPacks.all().flatMap((p) => p.assets).find((a) => a.id === item.id);
     const type = asset && elementTypes.all().find((t) => t.acceptsAsset?.(asset) && t.fromAsset);
     if (!asset || !type) return ctx.notify('error', UNKNOWN);
-    return type.fromAsset!(asset, ctx, at);
+    return type.fromAsset!(asset, ctx, place);
   }
   const type = item.kind === 'variant' && elementTypes.has(item.type) ? elementTypes.get(item.type) : undefined;
   // Ziehdaten sind nicht vertrauenswürdig: unbekannte Variante wie unbekanntes Markenbild melden.
   if (!type?.insertVariant || !type.variants?.some((v) => v.id === item.variant)) return ctx.notify('error', UNKNOWN);
-  return type.insertVariant(item.variant, ctx, at);
+  return type.insertVariant(item.variant, ctx, place);
 }

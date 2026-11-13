@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { elementTypes } from '../core/registries';
 import { addElement, DUPLICATE_OFFSET } from '../model/elements';
 import { createProject } from '../model/slides';
-import { apply, load } from '../store/document';
+import { apply, load, useDoc } from '../store/document';
 import { useUi } from '../store/ui';
 import { insertLibraryItem, LIBRARY_MIME, readLibraryItem, type LibraryItem } from './libraryItem';
 
@@ -13,7 +13,20 @@ if (!elementTypes.has('fake')) {
   elementTypes.register({
     id: 'fake',
     variants: [{ id: 'ok', label: 'Ok' }],
-    insertVariant: async (v: string, _c: unknown, at?: { x: number; y: number }) => void (inserted.push(v), places.push(at)),
+    insertVariant: async (v: string, _c: unknown, at?: (() => { x: number; y: number } | undefined) | { x: number; y: number }) => void (inserted.push(v), places.push(typeof at === 'function' ? at() : at)),
+  } as never);
+}
+
+// Wie die echten Typen: wartet (Schrift, Bild laden) und legt erst danach ab; `at` erst dann auflösen.
+if (!elementTypes.has('slow')) {
+  elementTypes.register({
+    id: 'slow',
+    variants: [{ id: 'ok', label: 'Ok' }],
+    insertVariant: async (_v: string, _c: unknown, at?: unknown) => {
+      await new Promise((r) => setTimeout(r, 5));
+      const c = (typeof at === 'function' ? at() : at) ?? { x: 500, y: 400 };
+      apply((d) => addElement(d, { id: `s${d.order.length}`, type: 'x', name: 'x', x: c.x - 50, y: c.y - 20, width: 100, height: 40, rotation: 0, opacity: 1, visible: true, locked: false, props: {} }));
+    },
   } as never);
 }
 
@@ -67,5 +80,14 @@ describe('libraryItem: Versatz bei wiederholtem Klick', () => {
     expect(places[2]).toEqual({ x: 500 + 2 * DUPLICATE_OFFSET, y: 400 + 2 * DUPLICATE_OFFSET });
     await insertLibraryItem(item, { x: 500, y: 400 });
     expect(places[3]).toEqual({ x: 500, y: 400 });
+  });
+});
+
+describe('libraryItem: zwei Klicks ohne Warten dazwischen', () => {
+  it('der freie Platz wird erst beim Einfügen bestimmt: zweites Element 40 px versetzt', async () => {
+    const item: LibraryItem = { kind: 'variant', type: 'slow', variant: 'ok' };
+    await Promise.all([insertLibraryItem(item), insertLibraryItem(item)]);
+    const [a, b] = Object.values(useDoc.getState().project!.elements);
+    expect([b!.x - a!.x, b!.y - a!.y]).toEqual([DUPLICATE_OFFSET, DUPLICATE_OFFSET]);
   });
 });

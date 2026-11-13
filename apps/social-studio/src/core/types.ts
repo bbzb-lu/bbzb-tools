@@ -40,6 +40,9 @@ export interface VideoJob {
   signal?: AbortSignal;
 }
 
+/** Ablagepunkt (Mitte, globale Koordinaten); als Funktion erst beim Einfügen ausgewertet, `undefined`: mittig auf die aktuelle Slide. */
+export type Anchor = { x: number; y: number } | (() => { x: number; y: number } | undefined);
+
 export interface EditorContext {
   project: Project;
   currentSlide: number;
@@ -86,10 +89,10 @@ export interface ElementType<P = unknown> {
   fromFile?(file: File, ctx: EditorContext): Promise<void>;
   /** Varianten, die die Brand Library direkt einfügt (z. B. Tags); `insertVariant` wie `fromAsset` mit optionalem Ablagepunkt `at`. */
   variants?: { id: string; label: string }[];
-  insertVariant?(variant: string, ctx: EditorContext, at?: { x: number; y: number }): Promise<void>;
+  insertVariant?(variant: string, ctx: EditorContext, at?: Anchor): Promise<void>;
   acceptsAsset?(asset: BrandAsset): boolean;
   /** Markenbild einfügen (Brand Library): ohne `at` mittig auf die aktuelle Slide, sonst mit der Mitte bei `at` (globale Koordinaten). */
-  fromAsset?(asset: BrandAsset, ctx: EditorContext, at?: { x: number; y: number }): Promise<void>;
+  fromAsset?(asset: BrandAsset, ctx: EditorContext, at?: Anchor): Promise<void>;
   /**
    * Element aus Layoutdaten fertigstellen: Standardwerte ausdrücklich setzen (Korn, Look, Ruling R10) und die Grösse messen
    * (Texthöhe, Tagbreite). Erst nach dem Laden der Schriften aufrufen. `fresh`: neuer Platzhalter ohne übernommenen Inhalt.
