@@ -68,9 +68,10 @@ export function ImageSection({ el, nested }: { el: Element<PhotoProps>; nested?:
   const flipY = flipYOf(el.props);
   const vid = isVideo(el.props);
   const empty = el.props.assetId === undefined;
+  const replaceLabel = empty ? 'Foto wählen' : vid ? 'Video ersetzen' : 'Foto ersetzen';
   // Ohne Maus: Datei wählen statt ziehen
   const replace = (
-    <button type="button" aria-label={empty ? 'Foto wählen' : 'Foto ersetzen'} data-tip={empty ? 'Foto wählen' : 'Foto ersetzen'} onClick={() => pickImage((file) => void fillPhoto(el, file, editorContext()))}>
+    <button type="button" aria-label={replaceLabel} data-tip={replaceLabel} onClick={() => pickImage((file) => void fillPhoto(el, file, editorContext()))}>
       <IconPhotoUp aria-hidden="true" />
       {empty ? 'Foto wählen' : 'Ersetzen'}
     </button>

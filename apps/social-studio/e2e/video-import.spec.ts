@@ -94,7 +94,7 @@ test('Video in Platzhalter ziehen, mit Foto ersetzen, wieder mit Video ersetzen'
   await openAllSections(page);
 
   const chooser = page.waitForEvent('filechooser');
-  await page.getByRole('button', { name: 'Foto ersetzen' }).click();
+  await page.getByRole('button', { name: 'Video ersetzen' }).click();
   await (await chooser).setFiles({ name: 'foto.png', mimeType: 'image/png', buffer: gradientPng(300, 400) });
   await expect.poll(async () => (await prop()).video).toBeUndefined();
   await openAllSections(page); // «Bild» am Foto hat ein eigenes Auf/Zu (am Video liegt es in «Video»)

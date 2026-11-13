@@ -92,6 +92,17 @@ describe('Video', () => {
     expect('video' in (p.elements['ph'] as Element<PhotoProps>).props).toBe(false);
   });
 
+  it('Video einfügen heisst «Video 1»; Foto «Foto 2» wird durch Video zu «Video 2», eigener Name bleibt', async () => {
+    okVideo();
+    const p = project(1);
+    await photoFromFile(mp4(), setup(p));
+    expect(Object.values(p.elements).find((e) => e.type === 'photo')!.name).toBe('Video 1');
+    const q = project(1, [el({ id: 'a', type: 'photo', name: 'Foto 2', props: { assetId: 'a'.repeat(64), crop } }), el({ id: 'b', type: 'photo', name: 'Mein Bild', props: { assetId: 'a'.repeat(64), crop } })]);
+    await fillPhoto(q.elements['a'] as Element<PhotoProps>, mp4(), setup(q));
+    await fillPhoto(q.elements['b'] as Element<PhotoProps>, mp4(), setup(q));
+    expect([q.elements['a']!.name, q.elements['b']!.name]).toEqual(['Video 2', 'Mein Bild']);
+  });
+
   it('Video ersetzt Foto: Rahmen, Spiegeln, Bildregler fallen weg', async () => {
     okVideo();
     const adjust = { brightness: 5, contrast: 0, saturation: 0, warmth: 0 };

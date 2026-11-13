@@ -38,7 +38,7 @@ export const photoType: ElementType<PhotoProps> = {
                   label: 'Spiegeln',
                   run: () => undefined,
                   sub: [
-                    { id: 'flip-x', label: 'Waagerecht', icon: IconFlipHorizontal, run: () => setProps(el.id, { flipX: !flipOf(el.props) }) },
+                    { id: 'flip-x', label: 'Waagrecht', icon: IconFlipHorizontal, run: () => setProps(el.id, { flipX: !flipOf(el.props) }) },
                     { id: 'flip-y', label: 'Senkrecht', icon: IconFlipVertical, run: () => setProps(el.id, { flipY: !flipYOf(el.props) }) },
                   ],
                 },

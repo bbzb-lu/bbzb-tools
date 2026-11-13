@@ -14,7 +14,7 @@ test('Video: «Bild» liegt eingerückt in «Video», nach Vorschau und Ton, auf
   await expect(bild).toBeVisible();
   await expect(panel.getByRole('region', { name: 'Bild', exact: true })).toHaveCount(1); // kein zweites «Bild» daneben
   await expect(bild).toHaveClass(/nested/);
-  for (const name of ['Foto ersetzen', 'Ausschnitt bearbeiten', 'BBZB-Look']) await expect(bild.getByRole('button', { name, exact: true })).toBeVisible();
+  for (const name of ['Video ersetzen', 'Ausschnitt bearbeiten', 'BBZB-Look']) await expect(bild.getByRole('button', { name, exact: true })).toBeVisible();
   // Reihenfolge in «Video»: Vorschaubilder, Bereichsregler, Zahlenfelder, Vorschau und Ton, dann «Bild»
   const order = await video.evaluate((v) => {
     const all = [...v.querySelectorAll('.video-thumbs, .range, .video-times, button, section')];
