@@ -74,7 +74,7 @@ function load(src: string) {
 }
 
 export function prepareIcon(ref: IconRef, color: string): Promise<Prepared> {
-  if (ref.kind === 'image') return Promise.resolve(prepareImage(ref.bitmap));
+  if (ref.kind === 'image') return Promise.resolve().then(() => prepareImage(ref.bitmap));
   const key = `${ref.kind}:${ref.name}:${color}`;
   let p = cache.get(key);
   if (!p) {
