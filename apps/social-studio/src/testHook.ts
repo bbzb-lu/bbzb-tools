@@ -76,6 +76,8 @@ declare global {
       /** Bildschirmpunkt eines Transformer-Anfassers (z. B. «bottom-right») und Skalierung des Knotens eines Elements. */
       anchorScreen(name: string): { x: number; y: number };
       nodeScale(id: string): { x: number; y: number };
+      /** Gezeichnete Skalierung (ohne Zoom) des ersten Rects im Element: 1, wenn der Inhalt unverzerrt bleibt. */
+      contentScale(id: string): { x: number; y: number };
       /** Höhe, die der Elementtyp (Text: measureTextHeight) für das Element bei seiner Breite misst. */
       textHeight(id: string): number;
       /** Sichtbare Randbreite des Fotorahmens (links, oben, rechts, unten) in Slide-Pixeln (Rechteck, Kontur oder alter Innenrahmen), null ohne Rahmen. */
@@ -225,6 +227,11 @@ export function installTestHook(): void {
     nodeScale: (id) => {
       const n = Konva.stages[0]!.findOne((x: Konva.Node) => x.id() === id)!;
       return { x: n.scaleX(), y: n.scaleY() };
+    },
+    contentScale: (id) => {
+      const stage = Konva.stages[0]!;
+      const a = stage.findOne<Konva.Group>((x: Konva.Node) => x.id() === id)!.findOne('Rect')!.getAbsoluteScale();
+      return { x: a.x / stage.scaleX(), y: a.y / stage.scaleY() };
     },
     frameInset: (id) => {
       const stage = Konva.stages[0]!;

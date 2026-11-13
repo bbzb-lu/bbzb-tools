@@ -17,9 +17,9 @@ export const textType: ElementType<TextProps> = {
   menuItems: (el) => [{ id: 'edit', label: 'Text bearbeiten', run: () => useUi.getState().setTextEditId(el.id) }],
   anchors: ['middle-left', 'middle-right'],
   // Seitenanker: nur die Breite ändert sich. Wächst die Höhe im selben Verhältnis (Gruppe, keepRatio), skaliert die Schriftgrösse mit.
-  afterTransform(el, box) {
+  afterTransform(el, box, _project, scaleContent) {
     const k = box.width / el.width;
-    if (Math.abs(k - 1) < 1e-6 || Math.abs(box.height / el.height - k) > 1e-3 * k) return { ...box, height: measureTextHeight(el.props, box.width) };
+    if (!scaleContent || Math.abs(k - 1) < 1e-6 || Math.abs(box.height / el.height - k) > 1e-3 * k) return { ...box, height: measureTextHeight(el.props, box.width) };
     const props = { ...el.props, fontSize: Math.max(1, Math.round(el.props.fontSize * k)) };
     return { ...box, props, height: measureTextHeight(props, box.width) };
   },

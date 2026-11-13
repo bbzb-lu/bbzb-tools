@@ -78,6 +78,8 @@ export interface ElementType<P = unknown> {
     el: Element<P>,
     box: { x: number; y: number; width: number; height: number; rotation: number },
     project?: Project,
+    /** Nur beim Skalieren einer Gruppe: der Inhalt (Text: Schriftgrösse) skaliert mit. Format-Kopie und Layoutwechsel setzen es nicht. */
+    scaleContent?: boolean,
   ): Partial<Element<P>>;
   add?: { label: string; icon?: ComponentType; run(ctx: EditorContext): Promise<void> | void };
   acceptsFile?(file: File): boolean;

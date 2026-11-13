@@ -158,7 +158,7 @@ test('Zustandswechsel ohne Überblendung: nie dunkle Schrift auf dunklem Grund',
   expect(bg).not.toBe(dark);
 });
 
-test('Strg- und Shift-Klick auf Zeilen schaltet um, gewöhnlicher Klick wählt eine, Ziehen bewegt nur die gezogene', async ({ page }) => {
+test('Strg-Klick auf Zeilen schaltet um, Umschalt-Klick wählt den Bereich, gewöhnlicher Klick wählt eine, Ziehen bewegt nur die gezogene', async ({ page }) => {
   await withTexts(page, 3);
   const [a, b, c] = (await elements(page)).map((e) => e.name);
   const btn = (n: string) => row(page, n).getByRole('button', { name: n, exact: true });
@@ -205,4 +205,19 @@ test('Pfeile im Ebenen-Panel wählen die Nachbarzeile, Umschalt erweitert, Umsch
   await btn(1).click();
   await btn(3).click({ modifiers: ['Shift'] });
   expect(new Set(await selected())).toEqual(new Set([ids[1], ids[2], ids[3]]));
+});
+
+test('Umschalt-Klick ohne Anker: Auswahl von der Leinwand zählt als Anker, Umschalt + Pfeil beginnt nach Auswahl von aussen neu', async ({ page }) => {
+  await withTexts(page, 4);
+  const ids = (await elements(page)).map((e) => e.id).reverse();
+  const btn = (i: number) => page.locator(`[data-layer="${ids[i]}"]`);
+  const selected = () => page.evaluate(() => window.__bbzbTest.ui().selectedIds);
+  await page.evaluate((id) => window.__bbzbTest.select(id), ids[1]!); // wie ein Klick auf der Leinwand
+  await btn(3).click({ modifiers: ['Shift'] });
+  expect(new Set(await selected())).toEqual(new Set([ids[1], ids[2], ids[3]]));
+  await btn(0).click(); // Anker oben
+  await page.evaluate((id) => (document.activeElement as HTMLElement).blur() ?? window.__bbzbTest.select(id), ids[2]!); // Klick auf die Leinwand: Fokus weg, andere Auswahl
+  await btn(2).focus();
+  await page.keyboard.press('Shift+ArrowDown');
+  expect(new Set(await selected())).toEqual(new Set([ids[2], ids[3]]));
 });

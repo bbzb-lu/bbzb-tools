@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { copyRules } from '../../../ui/layoutActions';
 import { textStyles } from '../../../tokens';
 import { textType } from './index';
 import { measureTextHeight, textConfig } from './measure';
@@ -49,9 +50,15 @@ describe('Text beim Skalieren', () => {
   const el = { id: 'x', type: 'text', name: 'T', x: 0, y: 0, width: 400, height: measureTextHeight(base, 400), rotation: 0, opacity: 1, visible: true, locked: false, props: base };
 
   it('Gruppe (Breite und Höhe im selben Verhältnis): Schriftgrösse skaliert mit', () => {
-    const patch = textType.afterTransform(el, { x: 0, y: 0, width: 200, height: el.height / 2, rotation: 0 });
+    const patch = textType.afterTransform(el, { x: 0, y: 0, width: 200, height: el.height / 2, rotation: 0 }, undefined, true);
     expect(patch.props).toEqual({ ...base, fontSize: 50 });
     expect(patch.height).toBe(measureTextHeight({ ...base, fontSize: 50 }, 200));
+  });
+
+  it('gleiche Box ohne scaleContent (Zahlenfelder, Format-Kopie, Layoutwechsel): Schriftgrösse bleibt', () => {
+    const box = { x: 0, y: 0, width: 200, height: el.height / 2, rotation: 0 };
+    expect(textType.afterTransform(el, box).props).toBeUndefined();
+    expect(copyRules.resize(el, box, {} as never)).toMatchObject({ width: 200, props: { fontSize: base.fontSize } });
   });
 
   it('nur die Breite ändert sich (Seitenanker): Schriftgrösse bleibt', () => {

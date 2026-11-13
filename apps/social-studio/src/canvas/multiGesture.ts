@@ -38,13 +38,13 @@ export function commitMove(ids: string[], nodes: Konva.Node[]): void {
   queueMicrotask(() => (group = []));
 }
 
-/** Je Element die Box über `afterTransform` seines Typs übernehmen, ein apply. Auch für die Zahlenfelder im Inspector. */
-export function applyBoxes(boxes: Record<string, Box>): void {
+/** Je Element die Box über `afterTransform` seines Typs übernehmen, ein apply. Auch für die Zahlenfelder im Inspector (dort ohne `scaleContent`). */
+export function applyBoxes(boxes: Record<string, Box>, scaleContent = false): void {
   const els = useDoc.getState().project?.elements ?? {};
   const patches: [string, Partial<Element>][] = [];
   for (const [id, box] of Object.entries(boxes)) {
     const cur = els[id];
-    if (cur) patches.push([id, elementTypes.get(cur.type).afterTransform(cur, box)]);
+    if (cur) patches.push([id, elementTypes.get(cur.type).afterTransform(cur, box, undefined, scaleContent)]);
   }
   if (patches.length) apply((d) => patches.forEach(([id, patch]) => updateElement(d, id, patch)));
 }
@@ -66,7 +66,7 @@ export function commitTransform(nodes: Konva.Node[]): void {
     // Scherung entsteht, wenn eine Mehrfachauswahl mit gedrehtem Element frei (Shift) skaliert wird; das Modell kennt keine
     n.setAttrs({ scaleX: 1, scaleY: 1, skewX: 0, skewY: 0 });
   }
-  applyBoxes(boxes);
+  applyBoxes(boxes, true);
 }
 
 /** Die Box schrumpft um kx, ky: würde ein Element schmaler oder niedriger als min? */
@@ -78,13 +78,13 @@ export function tooSmall(nodes: Konva.Node[], kx: number, ky: number, min: numbe
   });
 }
 
-const NO_RECT = { x: 0, y: 0, width: 0, height: 0 };
+const noRect = () => ({ x: 0, y: 0, width: 0, height: 0 });
 /** Live beim Skalieren einer Gruppe: `inner` bleibt unverzerrt und zählt nicht zur Box, die der Transformer misst (sie liefert ein unsichtbares Rect). */
 export function keepSize(inner: Konva.Node | null, group: Konva.Node): void {
   if (!inner) return;
   const { x, y } = group.scale();
   inner.scale({ x: 1 / x, y: 1 / y });
-  Object.assign(inner, { getClientRect: () => NO_RECT });
+  if (inner.getClientRect !== noRect) inner.getClientRect = noRect;
 }
 export function releaseSize(inner: Konva.Node | null): void {
   if (!inner) return;

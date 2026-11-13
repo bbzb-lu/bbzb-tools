@@ -4,12 +4,13 @@ import { elements, frames, newProject } from './fixtures';
 const FONT = 80;
 
 /** Ecke unten rechts ohne Shift ziehen (proportional) und loslassen. */
-async function dragCorner(page: Page, dx: number, dy: number) {
+async function dragCorner(page: Page, dx: number, dy: number, live?: () => Promise<void>) {
   const h = await page.evaluate(() => window.__bbzbTest.anchorScreen('bottom-right'));
   await page.mouse.move(h.x, h.y);
   await page.mouse.down();
   for (let i = 1; i <= 8; i++) await page.mouse.move(h.x + (dx * i) / 8, h.y + (dy * i) / 8);
   await frames(page);
+  if (live) await live();
   await page.mouse.up();
   await frames(page);
 }
@@ -32,7 +33,13 @@ async function textAndTag(page: Page) {
 test('Gruppe verkleinert: Text skaliert die Schriftgrösse mit, Tag behält Breite und Höhe', async ({ page }) => {
   const { text, tag } = await textAndTag(page);
   const before = (await elements(page)).find((e) => e.id === tag.id)!;
-  await dragCorner(page, -150, -150);
+  // mitten in der Geste: der Inhalt des Tags ist nicht verzerrt (Gruppe skaliert, innerer Knoten gleicht aus)
+  await dragCorner(page, -150, -150, async () => {
+    const s = await page.evaluate((id) => window.__bbzbTest.nodeScale(id), tag.id);
+    expect(s.x).toBeLessThan(1);
+    const c = await page.evaluate((id) => window.__bbzbTest.contentScale(id), tag.id);
+    expect([c.x, c.y]).toEqual([expect.closeTo(1, 3), expect.closeTo(1, 3)]);
+  });
   await expect.poll(async () => (await elements(page)).find((e) => e.id === text.id)!.width).toBeLessThan(600);
   const all = await elements(page);
   const t = all.find((e) => e.id === text.id)!;

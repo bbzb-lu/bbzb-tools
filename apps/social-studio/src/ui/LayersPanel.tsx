@@ -24,6 +24,11 @@ export function LayersPanel() {
   const listRef = useRef<HTMLUListElement>(null);
   const anchor = useRef<string | null>(null); // Ankerzeile für Umschalt + Pfeil und Umschalt-Klick
 
+  // Auswahl von aussen (Leinwand, Kontextmenü): der Anker der Panel-Zeilen gilt nicht mehr
+  useEffect(() => {
+    if (!listRef.current?.contains(document.activeElement)) anchor.current = null;
+  }, [selectedIds]);
+
   // Nach Verschieben oder Umbenennen behält die Zeile den Fokus (React setzt verschobene Knoten um).
   useEffect(() => {
     if (!refocus.current || editing) return;
@@ -47,9 +52,11 @@ export function LayersPanel() {
     if (!next) return;
     listRef.current?.querySelector<HTMLElement>(`[data-layer="${next}"]`)?.focus();
     if (!extend) return useUi.getState().setSelectedId(next), void (anchor.current = next);
-    anchor.current ??= id;
+    anchor.current = anchorOf(id);
     selectRange(anchor.current, next);
   };
+  // Anker, sonst erste gewählte Zeile, sonst die Zeile selbst; ein gelöschter Anker zählt nicht
+  const anchorOf = (id: string) => [anchor.current, useUi.getState().selectedIds[0]].find((a): a is string => !!a && ids.includes(a)) ?? id;
   const endEdit = (id: string, name?: string) => {
     if (cancelled.current) return;
     cancelled.current = name === undefined;
@@ -93,7 +100,7 @@ export function LayersPanel() {
             }}
             onMove={(dir) => move(id, ids[i + dir], dir < 0 ? 'above' : 'below')}
             onStep={(dir, extend) => step(id, dir, extend)}
-            onRange={() => anchor.current && selectRange(anchor.current, id)}
+            onRange={() => selectRange((anchor.current = anchorOf(id)), id)}
             onPick={() => (anchor.current = id)}
           />
         ))}
