@@ -24,11 +24,22 @@ const frame = (mp4: string, t: number) => ff(['-ss', String(t), '-i', mp4, '-fra
 const stream = (mp4: string, entries: string) =>
   execFileSync('ffprobe', ['-v', 'error', '-show_entries', entries, '-of', 'default=nw=1:nk=1', mp4]).toString().trim().split('\n').map(Number);
 
+/** Bild Nr. `k` (30 fps); die Suchzeit liegt knapp vor dem Zeitstempel, damit ffmpeg dieses und nicht das nächste Bild liefert. */
+const frameAt = (mp4: string, k: number) => frame(mp4, (k - 0.4) / 30);
+/** Grösste Kanalabweichung zwischen Spalte W-1 links und Spalte `dx` rechts, Zeilen 320 bis 820 (das Testbild ändert sich nur in x). */
+const seamDiff = (left: Buffer, right: Buffer, dx: number) => {
+  let worst = 0;
+  for (let y = 320; y < 820; y++) {
+    for (let c = 0; c < 3; c++) worst = Math.max(worst, Math.abs(left[(y * W + W - 1) * 3 + c]! - right[(y * W + dx) * 3 + c]!));
+  }
+  return worst;
+};
+
 test('Video über der Naht: beide MP4 gleich lang, beginnen bei 0, Spalte 1079 passt zu Spalte 0 (gleiches Bild)', async ({ page }, info) => {
   await newProject(page, 'Post 4:5');
-  const id = await addVideo(page, `${DIR}/landscape-h264-aac.mp4`);
+  const id = await addVideo(page, `${DIR}/seam-ramp.mp4`);
   await addSlide(page);
-  // 1000 × 600, die Naht liegt bei 40 % (mitten in einem Farbbalken des Testbilds, nicht auf einer Kante); Ausschnitt füllt die Fläche
+  // 960 × 540 (Massstab 0.5), Naht bei 40 %; Ausschnitt füllt die Fläche
   await page.evaluate(([id, w, h]) => {
     const e = window.__bbzbTest.elements().find((e) => e.id === id)!;
     const props = e.props as { crop: object; assetId: string };
@@ -36,8 +47,8 @@ test('Video über der Naht: beide MP4 gleich lang, beginnen bei 0, Spalte 1079 p
     const scale = Math.max(w! / meta.width, h! / meta.height);
     const crop = { x: (w! - meta.width * scale) / 2, y: (h! - meta.height * scale) / 2, scale };
     window.__bbzbTest.patch(id as string, { x: 1080 - 0.4 * w!, y: 300, width: w, height: h, props: { ...props, crop } } as never);
-  }, [id, 1000, 600] as const);
-  await setVideo(page, id, { start: 1, end: 3 });
+  }, [id, 960, 540] as const);
+  await setVideo(page, id, { start: 0, end: 2 });
   await settled(page);
   const files = await exportFiles(page);
   const a = save(files, info.outputPath(), '_01.mp4');
@@ -47,16 +58,18 @@ test('Video über der Naht: beide MP4 gleich lang, beginnen bei 0, Spalte 1079 p
   expect(Math.abs(durA! - durB!)).toBeLessThanOrEqual(1 / 30);
   for (const f of [a, b]) expect(stream(f, 'stream=start_time')[0]).toBeCloseTo(0, 2);
 
-  for (const t of [0, 1]) {
-    const left = frame(a, t);
-    const right = frame(b, t);
-    let worst = 0;
-    // nur Zeilen 320 bis 700: darunter kreuzt die schräge Linie des Testbilds die Naht (echte Kante, ab Zeile 714)
-    for (let y = 320; y < 700; y++) {
-      for (let c = 0; c < 3; c++) worst = Math.max(worst, Math.abs(left[(y * W + W - 1) * 3 + c]! - right[y * W * 3 + c]!));
-    }
-    console.log(`Naht bei ${t} s: grösste Abweichung je Kanal ${worst}`);
-    expect(worst).toBeLessThanOrEqual(8);
+  // Das Testbild hat im Export etwa 4 Stufen Steigung je Pixel und wandert etwa 15 Stufen je Bild: gleiches Bild und richtige Spalte
+  // liegen unter der Grenze von 8 (gemessen 4), 3 Pixel Versatz (12) und ein Bild Versatz (15) darüber.
+  for (const k of [0, 15]) {
+    const left = frameAt(a, k);
+    const right = frameAt(b, k);
+    const real = seamDiff(left, right, 0);
+    const shifted = seamDiff(left, right, 3);
+    const next = seamDiff(left, frameAt(b, k + 1), 0);
+    const msg = `Bild ${k}: Naht ${real}, 3 px verschoben ${shifted}, nächstes Bild ${next}`;
+    expect(real, msg).toBeLessThanOrEqual(8);
+    expect(shifted, msg).toBeGreaterThan(8);
+    expect(next, msg).toBeGreaterThan(8);
   }
 });
 
@@ -77,7 +90,7 @@ test('Ton-Versatz: Farbwechsel im Bild und Einsatz des Tons liegen nach dem Kür
   let s = 0;
   while ((s + 1) * 2 <= pcm.length && Math.abs(pcm.readInt16LE(s * 2)) < 500) s++;
   const tone = s / 48000;
-  console.log(`Bildwechsel ${picture.toFixed(3)} s, Tonbeginn ${tone.toFixed(3)} s`);
-  expect(Math.abs(picture - 1)).toBeLessThanOrEqual(0.1);
-  expect(Math.abs(picture - tone)).toBeLessThanOrEqual(0.05);
+  const msg = `Bildwechsel ${picture.toFixed(3)} s, Tonbeginn ${tone.toFixed(3)} s`;
+  expect(Math.abs(picture - 1), msg).toBeLessThanOrEqual(0.1);
+  expect(Math.abs(picture - tone), msg).toBeLessThanOrEqual(0.05);
 });
