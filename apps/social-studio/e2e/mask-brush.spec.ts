@@ -131,7 +131,7 @@ test('Grösse per Regler und Tasten begrenzt, Härte weich bis hart, Ring in ric
   expect(await size()).toBe(brush.size.min);
   await page.keyboard.press('+');
   expect(await size()).toBeGreaterThan(brush.size.min);
-  await expect(slider.locator('xpath=ancestor::fieldset')).toHaveAttribute('data-tip', /\[.*\]/);
+  await expect(slider.locator('xpath=ancestor::*[@role="group"]')).toHaveAttribute('data-tip', /\[.*\]/);
 
   // Härte: harter Strich oben, weicher unten, je Durchmesser 200; 70 px neben der Linie
   const num = page.locator('.inspector').getByRole('spinbutton', { name: 'Grösse' });

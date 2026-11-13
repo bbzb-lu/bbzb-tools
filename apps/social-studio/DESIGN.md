@@ -34,7 +34,7 @@ typography:
     fontWeight: 700
     lineHeight: 1.25
   hint:
-    fontFamily: "Newsreader, Georgia, serif"
+    fontFamily: "Host Grotesk, Segoe UI, system-ui, sans-serif"
     fontSize: "0.875rem"
     fontWeight: 400
     lineHeight: 1.4
@@ -95,7 +95,7 @@ Die Oberfläche tritt hinter die Slides zurück. Farbe trägt Bedeutung, nie Sti
 **Key Characteristics:**
 - Grau-Papier-Tinte, ein blauer Akzent, keine Rundungen.
 - Harter Schattenversatz nur an Tasten in Ruhe und an Overlays.
-- Grotesk für Bedienung, Serif nur für Hinweise.
+- Nur Host Grotesk, Hinweise leiser (Regular, Tinte weich).
 - Dicht, für 1280 × 720 bis 1536 × 864 ohne Seitenscroll.
 
 ## Colors
@@ -121,19 +121,18 @@ Neutrale Grautöne aus Tisch, Papier und Tinte, dazu genau ein Akzent.
 ## Typography
 
 **Bedienschrift:** Host Grotesk (400, 600, 700; Fallback Segoe UI, system-ui)
-**Hinweisschrift:** Newsreader (400; Fallback Georgia)
 
-**Character:** Eine sachliche Grotesk mit etwas Eigenart trägt alles, was man bedient; eine ruhige Zeitungs-Serif setzt erklärende Sätze ab. Beide kommen aus `@bbzb/ui` (OFL) und sind reine Oberflächenschriften: Segoe UI und Braveold bleiben den Exporten vorbehalten.
+**Character:** Eine sachliche Grotesk mit etwas Eigenart trägt alles, was man bedient; erklärende Sätze setzt sie leiser (Regular, Tinte weich). Sie kommt aus `@bbzb/ui` (OFL) und ist reine Oberflächenschriften: Segoe UI und Braveold bleiben den Exporten vorbehalten.
 
 ### Hierarchy
 - **Title** (700, 1.75rem): h1 der Startseite.
 - **Headline** (700, 1.125rem; Dialoge 1.5rem): Panel- und Dialogtitel.
 - **Body** (400, 1rem, 1.45): Knöpfe, Felder, Menüs.
 - **Label** (700, 0.8125rem): Abschnittsleisten; Reglerbeschriftungen 600.
-- **Hint** (Serif 400, 0.875 bis 1rem): Hinweise im Inspector, Ausschnitt-Leiste, leere Zustände.
+- **Hint** (Host Grotesk 400, 0.875 bis 1rem): Hinweise im Inspector, Ausschnitt-Leiste, leere Zustände.
 
 ### Named Rules
-**The Serif-erklärt Rule.** Serif nur für Sätze, die erklären; nie für Beschriftungen oder Werte. Zahlen in Reglern und Zoom mit `tabular-nums`.
+**The Eine-Schrift Rule.** Keine Serife in der Oberfläche; Erklärungen sind Regular und Tinte weich, Beschriftungen fett. Zahlen in Reglern und Zoom mit `tabular-nums`.
 
 ## Layout
 
@@ -194,5 +193,5 @@ Graue Abschnittsleiste mit Chevron, fetter Beschriftung und Linie. Abschnitte si
 - **Don't** Radien, weiche Schatten, Verläufe oder Glas-Effekte in der Oberfläche.
 - **Don't** Schatten an Reitern, Kacheln, Leisten oder Menüeinträgen.
 - **Don't** Orange oder andere Slide-Farben als Oberflächenfarbe.
-- **Don't** Segoe UI oder Braveold in der Oberfläche; Host Grotesk oder Newsreader nie in Exporten.
+- **Don't** Segoe UI oder Braveold in der Oberfläche; Host Grotesk nie in Exporten.
 - **Don't** eine zweite Farbe für dieselbe Rolle oder eine Rolle ohne Farbe einführen.

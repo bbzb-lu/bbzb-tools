@@ -16,14 +16,6 @@ const ENTRIES: Entry[] = [
     sources: [['Quelltext', 'https://github.com/Element-Type/HostGrotesk']],
   },
   {
-    name: 'Newsreader',
-    license: 'OFL-1.1',
-    use: 'Die Schrift für Hinweise in der Oberfläche.',
-    note: '© The Newsreader Project Authors.',
-    texts: [['Lizenztext', L + 'newsreader-OFL.txt']],
-    sources: [['Quelltext', 'https://github.com/productiontype/Newsreader']],
-  },
-  {
     name: 'Tabler Icons',
     license: 'MIT',
     use: 'Die Icons in der Bibliothek und in der Oberfläche.',

@@ -3,6 +3,7 @@ main { max-width: 72rem; margin: 0 auto; padding: 3rem 1rem 4rem; }
 main > h1 { margin: clamp(1rem, 4vw, 3rem) 0 1rem; font-size: clamp(2.25rem, 5vw, 3.5rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.03em; }
 .einleitung { max-width: 36rem; margin-bottom: 2rem; color: var(--ink-soft); font-size: 1.0625rem; }
 .steuerung { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin-bottom: 2.5rem; }
+.steuerung .segmented span { min-height: 2rem; padding: 0 0.875rem; font-size: 0.875rem; white-space: nowrap; }
 .embeds { display: grid; gap: 3rem; margin: 0; padding: 0; list-style: none; }
 .embed { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem 2.5rem; align-items: start; padding-top: 2rem; border-top: 1px solid var(--line); }
 .embed-text { display: grid; gap: 0.5rem; justify-items: start; }
