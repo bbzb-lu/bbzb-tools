@@ -1,21 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { LayoutPreset } from '../src/core/types';
 import { addPhoto, elements, gradientPng, newProject, openAllSections, toScreen } from './fixtures';
 
 const VID = resolve(`${import.meta.dirname}/fixtures/video`);
 const HEIC = resolve(`${import.meta.dirname}/fixtures/photo-rot90.heic`);
-
-test.beforeAll(() => {
-  if (existsSync(`${VID}/rotated-90.mov`)) return;
-  try {
-    execFileSync('sh', [`${import.meta.dirname}/../scripts/make-test-videos.sh`], { stdio: 'pipe' });
-  } catch {
-    throw new Error('Testvideos fehlen und lassen sich nicht erzeugen: ffmpeg installieren, dann `sh scripts/make-test-videos.sh`.');
-  }
-});
 
 const photo = { type: 'photo', role: 'foto', name: 'Foto', x: 72, y: 470, width: 936, height: 540, props: {} };
 const preset: LayoutPreset = { id: 'q', label: 'Querformat', format: 'post', slides: 1, background: 'warmweiss', elements: [photo] };
@@ -94,7 +85,7 @@ test('Video in Platzhalter ziehen, mit Foto ersetzen, wieder mit Video ersetzen'
   await openAllSections(page);
 
   const chooser = page.waitForEvent('filechooser');
-  await page.getByRole('button', { name: 'Foto ersetzen' }).click();
+  await page.getByRole('button', { name: 'Video ersetzen' }).click();
   await (await chooser).setFiles({ name: 'foto.png', mimeType: 'image/png', buffer: gradientPng(300, 400) });
   await expect.poll(async () => (await prop()).video).toBeUndefined();
   await openAllSections(page); // «Bild» am Foto hat ein eigenes Auf/Zu (am Video liegt es in «Video»)

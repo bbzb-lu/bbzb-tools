@@ -58,6 +58,9 @@ interface UiState {
   maskEditId: string | null;
   /** Ansicht im Pinselmodus: rote Folie über Ausgeblendetem oder das Foto mit der Maske wie im Export. Gilt für die Sitzung (Standard Folie), nicht persistiert. */
   maskView: 'folie' | 'ergebnis';
+  /** Pinselstriche, die gemalt oder noch nicht gespeichert sind: solange > 0 rechnet «Ergebnis» keine Effekte. Schreibt nur am Anfang und Ende eines Strichs. */
+  strokes: number;
+  addStrokes(n: 1 | -1): void;
   setMaskView(v: UiState['maskView']): void;
   /** Pinselwerte (Ansicht, nicht persistiert, nicht in der History). */
   brush: Brush;
@@ -119,6 +122,8 @@ export const useUi = create<UiState>()((set, get) => ({
   textEditId: null,
   maskEditId: null,
   maskView: 'folie',
+  strokes: 0,
+  addStrokes: (n) => set((s) => ({ strokes: Math.max(0, s.strokes + n) })),
   setMaskView: (maskView) => set({ maskView }),
   brush: { size: brushTokens.size.default, hardness: brushTokens.hardness.default, mode: 'hide' },
   notice: null,

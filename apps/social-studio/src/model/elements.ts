@@ -80,9 +80,9 @@ export function nextName(p: Project, label: string): string {
   return `${label} ${max + 1}`;
 }
 
-const styleLabels = { titel: 'Titel', kommentar: 'Kommentar' } as const;
+const styleLabels = { titel: 'Titel', kommentar: 'Kommentar', foto: 'Foto', video: 'Video' } as const;
 
-/** Folgt der Ebenenname dem Textstil: «Kommentar»/«Kommentar 2» wird zu «Titel»/«Titel 2». Eigene Namen bleiben. */
+/** Folgt der Ebenenname dem Textstil oder der Bildart: «Kommentar 2» wird zu «Titel 2», «Foto 2» zu «Video 2». Eigene Namen bleiben. */
 export function renameForStyle(name: string, from: keyof typeof styleLabels, to: keyof typeof styleLabels): string {
   const m = /^(\S+)((?: \d+)?)$/.exec(name);
   return m && m[1] === styleLabels[from] ? `${styleLabels[to]}${m[2]}` : name;

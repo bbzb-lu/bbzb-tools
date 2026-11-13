@@ -1,8 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
-import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { addPhoto, addSlide, newProject, png } from './fixtures';
-import { addVideo, settled, twoTone } from './video';
+import { addVideo, settled } from './video';
 import { b64, colourDiff, expectSameColour, exportFiles, fmt, noOpenExport, pointsIn, setVideo } from './video-export';
 
 // Ton als Opus statt AAC: muss neu kodiert werden
@@ -11,20 +10,6 @@ const OPUS = `${import.meta.dirname}/fixtures/video/opus-audio.mp4`;
 const GRID = `${import.meta.dirname}/fixtures/video/landscape-grid.mp4`;
 // Wie two-tone (2 s Rot, 2 s Blau), aber mit Ton
 const TWO_TONE_AAC = `${import.meta.dirname}/fixtures/video/two-tone-aac.mp4`;
-test.beforeAll(() => {
-  twoTone();
-  if (!existsSync(TWO_TONE_AAC)) {
-    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', `${import.meta.dirname}/fixtures/video/two-tone.mp4`, '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000:duration=4',
-      '-c:v', 'copy', '-c:a', 'aac', '-shortest', TWO_TONE_AAC]);
-  }
-  if (!existsSync(GRID)) {
-    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'color=c=black:s=1920x1080:r=30:d=3,drawgrid=w=8:h=8:t=2:c=white',
-      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', GRID]);
-  }
-  if (existsSync(OPUS)) return;
-  execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=320x400:rate=30:duration=3',
-    '-f', 'lavfi', '-i', 'sine=frequency=440:sample_rate=48000:duration=3', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-c:a', 'libopus', '-shortest', OPUS]);
-});
 
 const probe = (page: Page, bytes: Uint8Array, t: number, pts: [number, number][]) =>
   page.evaluate(([s, t, pts]) => window.__bbzbTest.videoProbe(s, t, pts), [b64(bytes), t, pts] as const);

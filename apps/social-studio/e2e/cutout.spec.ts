@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { elements, newProject, toScreen, openSection } from './fixtures';
 import { alphaPng, openPhoto } from './photoProject';
-import { addVideo, twoTone } from './video';
+import { addVideo } from './video';
 
 const SHOTS = '.superpowers/sdd/2026-10-28-phase-4b-ki-freistellen/screens';
 const BOX = { x: 140, y: 275, width: 800, height: 800 };
@@ -27,8 +27,6 @@ async function select(page: Page, name: string) {
   await page.mouse.click(c.x, c.y);
   await expect(section(page)).toBeVisible();
 }
-
-test.beforeAll(twoTone);
 
 test('«Hintergrund entfernen» legt die Kreismaske an, sichtbar im Export, Strg + Z nimmt sie in einem Schritt zurück', async ({ page }) => {
   await select(page, 'Kreis');
