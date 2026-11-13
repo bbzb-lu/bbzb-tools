@@ -53,7 +53,7 @@ const read = (page: Page) =>
   page.locator('.inspector').evaluate((root) => ({
     h2: root.querySelector('h2')?.textContent,
     firstIsH2: root.firstElementChild?.tagName === 'H2',
-    sections: [...root.querySelectorAll(':scope > section')].map((s) => {
+    sections: [...root.querySelectorAll(':scope > section, :scope > .inspector-body > section')].map((s) => {
       const h = document.getElementById(s.getAttribute('aria-labelledby') ?? '');
       return { title: h?.textContent ?? '', tag: h?.closest('h3')?.tagName, inside: !!h && s.contains(h), controls: s.querySelectorAll('button, input, select').length };
     }),

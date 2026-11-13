@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { addPhoto, addScrim, elements, newProject, openSection, png } from './fixtures';
+import { addEffect, addPhoto, addScrim, effectRemove, elements, newProject, openSection, png } from './fixtures';
 
 const plus = (page: Page) => page.getByRole('button', { name: 'Effekt hinzufügen', exact: true });
 const menu = (page: Page) => page.getByRole('menu', { name: 'Effekt hinzufügen' });
@@ -152,4 +152,28 @@ test('Esc im Effektmenü bei Fokus auf dem Auslöser: die Auswahl bleibt', async
   await page.keyboard.press('Escape');
   await expect(menu(page)).toBeHidden();
   expect(await page.evaluate(() => window.__bbzbTest.selected())).toBe(photo!.id);
+});
+
+test('Effekt-Menü: jeder Eintrag zeigt ein Icon vor dem Namen', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await addPhoto(page, png(400, 300));
+  await expect.poll(() => elements(page)).toHaveLength(1);
+  await plus(page).click();
+  const items = menu(page).getByRole('menuitem');
+  const n = await items.count();
+  expect(n).toBeGreaterThanOrEqual(3);
+  for (let i = 0; i < n; i++) await expect(items.nth(i).locator('svg').first()).toBeVisible();
+});
+
+test('Verläufe: Klappzustand rückt beim Entfernen nach, kein verwaister Eintrag', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  for (let i = 0; i < 3; i++) await addEffect(page, 'Verlauf');
+  const head = (name: string) => page.getByLabel('Eigenschaften').getByRole('button', { name, exact: true });
+  await head('Verlauf Oben').click(); // mittlerer zu
+  await expect(head('Verlauf Oben')).toHaveAttribute('aria-expanded', 'false');
+  await effectRemove(page, 'Verlauf Unten').click();
+  await expect(head('Verlauf Oben')).toHaveAttribute('aria-expanded', 'false');
+  await expect(head('Verlauf Links')).toHaveAttribute('aria-expanded', 'true');
+  await addEffect(page, 'Verlauf'); // neuer Verlauf an freier Stelle: offen
+  await expect(page.getByLabel('Eigenschaften').locator('.section.nested .section-toggle[aria-expanded="true"]')).toHaveCount(2);
 });

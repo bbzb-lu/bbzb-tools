@@ -28,7 +28,7 @@ export function TagInspector({ el }: { el: Element<TagProps> }) {
   // Tippen = eine Geste = ein Undo-Schritt; auch wenn die Auswahl wechselt, ohne dass das Feld den Fokus verliert.
   useEffect(() => endGesture, []);
   return (
-    <Section heading="Darstellung" collapsible defaultOpen>
+    <Section heading="Darstellung" id="darstellung-tag" collapsible defaultOpen>
       <OpacitySlider el={el} />
       {el.props.variant === 'schul' ? <LocationPicker el={el} /> : el.props.variant === 'fach' ? <Dept el={el} /> : <Label el={el} />}
       {el.props.variant === 'frei' && <Fill el={el} />}

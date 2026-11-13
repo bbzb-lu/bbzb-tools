@@ -9,7 +9,7 @@ test('Hauptviewport und Panels haben die Bildlaufleiste im Theme, Scrollen geht 
   await newProject(page, 'Post 4:5', 'Carousel');
   const theme = await page.evaluate(() => {
     const px = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--scrollbar'));
-    const probe = (sel: string) => { const e = document.querySelector<HTMLElement>(sel)!; return { sel, w: e.offsetWidth - e.clientWidth, h: e.offsetHeight - e.clientHeight }; };
+    const probe = (sel: string) => { const e = document.querySelector<HTMLElement>(sel)!; return { sel, w: e.offsetWidth - e.clientWidth - 2 * e.clientLeft, h: e.offsetHeight - e.clientHeight }; };
     return { px, bars: ['.canvas-scroll', '.inspector'].map(probe) };
   });
   expect(theme.px).toBeGreaterThanOrEqual(12);

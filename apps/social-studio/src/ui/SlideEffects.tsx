@@ -2,6 +2,7 @@ import { IconContrast, IconGrain } from '@tabler/icons-react';
 import type { Scrim, ScrimSide } from '../model/scrim';
 import { grainDefault } from '../model/grain';
 import { useDoc } from '../store/document';
+import { useUi } from '../store/ui';
 import { scrim } from '../tokens';
 import { tryApply } from './actions';
 import { EffectRow, EffectsSection, openSections, type EffectEntry } from './EffectsSection';
@@ -13,7 +14,7 @@ const ORDER: ScrimSide[] = ['unten', 'oben', 'links', 'rechts', 'untenLinks', 'u
 
 /** Eintrag «Verlauf» der Effekt-Auswahl (Slide und Foto): mehrfach, höchstens `scrim.max`. */
 export const scrimEntry = (scrims: Scrim[]): EffectEntry => ({
-  id: 'verlauf', label: 'Verlauf', hint: 'Dunkler Rand', active: scrims.length > 0, multi: true, limit: scrims.length >= scrim.max ? `Höchstens ${scrim.max} Verläufe` : undefined,
+  id: 'verlauf', icon: <IconContrast aria-hidden="true" />, label: 'Verlauf', hint: 'Dunkler Rand', active: scrims.length > 0, multi: true, limit: scrims.length >= scrim.max ? `Höchstens ${scrim.max} Verläufe` : undefined,
 });
 
 /** Neuer Verlauf an der ersten freien Seite, aufgeklappt; `set` bekommt die ganze Liste (ein Undo-Schritt). */
@@ -27,7 +28,10 @@ export function addScrim(scrims: Scrim[], set: (next: Scrim[]) => void) {
 /** Je Verlauf eine Zeile mit Seite, Farbe, Stärke und Reichweite. */
 export const scrimRows = (scrims: Scrim[], set: (next: Scrim[]) => void) =>
   scrims.map((s, k) => (
-    <EffectRow key={`verlauf-${k}`} id={`effekt-verlauf-${k}`} icon={<IconContrast aria-hidden="true" />} label={`Verlauf ${SIDE[s.side][0]}`} onRemove={() => set(scrims.filter((_, n) => n !== k))}>
+    <EffectRow key={`verlauf-${k}`} id={`effekt-verlauf-${k}`} icon={<IconContrast aria-hidden="true" />} label={`Verlauf ${SIDE[s.side][0]}`} onRemove={() => {
+      set(scrims.filter((_, n) => n !== k));
+      useUi.getState().shiftSections('effekt-verlauf-', k, scrims.length);
+    }}>
       <ScrimFields scrim={s} taken={scrims.map((o) => o.side)} onChange={(patch) => set(scrims.map((o, n) => (n === k ? { ...o, ...patch } : o)))} />
     </EffectRow>
   ));
@@ -45,7 +49,7 @@ export function SlideEffects({ index: i }: { index: number }) {
       if (next.length) s.scrims = next;
       else delete s.scrims; // fehlt = keine, wie eine neue Slide
     });
-  const entries: EffectEntry[] = [{ id: 'korn', label: 'Korn', hint: 'Filmkörnung', active: !!slide.grain }, scrimEntry(scrims)];
+  const entries: EffectEntry[] = [{ id: 'korn', icon: <IconGrain aria-hidden="true" />, label: 'Korn', hint: 'Filmkörnung', active: !!slide.grain }, scrimEntry(scrims)];
   const add = (id: string) => {
     if (id !== 'korn') return addScrim(scrims, set);
     tryApply((d) => void (d.slides[i]!.grain = true));

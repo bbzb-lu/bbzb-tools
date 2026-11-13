@@ -65,7 +65,7 @@ dialog .actions { justify-content: flex-end; }
 .editor-header button:not(dialog *, .primary) { background: var(--paper); }
 .editor-header button:not(dialog *, .primary):is(:hover) { background: var(--paper-shade); }
 .editor-header button:not(dialog *, .primary):is([aria-disabled='true']) { background: var(--paper-shade); }
-.workspace { display: grid; grid-template-columns: 15rem minmax(0, 1fr) 18rem; grid-template-rows: minmax(0, 1fr); min-height: 0; background: var(--table); } /* Zeile begrenzt: ein langer Inspector scrollt in sich, nie die Seite */
+.workspace { display: grid; grid-template-columns: 15rem minmax(0, 1fr) 18.5rem; grid-template-rows: minmax(0, 1fr); min-height: 0; background: var(--table); } /* Zeile begrenzt: ein langer Inspector scrollt in sich, nie die Seite */
 .stage-column { display: grid; grid-template-rows: 1fr auto; grid-template-columns: minmax(0, 1fr); min-width: 0; min-height: 0; }
 .canvas { position: relative; display: grid; grid-template-rows: minmax(0, 1fr); min-width: 0; min-height: 0; }
 /* Platz für den senkrechten Balken immer reservieren: sonst verschiebt er beim Vergrössern die Mitte (canvasLayout) */
@@ -90,7 +90,7 @@ dialog .actions { justify-content: flex-end; }
 .backdrop-btn { anchor-name: --backdrop; }
 .backdrop-chip { display: block; width: 1.5rem; height: 1.5rem; border: 1px solid var(--ink-soft); }
 .backdrop-popover { position-anchor: --backdrop; inset: auto; bottom: calc(anchor(top) + 0.75rem); right: anchor(right); margin: 0; padding: 0.75rem; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); box-shadow: 4px 4px 0 var(--ink); }
-.side { display: grid; grid-template-rows: minmax(0, 1fr); min-height: 0; background: var(--paper); } /* ohne Linie: sie stand als Haarlinie in Tischfarbe am rechten Rand des Hauptviewports */
+.side { display: grid; grid-template-rows: minmax(0, 1fr); min-height: 0; padding: 1rem 1rem 1rem 0.75rem; background: var(--table); } /* Karte wie links (.left-panel), Abstand gespiegelt */ /* ohne Linie: sie stand als Haarlinie in Tischfarbe am rechten Rand des Hauptviewports */
 /* Links: «Foto oder Video» und «Text» oben, darunter die Box mit den Reitern Bibliothek und Ebenen */
 .left-panel { display: flex; flex-direction: column; gap: 1rem; min-height: 0; padding: 1rem 0.75rem 1rem 1rem; background: var(--table); }
 .left-box { display: flex; flex-direction: column; flex: 1 1 0; min-height: 0; border: 1px solid var(--ink); background: var(--paper); }
