@@ -75,9 +75,21 @@ test('Abbrechen in der Vorbereitung wirkt innert 500 ms, danach klappt ein zweit
 
 test('Fortschrittsbalken: aria-valuenow vorhanden, aria-valuetext gleich dem sichtbaren Text', async ({ page }) => {
   const dialog = await open(page);
+  const busyFreeWidth = await dialog.locator('.segmented').first().evaluate((e) => e.getBoundingClientRect().width);
   await page.evaluate(() => window.__bbzbTest.holdEffects(true));
   await dialog.getByRole('button', { name: 'ZIP herunterladen' }).click();
   await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuetext', await dialog.getByRole('status').innerText());
+  // Format gesperrt: Hinweis hängt per aria-describedby an der Option; Auswahlfläche liegt auf der gewählten Option, Breite wie im Leerlauf
+  const group = dialog.getByRole('group', { name: 'Format' });
+  const hintId = await group.getByRole('radio', { name: 'PNG' }).getAttribute('aria-describedby');
+  await expect(dialog.locator(`[id="${hintId}"]`)).toHaveText('Während des Exports gesperrt.');
+  await page.waitForTimeout(1000);
+  const box = (l: ReturnType<Page['locator']>) => l.evaluate((e) => { const r = e.getBoundingClientRect(); return [r.x, r.width] as [number, number]; });
+  const [hx, hw] = await box(group.locator('.slide-hl'));
+  const [ox, ow] = await box(group.locator('label:has(input:checked)').first());
+  expect(Math.abs(hx - ox)).toBeLessThan(1);
+  expect(Math.abs(hw - ow)).toBeLessThan(1);
+  expect((await box(group.locator('.segmented').first()))[1]).toBe(busyFreeWidth);
   if (SHOTS) await page.screenshot({ path: `${SHOTS}/task-10-busy.png` });
   await dialog.getByRole('button', { name: 'Abbrechen' }).click();
   await page.evaluate(() => window.__bbzbTest.holdEffects(false));

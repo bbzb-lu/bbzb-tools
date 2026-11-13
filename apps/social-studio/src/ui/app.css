@@ -186,7 +186,7 @@ dialog .actions { justify-content: flex-end; }
 .layers-empty { padding: 0.75rem; }
 
 /* Export nach Entwurf: nummerierte Slide-Kacheln, Hinweiszeilen mit Icon, Fortschrittsbalken */
-.export-dialog { width: min(46rem, calc(100vw - 2rem)); max-width: none; }
+.export-dialog { width: min(48rem, calc(100vw - 2rem)); max-width: none; }
 .export-count { font-size: 0.875rem; font-weight: 600; }
 .export-slides { margin: 0; padding: 0.25rem 0.5rem 0.25rem 0; list-style: none; max-height: 11rem; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 0.625rem; }
 .export-slides li { display: grid; justify-items: center; gap: 0.125rem; font-size: 0.8125rem; }
