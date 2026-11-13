@@ -68,8 +68,10 @@ function useBackgroundCanvas(color: ColorToken, width: number, height: number, s
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, preview]);
   if (key === null) return { pending: false };
-  // Fehlgeschlagen: Hintergrund ohne Verlauf und Korn, der Export wartet nicht. Eine Vorschau nach dem Loslassen wird nicht mehr gezeigt.
-  return current ? { canvas: state.canvas, pending: false } : { pending: true };
+  // Fehlgeschlagen: Hintergrund ohne Verlauf und Korn, der Export wartet nicht.
+  if (current) return { canvas: state.canvas, pending: false };
+  // Nach dem Loslassen bleibt die Vorschau stehen (wie useEffectCanvas), bis die volle fertig ist; der Export wartet weiter (pending)
+  return { canvas: state?.key === key ? state.canvas : undefined, pending: true };
 }
 
 /** Hintergrund einer Slide, mit Verläufen und Korn als geteilte Effekt-Canvas (Editor und Export zeigen dieselbe). Fängt keine Klicks. */
@@ -77,7 +79,7 @@ export function SlideBackground({ slide, x, width, height }: { slide: Slide } & 
   const color = slide.background;
   const fx = useBackgroundCanvas(color, width, height, slideSteps(slide.scrims ?? [], slide.grain ? grainOpacity(slide.grainStrength, 'flaeche') : 0));
   return fx.canvas ? (
-    <KImage image={fx.canvas} x={x} width={width} height={height} listening={false} />
+    <KImage name={fx.pending ? EFFECT_PENDING_NODE : undefined} image={fx.canvas} x={x} width={width} height={height} listening={false} />
   ) : (
     <Rect name={fx.pending ? EFFECT_PENDING_NODE : undefined} x={x} width={width} height={height} fill={colors[color]} listening={false} />
   );

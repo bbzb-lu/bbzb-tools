@@ -6,13 +6,12 @@ import { editorContext } from '../canvas/editorContext';
 import { useDoc } from '../store/document';
 import { useUi } from '../store/ui';
 import { removeMany, tryApply } from './actions';
+import { ctrlV } from './textMenu';
 
 /** Interner Speicher (nur diese Sitzung, nie nach aussen); Meta der Fotos reist mit, falls das Projekt sie inzwischen verworfen hat. */
 let mem: { entries: Element[]; assets: Record<string, AssetMeta>; n: number; step: number; projectId: string } | null = null;
 let counter = 0;
 const marker = () => `bbzb-social-studio:${mem?.n}`;
-
-export const hasClipboard = (): boolean => mem !== null;
 
 /** Merkt die Auswahl; mit Ereignis auch Marker in `text/plain` (so erkennt Einfügen, dass die Ablage noch von uns ist). */
 export function copySelection(e?: ClipboardEvent): boolean {
@@ -50,19 +49,38 @@ export function clipboardCommand(cmd: 'copy' | 'cut'): void {
   if (counter === before) void (cmd === 'copy' ? copySelection() : cutSelection());
 }
 
+const addFiles = (files: File[]) => {
+  for (const file of files) {
+    const type = elementTypes.all().find((t) => t.acceptsFile?.(file) && t.fromFile);
+    if (type) void type.fromFile!(file, editorContext());
+    else useUi.getState().setNotice({ kind: 'info', text: 'Diese Datei kann ich nicht verwenden. Erlaubt sind Fotos.' });
+  }
+};
+
+/** Nur aus dem Menüklick (Geste): Edge fragt bei `read()` nach der Berechtigung. Kein Bild oder verweigert: Meldung wie im Textfeld. */
+async function pasteSystemImage() {
+  try {
+    for (const item of await navigator.clipboard.read()) {
+      const type = item.types.find((t) => t.startsWith('image/'));
+      if (type) return addFiles([new File([await item.getType(type)], `Einfügen.${type.slice(6)}`, { type })]);
+    }
+  } catch {
+    // verweigert oder nicht lesbar
+  }
+  ctrlV();
+}
+
 export function pasteClipboard(e?: ClipboardEvent): void {
   // Word/Excel legen neben dem Text ein Bild davon ab: mit RTF ist es Text, kein Foto
   const files = e?.clipboardData?.types?.includes('text/rtf') ? [] : [...(e?.clipboardData?.files ?? [])];
   if (files.length) {
     e!.preventDefault();
-    for (const file of files) {
-      const type = elementTypes.all().find((t) => t.acceptsFile?.(file) && t.fromFile);
-      if (type) void type.fromFile!(file, editorContext());
-      else useUi.getState().setNotice({ kind: 'info', text: 'Diese Datei kann ich nicht verwenden. Erlaubt sind Fotos.' });
-    }
+    return addFiles(files);
+  }
+  if (!mem || mem.projectId !== useDoc.getState().project?.id) {
+    if (!e) void pasteSystemImage(); // Menü ohne eigenen Inhalt: Bild aus der Systemablage
     return;
   }
-  if (!mem || mem.projectId !== useDoc.getState().project?.id) return;
   if (e && e.clipboardData?.getData('text/plain') !== marker()) return; // fremder Inhalt (z. B. Text in einem Feld)
   e?.preventDefault();
   const { entries, assets, step } = mem;

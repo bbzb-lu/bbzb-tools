@@ -8,7 +8,7 @@ import { editorContext } from './canvas/editorContext';
 import { loadBrandAssets } from './brand/manifest';
 import { ensureDoodles } from './brand/doodles';
 import { ensureTabler } from './brand/tabler';
-import { aiTools, assetPacks, elementTypes, exporters } from './core/registries';
+import { aiTools, assetPacks, effects, elementTypes, exporters } from './core/registries';
 import { fakeSegment, type FakeMode } from './ai/fakeSegment';
 import { videoExportStats } from './export/exportVideoSlide';
 import { exportZip, renderSlide } from './export/exportZip';
@@ -100,6 +100,8 @@ declare global {
       folderFiles(clear?: boolean): Promise<Record<string, string>>;
       /** Hält die Wartezeit auf Effekte im Export offen (ein Platzhalterknoten in der Ebene), bis `holdEffects(false)`. */
       holdEffects(on: boolean): void;
+      /** Verzögert die volle Korn-Rechnung (nicht die Vorschau) um `ms`; 0 hebt auf. */
+      slowGrain(ms: number): void;
       /** Offene Video-Exporte (Decoder, Encoder, Canvases); nach Ende oder Abbruch 0. */
       videoExportOpen(): number;
       /** Maske malen, in OPFS speichern, wieder lesen: Pixelwerte vorher und nachher. */
@@ -124,6 +126,7 @@ declare global {
 
 const TEST_FOLDER = 'social-studio-export-test';
 let kitRoot: Root | undefined;
+let slowGrainOrig: ReturnType<typeof effects.get>['apply'] | undefined;
 
 export function installTestHook(): void {
   window.__bbzbTest = {
@@ -342,6 +345,11 @@ export function installTestHook(): void {
       const layer = getContentLayer()!;
       if (on) layer.add(new Konva.Group({ name: EFFECT_PENDING_NODE, id: 'hold-effects' }));
       else layer.findOne('#hold-effects')?.destroy();
+    },
+    slowGrain: (ms) => {
+      const g = effects.get('grain');
+      const orig = (slowGrainOrig ??= g.apply);
+      g.apply = async (ctx, p, scale) => (ms && scale >= 1 && (await new Promise((r) => setTimeout(r, ms))), orig(ctx, p, scale));
     },
     videoExportOpen: () => videoExportStats.open,
     putMask: async (width, height, split) => {

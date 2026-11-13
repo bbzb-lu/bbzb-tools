@@ -107,3 +107,25 @@ test('Datei lädt langsam: Projekt öffnet erst danach, ohne Platzhalter und Mel
   await expect(page.getByLabel('Projektname')).toHaveValue('Unbekannt');
   await expect(page.getByRole('alert')).toHaveCount(0);
 });
+
+test('Datei lädt langsam: Doppelklick auf «Öffnen» öffnet einmal, Knopf zeigt «Wird geöffnet …», Liste gesperrt', async ({ page }) => {
+  let release!: () => void;
+  const gate = new Promise<void>((r) => (release = r));
+  await page.route(CHUNK, async (r) => {
+    await gate;
+    await r.continue();
+  });
+  await openImported(page, 'tabler-home');
+  const row = page.getByRole('listitem').filter({ hasText: 'Unbekannt' });
+  const open = row.getByRole('button', { name: /öffnen$/ });
+  await expect(open).toHaveText('Wird geöffnet …');
+  await expect(open).toHaveAttribute('aria-disabled', 'true');
+  await expect(row.getByRole('button', { name: /duplizieren$/ })).toHaveAttribute('aria-disabled', 'true');
+  await open.dispatchEvent('click'); // weitere Klicks während des Ladens (aria-disabled lässt dblclick ewig warten)
+  await open.dispatchEvent('click');
+  release();
+  await expect(page.getByLabel('Projektname')).toHaveValue('Unbekannt');
+  await page.getByRole('button', { name: 'Übersicht' }).click();
+  await expect(page.getByRole('listitem').filter({ hasText: 'Unbekannt' })).toHaveCount(1); // kein zweites Projekt, Seite wieder bedienbar
+  await expect(open).toHaveText('Öffnen');
+});

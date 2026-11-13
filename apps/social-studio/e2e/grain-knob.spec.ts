@@ -150,3 +150,43 @@ test('Slide: Drehen rechnet das Korn als Vorschau in kleiner Auflösung, Loslass
   await expect.poll(bgHeight).toBe(1350);
   expect((await slide(page)).grainStrength).toBe(60);
 });
+
+test('Slide: nach dem Loslassen (4× Drosselung, volle Rechnung verzögert) nie die flache Farbe, Export wartet auf die volle Auflösung', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await openSection(page, 'Hintergrund');
+  await page.getByRole('radio', { name: 'Blau', exact: true }).check();
+  await addEffect(page, 'Korn');
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects())).toBe(0);
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+  await page.evaluate(() => window.__bbzbTest.slowGrain(1500));
+  const b = (await knob(page).boundingBox())!;
+  const [cx, cy] = [b.x + b.width / 2, b.y + b.height / 2];
+  await page.mouse.move(cx, cy);
+  await page.mouse.down();
+  for (let i = 1; i <= 5; i++) await page.mouse.move(cx, cy - i * 6);
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects()), { timeout: 15_000 }).toBe(0); // Vorschau steht
+  await page.evaluate(() => {
+    const k = (window as unknown as { Konva: typeof import('konva').default }).Konva;
+    const w = window as unknown as { __flat: number; __stop: boolean };
+    w.__flat = 0;
+    w.__stop = false;
+    const tick = () => {
+      const bg = (k.stages[0]!.findOne('.content') as import('konva').default.Layer).getChildren()[0];
+      if (bg instanceof k.Rect) w.__flat++;
+      if (!w.__stop) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  await page.mouse.up();
+  // sofort nach dem Loslassen: Export-Warteknoten ist da, solange nur die Vorschau steht
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects())).toBe(1);
+  const [early] = await exportPng(page); // wartet auf die volle Rechnung
+  await expect.poll(() => page.evaluate(() => window.__bbzbTest.pendingEffects())).toBe(0);
+  expect(await page.evaluate(() => (window as unknown as { __flat: number }).__flat)).toBe(0);
+  await page.evaluate(() => ((window as unknown as { __stop: boolean }).__stop = true));
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  await page.evaluate(() => window.__bbzbTest.slowGrain(0));
+  const [late] = await exportPng(page);
+  expect(meanDiff(early!, late!)).toEqual([0, 0, 0]); // volle Auflösung, nicht die hochgezogene Vorschau
+});

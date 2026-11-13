@@ -25,7 +25,7 @@ export function fieldState(f: HTMLElement): FieldState {
   return { selected: !!sel && !sel.isCollapsed && f.contains(sel.anchorNode), editable: f.isContentEditable, empty: !f.textContent };
 }
 
-const ctrlV = () => useUi.getState().setNotice({ kind: 'info', text: 'Einfügen: drücke Strg + V.' });
+export const ctrlV = () => useUi.getState().setNotice({ kind: 'info', text: 'Einfügen: drücke Strg + V.' });
 
 /**
  * Zwischenablage lesen und am Feld einfügen. Die Berechtigungsfrage von Edge kann offen bleiben: ist das Feld danach weg oder
