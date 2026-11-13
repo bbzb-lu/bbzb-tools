@@ -176,7 +176,8 @@ test('Kategorien als Texttabs, vollständig lesbar, Kacheln mit Tooltip statt ti
       return (await t.boundingBox())!;
     }));
     expect(boxes.every((b) => Math.abs(b.y - boxes[0]!.y) <= 1), `eine Zeile bei ${w}px`).toBe(true);
-    await expect.poll(() => library(page).locator('.library-tile img').count()).toBe(await library(page).locator('.library-tile').count());
+    // Scribble-PNGs werden nacheinander dekodiert (thumbnail.ts): bei vielen parallelen Workern dauert das länger als 5 s.
+    await expect.poll(() => library(page).locator('.library-tile img').count(), { timeout: 20_000 }).toBe(await library(page).locator('.library-tile').count());
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/task-6-${w}.png` });
   }
   await expect(library(page).locator('[title]')).toHaveCount(0);
