@@ -44,9 +44,10 @@ need noise.mp4 && ff -f lavfi -i testsrc2=size=1080x1350:rate=30:duration=3,nois
 # 6 s: bei Sekunde 3 wechselt das Bild von Rot auf Blau und ein Ton (1 kHz) setzt ein
 need beep-flash.mp4 && ff $(color 0xB03030 3) $(color 0x3030B0 3) -f lavfi -i 'sine=frequency=1000:sample_rate=48000:duration=3,adelay=3000:all=1' \
   -filter_complex '[0][1]concat=n=2:v=1:a=0[v]' -map '[v]' -map 2:a -c:v libx264 -pix_fmt yuv420p -g 15 -c:a aac "$OUT/beep-flash.mp4"
-# Naht-Test: Dreieckswelle in x (Steigung 1.1 Stufen je Quellpixel, Periode 200 px), die pro Bild um 10 px wandert: Nachbarspalten und
-# aufeinanderfolgende Bilder unterscheiden sich deutlich, nur Helligkeit (Farbe bleibt grau, kein Chroma-Rauschen)
-need seam-ramp.mp4 && ff -f lavfi -i "color=c=black:s=1920x1080:r=30:d=3,geq=lum='16+1.1*abs(mod(X+10*N,200)-100)':cb=128:cr=128" \
+# Naht-Test: Dreieckswelle in x (Steigung 0.55 Stufen je Pixel, Periode 400 px), die pro Bild um 30 px wandert: Nachbarspalten
+# und aufeinanderfolgende Bilder unterscheiden sich messbar, nur Helligkeit (grau, kein Chroma-Rauschen). Phase 92: an der Naht
+# (Quellspalte 768) und bei Bild 0 bis 17 liegt im Umkreis von 40 px keine Spitze der Welle (Spitzen bei Vielfachen von 200)
+need seam-ramp.mp4 && ff -f lavfi -i "color=c=black:s=1920x1080:r=30:d=3,geq=lum='16+0.55*abs(mod(X+92+30*N,400)-200)':cb=128:cr=128" \
   -c:v libx264 -pix_fmt yuv420p -crf 18 "$OUT/seam-ramp.mp4"
 # letzte Zeile sonst Exit 1, wenn der letzte Clip schon da ist (need liefert 1)
 true

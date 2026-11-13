@@ -58,16 +58,16 @@ test('Video über der Naht: beide MP4 gleich lang, beginnen bei 0, Spalte 1079 p
   expect(Math.abs(durA! - durB!)).toBeLessThanOrEqual(1 / 30);
   for (const f of [a, b]) expect(stream(f, 'stream=start_time')[0]).toBeCloseTo(0, 2);
 
-  // Das Testbild (Skript: 1.1 Stufen je Quellpixel, im Export Massstab 0.5 und Farbraumdehnung, gemessen etwa 4 Stufen je Pixel)
-  // wandert etwa 15 Stufen je Bild: gleiches Bild und richtige Spalte liegen unter der Grenze von 8 (gemessen 4 bis 6), 8 Pixel Versatz (gemessen
-  // 23 bis 28) und zwei Bilder Versatz (30 bis 32) darüber. Grosse Abstände, damit ein anderer Encoder (Windows-CI) nichts kippt.
+  // Das Testbild (Skript: 0.55 Stufen je Quellpixel, Welle wandert 30 px je Bild, ohne Spitze nahe der Naht): gleiches Bild und
+  // richtige Spalte liegen unter der Grenze von 8 (gemessen 2 bis 4), 16 Pixel Versatz (gemessen 21 bis 24) und zwei Bilder Versatz
+  // (40 bis 45) deutlich darüber, auch mit einem anderen Encoder (Windows-CI).
   for (const k of [0, 15]) {
     const left = frameAt(a, k);
     const right = frameAt(b, k);
     const real = seamDiff(left, right, 0);
-    const shifted = seamDiff(left, right, 8);
+    const shifted = seamDiff(left, right, 16);
     const next = seamDiff(left, frameAt(b, k + 2), 0);
-    const msg = `Bild ${k}: Naht ${real}, 8 px verschoben ${shifted}, übernächstes Bild ${next}`;
+    const msg = `Bild ${k}: Naht ${real}, 16 px verschoben ${shifted}, übernächstes Bild ${next}`;
     expect(real, msg).toBeLessThanOrEqual(8);
     expect(shifted, msg).toBeGreaterThan(8);
     expect(next, msg).toBeGreaterThan(8);
