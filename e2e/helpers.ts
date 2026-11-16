@@ -5,7 +5,7 @@ export function foreignRequests(page: Page): string[] {
   const foreign: string[] = [];
   page.on('request', (r) => {
     const url = r.url();
-    if (!url.startsWith('http://localhost:8788/') && !url.startsWith('blob:') && !url.startsWith('data:')) foreign.push(url);
+    if (!url.startsWith(`http://localhost:${process.env.PW_PORT ?? '8788'}/`) && !url.startsWith('blob:') && !url.startsWith('data:')) foreign.push(url);
   });
   return foreign;
 }

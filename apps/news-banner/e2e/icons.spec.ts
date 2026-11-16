@@ -1,6 +1,6 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { PNG } from 'pngjs';
-import { choose, exportPng, pick, px, slotButton, strong } from './helpers';
+import { choose, exportPng, near, pick, px, slotButton, strong } from './helpers';
 
 const LEFT = [440, 380, 780, 644] as const;
 const RIGHT = [1120, 380, 1460, 644] as const;
@@ -92,6 +92,41 @@ test('Eigenes Bild wird eingepasst, falsche Dateien geben eine Meldung', async (
   await expect(page.getByRole('alert')).toContainText('Dieses Format geht nicht');
   await input.setInputFiles({ name: 'kaputt.png', mimeType: 'image/png', buffer: Buffer.from('kein bild') });
   await expect(page.getByRole('alert')).toContainText('liess sich nicht öffnen');
+});
+
+async function ownImage(page: Page, file: { name: string; mimeType: string; buffer: Buffer }) {
+  await slotButton(page, 'links').click();
+  await choose(page, 'Bild');
+  await page.locator('input[type=file]').setInputFiles(file);
+}
+
+test('Eigenes Bild mit durchsichtigem Grund bekommt Schein, Farbe bleibt', async ({ page }) => {
+  await page.goto('');
+  const c = new PNG({ width: 400, height: 400 });
+  for (let y = 0; y < 400; y++) for (let x = 0; x < 400; x++) if ((x - 200) ** 2 + (y - 200) ** 2 < 150 ** 2) c.data.set([255, 0, 0, 255], (y * 400 + x) * 4);
+  await ownImage(page, { name: 'kreis.png', mimeType: 'image/png', buffer: PNG.sync.write(c) });
+  const { png } = await exportPng(page);
+  // auf den Inhalt zugeschnitten: Kreis 262×262 um (610, 512), Radius 131
+  expect(px(png, 610, 512)).toEqual([255, 0, 0]);
+  const [x, y] = [610 + 131 + 12, 512];
+  expect(px(png, x, y)[0]! - px(png, 2, y)[0]!).toBeGreaterThan(2); // heller als der Verlauf
+});
+
+test('Deckendes Bild (JPEG) bekommt keinen Schein', async ({ page }) => {
+  await page.goto('');
+  const b64 = await page.evaluate(async () => {
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = 200;
+    const g = cv.getContext('2d')!;
+    g.fillStyle = 'rgb(255,0,0)';
+    g.fillRect(0, 0, 200, 200);
+    const blob = await new Promise<Blob>((r) => cv.toBlob((b) => r(b!), 'image/jpeg', 0.95));
+    return btoa(String.fromCharCode(...new Uint8Array(await blob.arrayBuffer())));
+  });
+  await ownImage(page, { name: 'foto.jpg', mimeType: 'image/jpeg', buffer: Buffer.from(b64, 'base64') });
+  const { png } = await exportPng(page);
+  // quadratisch: 262×262 um (610, 512), Kante bei x = 741
+  near(px(png, 741 + 12, 512), px(png, 2, 512)); // Verlauf ist nur vertikal
 });
 
 test('Eigene SVG-Datei (nur viewBox) wird eingepasst', async ({ page }) => {

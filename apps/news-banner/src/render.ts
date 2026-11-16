@@ -46,10 +46,10 @@ function inner(icon: CanvasImageSource, w: number, h: number, pad: number, color
   return c;
 }
 
-/** Ein Icon im Platz: einpassen, dann (bei Strichicons) weicher Schein und Relief wie in der PSD. */
+/** Ein Icon im Platz: einpassen, dann (bei Strichicons und Bildern mit Transparenz) weicher Schein und Relief wie in der PSD. */
 function drawIcon(ctx: CanvasRenderingContext2D, p: Prepared, slot: Slot, theme: Theme) {
   const r = fitRect(p.w, p.h, slot);
-  if (!p.tinted) return void ctx.drawImage(p.src, r.x, r.y, r.w, r.h);
+  if (!p.effects) return void ctx.drawImage(p.src, r.x, r.y, r.w, r.h);
   const k = Math.min(1, r.w / 340, r.h / 262) || 1; // Effekte schrumpfen mit kleinen Icons
   const glow = iconStyle.glow[theme];
   const { shade, light, offset, blur } = iconStyle.relief;
