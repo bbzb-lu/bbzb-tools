@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { addEffect, newProject } from './fixtures';
-import { addVideo, twoTone } from './video';
+import { addVideo } from './video';
 
 /**
  * Rollende Zahl, Bild für Bild: ein Abtaster liest in jedem Bild den Stand, der gleich gemalt wird (ResizeObserver, nach allen rAF-Rückrufen und
@@ -116,7 +116,6 @@ test('Drehregler Korn: die Zahl selbst rollt, es gibt nie eine zweite', async ({
 });
 
 test.describe('Video', () => {
-  test.beforeAll(() => twoTone());
   test('Zeitfelder Start: Pfeiltasten am Bereichsregler zeigen in keinem Bild zwei Zahlen', async ({ page }) => {
     await newProject(page, 'Post 4:5');
     await addVideo(page);

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { elements, newProject, openAllSections, toScreen } from './fixtures';
 import { alphaPng, maskPng, openPhoto } from './photoProject';
-import { addVideo, twoTone } from './video';
+import { addVideo } from './video';
 
 const SHOTS = '.superpowers/sdd/2026-10-28-phase-4a-maske-pinsel/screens';
 const BOX = { x: 140, y: 275, width: 800, height: 800 };
@@ -22,21 +22,19 @@ async function select(page: Page, name: string, withMask = false) {
   await openAllSections(page);
 }
 
-test.beforeAll(twoTone);
-
 test('Abschnitt «Maske» am Foto, Knöpfe mit Name und Tooltip', async ({ page }) => {
   await select(page, 'Einfach');
   await expect(section(page)).toBeVisible();
-  await expect(btn(page, 'Ausblenden')).toHaveCount(0); // Pinselwerte nur im Pinselmodus
+  await expect(section(page).getByRole('radio', { name: 'Ausblenden' })).toHaveCount(0); // Pinselwerte nur im Pinselmodus
   for (const n of ['Maske bearbeiten', 'Maske umkehren', 'Maske zurücksetzen', 'Maske weich zeichnen'])
     await expect(btn(page, n)).toHaveAttribute('data-tip', /.+/);
   await expect(section(page).getByRole('slider', { name: 'Weiche Kante' })).toBeVisible();
   await btn(page, 'Maske bearbeiten').click();
-  for (const n of ['Ausblenden', 'Einblenden']) await expect(btn(page, n)).toHaveAttribute('data-tip', /.+/);
+  for (const n of ['Ausblenden', 'Einblenden']) await expect(section(page).getByRole('radio', { name: n })).toHaveAccessibleDescription('Taste X wechselt.');
   await expect(section(page).getByRole('slider', { name: 'Grösse' })).toBeVisible();
   await expect(section(page).getByRole('slider', { name: 'Härte' })).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(btn(page, 'Ausblenden')).toHaveCount(0);
+  await expect(section(page).getByRole('radio', { name: 'Ausblenden' })).toHaveCount(0);
   expect(await section(page).locator('[title]').count()).toBe(0);
   // Bild enthält den Knopf nicht mehr
   await expect(page.locator('section.section', { has: page.getByRole('heading', { name: 'Bild', exact: true }) }).getByRole('button', { name: 'Maske bearbeiten' })).toHaveCount(0);
@@ -58,10 +56,11 @@ test('Nicht am leeren Platzhalter und nicht am Video', async ({ page }) => {
 test('Ausblenden und Einblenden zeigen den aktiven Zustand', async ({ page }) => {
   await select(page, 'Modus');
   await btn(page, 'Maske bearbeiten').click();
-  await expect(btn(page, 'Ausblenden')).toHaveAttribute('aria-pressed', 'true');
-  await btn(page, 'Einblenden').click();
-  await expect(btn(page, 'Einblenden')).toHaveAttribute('aria-pressed', 'true');
-  await expect(btn(page, 'Ausblenden')).toHaveAttribute('aria-pressed', 'false');
+  const radio = (name: string) => section(page).getByRole('radio', { name, exact: true });
+  await expect(radio('Ausblenden')).toBeChecked();
+  await radio('Einblenden').check();
+  await expect(radio('Einblenden')).toBeChecked();
+  await expect(radio('Ausblenden')).not.toBeChecked();
   expect(await history(page)).toBe(0); // Ansicht, nie History
 });
 

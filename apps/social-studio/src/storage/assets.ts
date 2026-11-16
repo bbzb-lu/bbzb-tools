@@ -28,6 +28,8 @@ export interface AssetStore {
   get(id: string): Promise<Blob>;
   delete(id: string): Promise<void>;
   list(): Promise<{ id: string; lastModified: number }[]>;
+  /** Nur Sitzung: wann `put` ein Asset zuletzt angefasst hat, ohne es neu zu schreiben. `collectGarbage` zählt das wie `lastModified`. */
+  touched?: Map<string, number>;
 }
 
 export function toStorageError(e: unknown): unknown {
@@ -58,8 +60,10 @@ export function memoryAssetStore(clock: () => number = () => Date.now()): AssetS
 
 /** Dateiname = SHA-256-Hex im OPFS-Ordner `social-studio-assets`. Echtes OPFS nur per e2e testbar. */
 export function opfsAssetStore(): AssetStore {
+  const touched = new Map<string, number>();
   const dir = async () => (await navigator.storage.getDirectory()).getDirectoryHandle('social-studio-assets', { create: true });
   return {
+    touched,
     async put(blob, given) {
       const id = given ?? (await sha256Hex(blob));
       const d = await dir();
@@ -69,7 +73,8 @@ export function opfsAssetStore(): AssetStore {
       } catch (e) {
         if ((e as Error).name !== 'NotFoundError') throw e;
       }
-      // Immer (neu) schreiben: frischt lastModified auf, das schützt vor GC.
+      touched.set(id, Date.now()); // schützt vor GC, auch wenn nicht neu geschrieben wird
+      if (valid) return id;
       let w: FileSystemWritableFileStream | undefined;
       try {
         w = await (await d.getFileHandle(id, { create: true })).createWritable();
@@ -78,7 +83,7 @@ export function opfsAssetStore(): AssetStore {
       } catch (e) {
         await w?.abort().catch(() => {});
         // Teildatei nicht stehen lassen, gültige Datei behalten (auch eine, die inzwischen ein paralleles `put` geschrieben hat)
-        const nowValid = valid || (await d.getFileHandle(id).then((h) => h.getFile()).then((f) => f.size === blob.size, () => false));
+        const nowValid = await d.getFileHandle(id).then((h) => h.getFile()).then((f) => f.size === blob.size, () => false);
         if (!nowValid) await d.removeEntry(id).catch(() => {});
         throw toStorageError(e);
       }

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AiNetworkError } from '../../../ai/segmentClient';
+import { AiMissingError, AiNetworkError } from '../../../ai/segmentClient';
 import { maskFromAlpha } from '../../../ai/toMask';
 import { aiTools } from '../../../core/registries';
 import type { AiTool } from '../../../core/types';
@@ -14,7 +14,7 @@ const store = memoryAssetStore();
 vi.mock('../../../storage/assets', async (orig) => ({ ...(await orig<object>()), opfsAssetStore: () => store }));
 
 const { AI_DROPPED, saveStroke, setMaskFromAi } = await import('./maskOps');
-const { AI_FAILED, AI_NETWORK, NO_SUBJECT, cancelRemoveBackground, removeBackground } = await import('./cutoutOps');
+const { AI_FAILED, AI_MISSING, AI_NETWORK, NO_SUBJECT, cancelRemoveBackground, removeBackground } = await import('./cutoutOps');
 const ID = 'a'.repeat(64);
 const photo = () => useDoc.getState().project!.elements.p!.props as { mask?: string };
 const mk = (v: number) => {
@@ -166,6 +166,15 @@ describe('removeBackground', () => {
     (await started()).resolve(ring());
     await again;
     expect(photo().mask).toBeDefined();
+  });
+
+  it('Modelldatei fehlt: eigene Meldung ohne Netzhinweis', async () => {
+    const done = removeBackground('p');
+    (await started()).reject(new AiMissingError('Could not locate file'));
+    await done;
+    expect(useUi.getState().notice).toEqual({ kind: 'error', text: AI_MISSING });
+    expect(AI_MISSING).toBe('Das KI-Modell wurde nicht gefunden. Das liegt an der App, nicht an deinem Netz. Bitte melde es über das Feedback-Formular.');
+    expect(useUi.getState().ai).toBeUndefined();
   });
 
   it('anderer Fehler: allgemeine Meldung, Maske unverändert', async () => {

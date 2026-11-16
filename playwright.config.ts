@@ -6,6 +6,8 @@ const port = process.env.PW_PORT ?? '8788';
 const base = `http://localhost:${port}/`;
 
 export default defineConfig({
+  // Testvideos des Studios einmal vor dem Lauf erzeugen (vorhandene bleiben)
+  globalSetup: './scripts/test-videos.ts',
   // CI: Spur und Bild bei Fehlern, landen im Bericht (Artefakt)
   use: { trace: 'retain-on-failure', screenshot: 'only-on-failure' },
   // Windows-Runner ist langsam: ein zweiter Versuch, Wackler stehen im Bericht als «flaky»

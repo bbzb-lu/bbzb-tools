@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { AiBusy, AiNetworkError, createSegmentClient, type FromWorker, type ToWorker } from './segmentClient';
+import { AiBusy, AiMissingError, AiNetworkError, createSegmentClient, type FromWorker, type ToWorker } from './segmentClient';
 
 /** Test-Worker: merkt sich Nachrichten, die Antworten schreibt der Test. */
 class FakeWorker {
@@ -84,7 +84,7 @@ describe('segmentClient', () => {
     const { client, workers } = setup();
     const p = client.run(new Blob(), opts());
     await flush();
-    workers[0]!.reply({ type: 'error', network: false, message: 'shader' });
+    workers[0]!.reply({ type: 'error', reason: undefined, message: 'shader' });
     await flush();
     expect(workers[0]!.terminated).toBe(true);
     expect(workers[1]!.sent[0]!.device).toBe('wasm');
@@ -103,7 +103,7 @@ describe('segmentClient', () => {
     w2[0]!.onerror?.({ message: 'abort' } as ErrorEvent);
     await flush();
     expect(w2[1]!.sent[0]!.device).toBe('wasm');
-    w2[1]!.reply({ type: 'error', network: false, message: 'wasm kaputt' });
+    w2[1]!.reply({ type: 'error', reason: undefined, message: 'wasm kaputt' });
     await expect(crash).rejects.toThrow('wasm kaputt');
   });
 
@@ -111,7 +111,7 @@ describe('segmentClient', () => {
     const { client, workers } = setup();
     const p = client.run(new Blob(), opts());
     await flush();
-    workers[0]!.reply({ type: 'error', network: true, message: 'Failed to fetch' });
+    workers[0]!.reply({ type: 'error', reason: 'network', message: 'Failed to fetch' });
     await expect(p).rejects.toBeInstanceOf(AiNetworkError);
     expect(workers).toHaveLength(1);
     expect(workers[0]!.terminated).toBe(true);
@@ -120,5 +120,14 @@ describe('segmentClient', () => {
     expect(workers[1]!.sent[0]!.device).toBe('webgpu');
     workers[1]!.reply(result);
     await again;
+  });
+
+  it('Modelldatei fehlt: AiMissingError ohne WASM-Versuch', async () => {
+    const { client, workers } = setup();
+    const p = client.run(new Blob(), opts());
+    await flush();
+    workers[0]!.reply({ type: 'error', reason: 'missing', message: 'Could not locate file' });
+    await expect(p).rejects.toBeInstanceOf(AiMissingError);
+    expect(workers).toHaveLength(1);
   });
 });

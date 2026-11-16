@@ -1,18 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
-import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { newProject } from './fixtures';
 import { addVideo, settled } from './video';
 import { b64, colourDiff, expectSameColour, exportFiles, fmt, pointsIn, setVideo } from './video-export';
 
 const DIR = `${import.meta.dirname}/fixtures/video`;
-// Farbbalken mit BT.709-Angaben im Container (die übrigen Testclips haben keine Farbangaben)
-const TAGGED = `${DIR}/tagged-bt709.mp4`;
-test.beforeAll(() => {
-  if (existsSync(TAGGED)) return;
-  execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=640x360:rate=30:duration=3',
-    '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709', '-color_range', 'tv', TAGGED]);
-});
 
 const T = 1; // Start des gekürzten Stücks
 

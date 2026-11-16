@@ -184,11 +184,13 @@ export function useMaskTool(el: Element<PhotoProps>, photo: HTMLImageElement | u
         endGesture();
       }
       const { s, changed } = st;
-      if (!changed) return;
+      const { addStrokes } = useUi.getState();
+      if (!changed) return addStrokes(-1);
       // Sitzung inzwischen ersetzt (Maske im Store geändert): der Strich passt nicht mehr dazu
-      if (s !== session.current) return void useUi.getState().setNotice({ kind: 'error', text: DROPPED });
-      // liest die Maske sofort, der nächste Strich darf weitermalen; die Kette des Fotos schreibt der Reihe nach ins Dokument
-      void saveStroke(id, s, saveMask(opfsAssetStore(), s.mask));
+      if (s !== session.current) return addStrokes(-1), void useUi.getState().setNotice({ kind: 'error', text: DROPPED });
+      // liest die Maske sofort, der nächste Strich darf weitermalen; die Kette des Fotos schreibt der Reihe nach ins Dokument.
+      // «Ergebnis» rechnet die Effekte erst, wenn der Strich gespeichert ist (die Maskenversion im Schlüssel ist dann neu)
+      void saveStroke(id, s, saveMask(opfsAssetStore(), s.mask)).finally(() => addStrokes(-1));
     };
     const down = (e: PointerEvent) => {
       const p = useDoc.getState().project;
@@ -209,6 +211,7 @@ export function useMaskTool(el: Element<PhotoProps>, photo: HTMLImageElement | u
       const brush = { radius: (b.size / 2) * maskScale(meta, s.mask, cur.props.crop), hardness: b.hardness / 100, mode: b.mode, clip };
       // Geste offen: Undo/Redo wirken während des Strichs nicht (die Arbeitskopie bleibt die des Strichs)
       startGesture();
+      useUi.getState().addStrokes(1);
       stroke = { s, brush, toMask, pending: [toMask(world(e))], frame: 0, changed: false };
       stroke.frame = requestAnimationFrame(flush);
       window.addEventListener('pointermove', move);

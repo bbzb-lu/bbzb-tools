@@ -47,12 +47,12 @@ export const grainOf = (p: PhotoProps): boolean => p.grain ?? false;
 export const lookOf = (p: PhotoProps): boolean => p.look ?? false;
 export const videoOf = (p: PhotoProps): VideoProps | undefined => p.video;
 export const isVideo = (p: PhotoProps): boolean => p.video !== undefined;
-// Bildregler, Spiegeln und Rahmen gibt es am Video nicht (Phase 3): gespeicherte Werte (z. B. Rahmen aus dem Layout) gelten dort nicht.
+// Bildregler und Spiegeln gibt es am Video nicht (Phase 3): gespeicherte Werte gelten dort nicht. Der Rahmen gilt auch am Video.
 export const adjustOf = (p: PhotoProps): Adjust => (isVideo(p) ? undefined : p.adjust) ?? NEUTRAL;
 export const flipOf = (p: PhotoProps): boolean => !isVideo(p) && (p.flipX ?? false);
 export const flipYOf = (p: PhotoProps): boolean => !isVideo(p) && (p.flipY ?? false);
 export const maskOf = (p: PhotoProps): string | undefined => (isVideo(p) ? undefined : p.mask);
-export const frameOf = (p: PhotoProps): boolean => !isVideo(p) && (p.frame ?? false);
+export const frameOf = (p: PhotoProps): boolean => p.frame ?? false;
 export const scrimsOf = (p: PhotoProps): Scrim[] => p.scrims ?? (p.scrim ? [p.scrim] : []);
 /** Noch Platz für einen Verlauf? Die Bedienung prüft das vor dem Anlegen (höchstens `scrim.max`). */
 export const canAddScrim = (p: PhotoProps): boolean => scrimsOf(p).length < scrim.max;

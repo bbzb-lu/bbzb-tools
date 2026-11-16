@@ -1,8 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { addScrim, bbzbsocial, elements, newProject, toggleEffect, toScreen } from './fixtures';
-import { addVideo, probe, setStart, settled, twoTone } from './video';
-
-test.beforeAll(twoTone);
+import { addVideo, probe, setStart, settled } from './video';
 
 test('Video zeigt das Startbild mit Look; anderer Start zeigt ein anderes Bild', async ({ page }) => {
   await newProject(page, 'Post 4:5');
@@ -23,7 +21,7 @@ test('Video zeigt das Startbild mit Look; anderer Start zeigt ein anderes Bild',
   await expect.poll(diff).toBeGreaterThan(10);
 });
 
-test('Korn und Verlauf wirken auf das Video; Rahmen, Bildregler, Spiegeln fehlen', async ({ page }) => {
+test('Korn und Verlauf wirken auf das Video; Bildregler, Spiegeln fehlen; Rahmen gibt es', async ({ page }) => {
   await newProject(page, 'Post 4:5');
   const id = await addVideo(page);
   const plain = (await probe(page, id))!;
@@ -35,9 +33,9 @@ test('Korn und Verlauf wirken auf das Video; Rahmen, Bildregler, Spiegeln fehlen
   await settled(page);
   await expect.poll(async () => (await probe(page, id))!.top - (await probe(page, id))!.bottom).toBeGreaterThan(10);
 
-  // Effekt-Auswahl ohne Rahmen (Menü zu, die Einträge liegen schon im DOM)
+  // Effekt-Auswahl mit Rahmen (Menü zu, die Einträge liegen schon im DOM)
   await expect(page.getByRole('menuitem', { name: /^Korn/, includeHidden: true })).toHaveCount(1);
-  await expect(page.getByRole('menuitem', { name: /^Rahmen/, includeHidden: true })).toHaveCount(0);
+  await expect(page.getByRole('menuitem', { name: /^Rahmen/, includeHidden: true })).toHaveCount(1);
   for (const name of ['Waagrecht spiegeln', 'Senkrecht spiegeln', 'Erweitert']) await expect(page.getByRole('button', { name, exact: true })).toHaveCount(0);
   await expect(page.getByRole('slider', { name: 'Helligkeit' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Ausschnitt bearbeiten' })).toBeVisible();

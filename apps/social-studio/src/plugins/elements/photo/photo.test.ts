@@ -56,6 +56,7 @@ describe('photoType', () => {
   it('nimmt Bilder und HEIC an, sonst nichts', () => {
     expect(photoType.acceptsFile!(new File([], 'a.jpg', { type: 'image/jpeg' }))).toBe(true);
     expect(photoType.acceptsFile!(new File([], 'IMG_1.HEIC'))).toBe(true);
+    expect(photoType.acceptsFile!(new File([], 'ohne-endung', { type: 'image/heic' }))).toBe(true);
     expect(photoType.acceptsFile!(new File([], 'a.txt', { type: 'text/plain' }))).toBe(false);
   });
 

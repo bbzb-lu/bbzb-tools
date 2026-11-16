@@ -1,6 +1,6 @@
 import type { EditorContext } from '../../../core/types';
 import { coverCrop, insertFrame } from '../../../model/crop';
-import { addElement, nextName } from '../../../model/elements';
+import { addElement, nextName, renameForStyle } from '../../../model/elements';
 import { slideRect } from '../../../model/geometry';
 import type { Element, Project } from '../../../model/types';
 import { StorageFullError, videoAssetId } from '../../../storage/assets';
@@ -48,7 +48,7 @@ export const photoFromFile = (file: File, ctx: EditorContext): Promise<void> =>
       addElement(d, {
         id,
         type: 'photo',
-        name: nextName(d, 'Foto'),
+        name: nextName(d, img.video ? 'Video' : 'Foto'),
         ...frame,
         rotation: 0,
         opacity: 1,
@@ -69,9 +69,10 @@ export const fillPhoto = (el: Element<PhotoProps>, file: File, ctx: EditorContex
       if (!target) return; // inzwischen gelöscht; das Asset räumt die GC weg
       addAsset(d, img, file);
       target.props = { ...target.props, assetId: img.assetId, crop: coverCrop(imageArea(target.props, target), img), grain: target.props.assetId === undefined ? false : (target.props.grain ?? false), look: true, video: img.video };
+      target.name = renameForStyle(target.name, img.video ? 'foto' : 'video', img.video ? 'video' : 'foto');
       delete target.props.mask; // die Maske gehört zum alten Bild (Alt-Asset und -Maske räumt die GC weg)
       if (!img.video) delete target.props.video; // Foto ersetzt Video: Ausschnitt und Ton fallen weg; neues Video startet bei 0
-      else for (const k of ['frame', 'frameOutside', 'flipX', 'flipY', 'adjust'] as const) delete target.props[k]; // gibt es am Video nicht
+      else for (const k of ['flipX', 'flipY', 'adjust'] as const) delete target.props[k]; // Spiegeln und Bildregler gibt es am Video nicht; der Rahmen bleibt
       filled = true;
     });
     if (filled) ctx.select(el.id);

@@ -238,7 +238,7 @@ test('Windows-Rechtsklick gleich nach einem Klick: Menü des Elements, kein Dopp
   }
 });
 
-test('Spiegeln hat ein Untermenü: Pfeil rechts öffnet, Waagerecht und Senkrecht kippen das Foto, Pfeil links und Esc schliessen nur das Untermenü', async ({ page }) => {
+test('Spiegeln hat ein Untermenü: Pfeil rechts öffnet, Waagrecht und Senkrecht kippen das Foto, Pfeil links und Esc schliessen nur das Untermenü', async ({ page }) => {
   const { photo } = await photoAndText(page);
   const props = () => page.evaluate((id) => (window.__bbzbTest.elements().find((e) => e.id === id)!.props as { flipX?: boolean; flipY?: boolean }), photo.id);
   const open = async () => {
@@ -252,23 +252,23 @@ test('Spiegeln hat ein Untermenü: Pfeil rechts öffnet, Waagerecht und Senkrech
   await page.keyboard.press('ArrowRight');
   await expect(item(page, 'Spiegeln')).toHaveAttribute('aria-expanded', 'true');
   const sub = page.getByRole('menu', { name: 'Spiegeln' });
-  await expect(sub.getByRole('menuitem')).toHaveText(['Waagerecht', 'Senkrecht']);
+  await expect(sub.getByRole('menuitem')).toHaveText(['Waagrecht', 'Senkrecht']);
   // Symbol zeigt die Achse wie im Entwurf: waagerecht = senkrechte Achse
-  await expect(sub.getByRole('menuitem', { name: 'Waagerecht' }).locator('svg.tabler-icon-flip-horizontal')).toHaveCount(1);
+  await expect(sub.getByRole('menuitem', { name: 'Waagrecht' }).locator('svg.tabler-icon-flip-horizontal')).toHaveCount(1);
   await expect(sub.getByRole('menuitem', { name: 'Senkrecht' }).locator('svg.tabler-icon-flip-vertical')).toHaveCount(1);
-  await expect(sub.getByRole('menuitem', { name: 'Waagerecht' })).toBeFocused();
+  await expect(sub.getByRole('menuitem', { name: 'Waagrecht' })).toBeFocused();
   if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/task-13a-rechtsklick-untermenue.png` });
   await page.keyboard.press('ArrowLeft');
   await expect(sub).toHaveCount(0);
   await expect(item(page, 'Spiegeln')).toBeFocused();
   await page.keyboard.press('ArrowRight');
-  await expect(sub.getByRole('menuitem', { name: 'Waagerecht' })).toBeFocused();
+  await expect(sub.getByRole('menuitem', { name: 'Waagrecht' })).toBeFocused();
   await page.keyboard.press('Escape'); // im Untermenü: nur das Untermenü zu
   await expect(sub).toHaveCount(0);
   await expect(menu(page)).toBeVisible();
   await page.keyboard.press('Enter'); // Enter am Elterneintrag öffnet ebenfalls
-  await expect(sub.getByRole('menuitem', { name: 'Waagerecht' })).toBeFocused();
-  await page.keyboard.press('Enter'); // Waagerecht
+  await expect(sub.getByRole('menuitem', { name: 'Waagrecht' })).toBeFocused();
+  await page.keyboard.press('Enter'); // Waagrecht
   await expect(menu(page)).toBeHidden();
   expect((await props()).flipX).toBe(true);
 

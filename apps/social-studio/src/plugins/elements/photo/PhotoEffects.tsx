@@ -27,7 +27,7 @@ const removeGrain = (id: string) =>
   });
 
 /**
- * «Effekte» am Foto: Rahmen (nicht am Video), Korn und Verläufe über «+». Beim leeren Platzhalter (`empty`) nur der Rahmen:
+ * «Effekte» am Foto: Rahmen, Korn und Verläufe über «+». Beim leeren Platzhalter (`empty`) nur der Rahmen:
  * er gehört zum Layout, Korn und Verläufe kommen mit dem Bild.
  */
 export function PhotoEffects({ el, empty = false }: { el: Element<PhotoProps>; empty?: boolean }) {
@@ -37,7 +37,7 @@ export function PhotoEffects({ el, empty = false }: { el: Element<PhotoProps>; e
   const scrims = empty ? [] : scrimsOf(el.props);
   const set = (next: Scrim[]) => setScrims(el.id, next);
   const entries: EffectEntry[] = [
-    ...(vid ? [] : [{ id: 'rahmen', label: 'Rahmen', hint: 'Rand ums Foto', active: frame }]),
+    { id: 'rahmen', label: 'Rahmen', hint: vid ? 'Rand ums Video' : 'Rand ums Foto', active: frame },
     ...(empty ? [] : [{ id: 'korn', label: 'Korn', hint: 'Filmkörnung', active: grain }, scrimEntry(scrims)]),
   ];
   const add = (id: string) => {
@@ -47,9 +47,9 @@ export function PhotoEffects({ el, empty = false }: { el: Element<PhotoProps>; e
     openSections('Effekte', `effekt-${id}`);
   };
   const rows = [
-    !vid && frame && (
+    frame && (
       <EffectRow key="rahmen" id="effekt-rahmen" icon={<IconFrame aria-hidden="true" />} label="Rahmen" onRemove={() => toggleFrame(el.id)}>
-        <p className="muted hint">Warmweisser Rand mit Schatten um das Foto.</p>
+        <p className="muted hint">Warmweisser Rand mit Schatten um das {vid ? 'Video' : 'Foto'}.</p>
       </EffectRow>
     ),
     grain && (

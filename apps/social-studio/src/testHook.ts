@@ -79,11 +79,13 @@ declare global {
       /** Sichtbare Randbreite des Fotorahmens (links, oben, rechts, unten) in Slide-Pixeln (Rechteck, Kontur oder alter Innenrahmen), null ohne Rahmen. */
       frameInset(id: string): { left: number; top: number; right: number; bottom: number } | null;
       hintFill(): string | null;
+      /** Lage des Platzhalter-Hinweises in Slide-Pixeln (Oberkante, Unterkante der Textzeile), null ohne Platzhalter. */
+      hintBox(): { top: number; bottom: number } | null;
       breakManifest(missing?: string[]): void;
       notify(kind: 'info' | 'error', text: string): void;
       applyLayout(preset: LayoutPreset, at: number): Promise<string[]>;
       /** Video-Vorschau: gezeichnete Bilder seit dem Laden, offene Video-Elemente (nach Stopp 0). */
-      preview(): { frames: number; open: number };
+      preview(): { frames: number; open: number; composites: number };
       /** Slide wie der Export sie zeichnet (Videos: Startbild), RGB-Flecken 5 × 5 px an relativen Punkten (0 bis 1). */
       slidePixels(index: number, pts: [number, number][]): number[][];
       /** Video (Base64) mit Mediabunny dekodiert wie im Editor: Bild bei `t` an relativen Punkten, dazu Dauer, Grösse, Frames, Ton. */
@@ -163,6 +165,13 @@ export function installTestHook(): void {
     safeZoneRects: () => Array.from((Konva.stages[0]!.findOne('.safezones') as Konva.Layer | undefined)?.find<Konva.Rect>('Rect') ?? []).map((r) => ({ width: r.width(), height: r.height() })),
     /** Füllfarbe des Platzhalter-Hinweises (null: kein leerer Platzhalter). */
     hintFill: () => (Konva.stages[0]!.findOne<Konva.Text>((n: Konva.Node) => n.getClassName() === 'Text' && (n as Konva.Text).text() === 'Foto hierher ziehen')?.fill() as string | undefined) ?? null,
+    hintBox: () => {
+      const t = Konva.stages[0]!.findOne<Konva.Text>((n: Konva.Node) => n.getClassName() === 'Text' && (n as Konva.Text).text() === 'Foto hierher ziehen');
+      if (!t) return null;
+      const r = t.getClientRect({ relativeTo: t.getLayer()! });
+      const h = t.fontSize(); // Textzeile, ohne die Auffüllung der Box
+      return { top: r.y + (r.height - h) / 2, bottom: r.y + (r.height + h) / 2 };
+    },
     notify: (kind, text) => useUi.getState().setNotice({ kind, text }),
     transformerNodes: () => (Konva.stages[0]!.findOne('Transformer') as Konva.Transformer).nodes().length,
     /** Position des Konva-Nodes eines Elements (was die Leinwand zeigt). */

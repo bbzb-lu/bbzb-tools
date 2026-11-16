@@ -1,25 +1,10 @@
 import { expect, type Page } from '@playwright/test';
-import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { elements, openSectionsOf } from './fixtures';
 
 const DIR = resolve(`${import.meta.dirname}/fixtures/video`);
 // 2 s Rot, dann 2 s Blau, beide mittelhell (Korn wirkt im Modus «overlay» nicht auf reine Farben): das Bild hängt von `video.start` ab
 const CLIP = `${DIR}/two-tone.mp4`;
-
-/** Testclip erzeugen (git-ignoriert), falls er fehlt: in `test.beforeAll` aufrufen. */
-export function twoTone(): void {
-  if (existsSync(CLIP)) return;
-  mkdirSync(DIR, { recursive: true });
-  const color = (c: string) => ['-f', 'lavfi', '-i', `color=c=${c}:s=320x400:r=30:d=2`];
-  try {
-    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', ...color('0xB03030'), ...color('0x3030B0'),
-      '-filter_complex', '[0][1]concat=n=2:v=1:a=0[v]', '-map', '[v]', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-g', '15', CLIP]);
-  } catch {
-    throw new Error('Testvideo lässt sich nicht erzeugen: ffmpeg installieren.');
-  }
-}
 
 type Probe = { r: number; g: number; b: number; sd: number; top: number; bottom: number };
 /** Bild, das der Video-Knoten gerade zeigt (Effekt-Canvas oder Rohbild): Mittelwerte, Streuung der Helligkeit, Helligkeit oben/unten. */

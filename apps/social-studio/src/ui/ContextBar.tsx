@@ -14,6 +14,8 @@ interface Props {
   label: string;
   icon: ReactNode;
   hint?: ReactNode;
+  /** Nur das Symbol statt des Titels zeigen (der Titel bleibt für Screenreader und als Tooltip): spart Breite bei vielen Bedienelementen. */
+  compact?: boolean;
   /** Primärtaste am Ende («Fertig», «Geprüft»); ohne: keine. */
   onDone?(): void;
   doneLabel?: string;
@@ -28,7 +30,7 @@ interface Props {
  * über dem Rahmen der Elemente `ids`, steht sie oben; ist auch dort kein Platz, bleibt sie unten. Geprüft beim Öffnen, bei Grössenänderung, Zoom, Scrollen und Dokumentänderungen,
  * ohne React-Render. Nur sie selbst fängt Zeigerereignisse (Striche daneben gehen an die Leinwand).
  */
-export function ContextBar({ ids, label, icon, hint, onDone, doneLabel = 'Fertig', onHold, children }: Props) {
+export function ContextBar({ ids, label, icon, hint, compact, onDone, doneLabel = 'Fertig', onHold, children }: Props) {
   const zoom = useUi((s) => s.zoom);
   const bar = useRef<HTMLDivElement>(null);
   const key = ids.join();
@@ -75,7 +77,7 @@ export function ContextBar({ ids, label, icon, hint, onDone, doneLabel = 'Fertig
   return (
     <div
       ref={bar}
-      className="context-bar"
+      className={compact ? 'context-bar compact' : 'context-bar'}
       role="group"
       aria-label={label}
       onPointerEnter={onHold && (() => onHold(true))}
@@ -84,9 +86,9 @@ export function ContextBar({ ids, label, icon, hint, onDone, doneLabel = 'Fertig
       onFocus={onHold && (() => onHold(true))}
       onBlur={onHold && ((e) => onHold(e.currentTarget.matches(':hover') || e.currentTarget.contains(e.relatedTarget as Node | null)))}
     >
-      <span className="context-bar-title">
+      <span className="context-bar-title" data-tip={compact ? label : undefined}>
         {icon}
-        {label}
+        <span className="context-bar-label">{label}</span>
       </span>
       {hint && <span className="context-bar-hint">{hint}</span>}
       {children}

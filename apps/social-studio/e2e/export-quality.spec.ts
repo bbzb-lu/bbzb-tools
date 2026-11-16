@@ -1,16 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
-import { execFileSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
 import { addPhoto, addSlide, gradientPng, newProject } from './fixtures';
 import { addVideo, settled } from './video';
 import { exportFiles, setVideo } from './video-export';
 
 // Viel Rauschen: der Encoder schöpft die Bitrate aus (ein einfarbiges Video bliebe bei jeder Stufe winzig)
 const NOISE = `${import.meta.dirname}/fixtures/video/noise.mp4`;
-test.beforeAll(() => {
-  if (existsSync(NOISE)) return;
-  execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-f', 'lavfi', '-i', 'testsrc2=size=1080x1350:rate=30:duration=3,noise=alls=60:allf=t', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '10', NOISE]);
-});
 
 async function setQuality(page: Page, label: 'Klein' | 'Standard' | 'Hoch') {
   await page.getByRole('button', { name: 'Einstellungen', exact: true }).click();

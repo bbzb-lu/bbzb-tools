@@ -90,7 +90,7 @@ test(`Malen mit 4× CPU-Drosselung (grösstes Foto, Maske 2048 × 1536, Ansicht 
     await frames(page);
   });
   if (view === 'Ergebnis') {
-    await page.getByRole('group', { name: 'Ansicht' }).getByRole('button', { name: view }).click();
+    await page.locator('.inspector').getByRole('radio', { name: view, exact: true }).check();
     await expect.poll(() => page.evaluate(() => window.__bbzbTest.veils())).toBe(0);
   }
   const k = (await toScreen(page, 1, 0)).x - (await toScreen(page, 0, 0)).x;

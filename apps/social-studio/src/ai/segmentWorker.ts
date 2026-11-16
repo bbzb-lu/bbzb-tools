@@ -52,6 +52,8 @@ self.onmessage = async ({ data: { image, device } }: MessageEvent<ToWorker>) => 
     post({ type: 'done', ...result }, [result.alpha.buffer]);
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
-    post({ type: 'error', network: loading && /fetch|network|locate file/i.test(message), message });
+    // Fehlende Datei (404) ist ein Fehler der App, nicht des Netzes: eigene Meldung
+    const reason = !loading ? undefined : /locate file|\b404\b/i.test(message) ? 'missing' : /fetch|network/i.test(message) ? 'network' : undefined;
+    post({ type: 'error', reason, message });
   }
 };
