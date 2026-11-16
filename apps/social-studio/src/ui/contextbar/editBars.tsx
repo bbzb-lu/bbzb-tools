@@ -19,7 +19,7 @@ function MaskBar() {
   const b = useUi((s) => s.brush);
   const set = useUi((s) => s.setBrush);
   return (
-    <ContextBar ids={[id]} label="Maske" compact icon={<IconBrush aria-hidden="true" />} onDone={() => useUi.getState().setMaskEditId(null)}>
+    <ContextBar ids={[id]} label="Maske" icon={<IconBrush aria-hidden="true" />} onDone={() => useUi.getState().setMaskEditId(null)}>
       {/* Tooltip am Umschlag: Segmented selbst hat keinen Anker (data-tip), der Tooltip sucht per closest */}
       <div className="tip-wrap" data-tip="Ausblenden oder Einblenden" data-keys={keysAttr(KEYS.brushSwap)}>
         <Segmented legend="Modus" value={b.mode} options={[['hide', 'Ausblenden'], ['show', 'Einblenden']]} onChange={(mode) => set({ mode })} hint="Taste X wechselt." />

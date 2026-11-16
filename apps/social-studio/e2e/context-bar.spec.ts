@@ -7,6 +7,7 @@ test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } });
 
 const BOX = { x: 140, y: 275, width: 800, height: 800 };
 const bar = (page: Page) => page.getByRole('group', { name: 'Maske', exact: true });
+const more = (page: Page) => bar(page).getByRole('button', { name: 'Mehr' });
 const toggle = (page: Page) => page.getByRole('button', { name: 'Maske bearbeiten' });
 
 async function open(page: Page, name: string, box = BOX) {
@@ -28,6 +29,9 @@ test('Leiste im Maskenmodus: über den Inspektor, Pinsel synchron, «Fertig» un
   await bar(page).getByRole('spinbutton', { name: 'Grösse' }).press('Enter');
   await expect(insp.getByRole('slider', { name: 'Grösse' })).toHaveValue('77');
   await insp.getByRole('slider', { name: 'Härte' }).fill('20');
+  // 1280 px: Härte und Ansicht passen nicht in die Zeile, sie stehen unter «Mehr»
+  await expect(bar(page).getByRole('slider', { name: 'Härte' })).toHaveCount(0);
+  await more(page).click();
   await expect(bar(page).getByRole('slider', { name: 'Härte' })).toHaveValue('20');
   await bar(page).getByRole('radio', { name: 'Einblenden' }).check();
   await expect(insp.getByRole('radio', { name: 'Einblenden' })).toBeChecked();
@@ -43,11 +47,17 @@ test('Leiste im Maskenmodus: über den Inspektor, Pinsel synchron, «Fertig» un
   const last = bar(page).locator('button, input').last();
   await expect(last).toHaveText('Fertig');
   await expect(bar(page).getByRole('radio', { name: 'Einblenden' })).toHaveAccessibleDescription('Taste X wechselt.'); // Kürzel auch in der Leiste
-  // Ansicht: Leiste und Inspektor teilen sie
+  // Ansicht: Leiste und Inspektor teilen sie (das Feld «Mehr» schloss sich beim Klick in den Inspektor)
+  await more(page).click();
   await bar(page).getByRole('radio', { name: 'Ergebnis' }).check();
   await expect(insp.getByRole('radio', { name: 'Ergebnis' })).toBeChecked();
   await insp.getByRole('radio', { name: 'Rote Folie' }).check();
+  await more(page).click();
   await expect(bar(page).getByRole('radio', { name: 'Rote Folie' })).toBeChecked();
+  // Esc schliesst nur das Feld, der Pinselmodus bleibt
+  await page.keyboard.press('Escape');
+  await expect(bar(page).getByRole('radio', { name: 'Rote Folie' })).toHaveCount(0);
+  await expect(bar(page)).toBeVisible();
   await bar(page).getByRole('button', { name: 'Fertig' }).click();
   await expect(bar(page)).toHaveCount(0);
   expect(await page.evaluate(() => window.__bbzbTest.ui().maskEditId)).toBeNull();
@@ -106,6 +116,40 @@ for (const size of [{ width: 1280, height: 720 }, { width: 1536, height: 864 }])
     expect((await measure(page)).stage).toEqual(before.stage);
   });
 }
+
+// Gängige Breiten (1536: Full HD mit 125 %): immer eine Zeile gleicher Höhe, jedes Bedienelement genau einmal erreichbar, in der Zeile oder unter «Mehr»
+test('Maskenleiste 1280 bis 1920 px: eine Zeile, was nicht passt, steht unter «Mehr»; folgt der Fensterbreite', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await open(page, 'Leiste Breite');
+  await toggle(page).click();
+  const names = ['Ausblenden', 'Grösse', 'Härte', 'Rote Folie'];
+  const control = (n: string) => bar(page).getByRole(n === 'Grösse' || n === 'Härte' ? 'slider' : 'radio', { name: n });
+  const inRow = async () => {
+    const shown: string[] = [];
+    for (const n of names) if (await control(n).count()) shown.push(n);
+    return shown;
+  };
+  const heights = new Set<number>();
+  for (const [width, row] of [[1920, 4], [1536, 4], [1366, 3], [1280, 2], [1920, 4]] as const) {
+    await page.setViewportSize({ width, height: 800 });
+    await expect.poll(inRow, { message: `${width} px` }).toEqual(names.slice(0, row));
+    await expect(more(page)).toHaveCount(row < 4 ? 1 : 0);
+    const box = (await bar(page).boundingBox())!;
+    heights.add(Math.round(box.height));
+    const frame = (await page.locator('.canvas-scroll').boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(frame.x);
+    expect(box.x + box.width).toBeLessThanOrEqual(frame.x + frame.width);
+    await expect(bar(page).getByRole('button', { name: 'Fertig' })).toBeVisible();
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/mask-bar-fit-${width}.png` });
+    if (row === 4) continue;
+    await more(page).click();
+    await expect.poll(inRow).toEqual(names); // der Rest im Feld, nichts doppelt (getByRole wäre sonst nicht eindeutig)
+    for (const n of names) await expect(control(n)).toHaveCount(1);
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/mask-bar-more-${width}.png` });
+    await page.keyboard.press('Escape');
+  }
+  expect([...heights]).toHaveLength(1);
+});
 
 test('Maskenleiste: ein Strich über die Leiste malt weiter, die Leiste fängt ihn nicht ab', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
@@ -191,7 +235,7 @@ test('Maskenleiste: Tooltip «Ausblenden oder Einblenden» mit Taste X bei Maus 
   await toggle(page).click();
   const tip = page.locator('.tooltip');
   const shown = () => tip.evaluate((e) => e.matches(':popover-open'));
-  await bar(page).locator('.tip-wrap').hover();
+  await bar(page).locator('.context-bar-items .tip-wrap').hover();
   await expect.poll(shown).toBe(true);
   await expect(tip).toContainText('Ausblenden oder Einblenden');
   await expect(tip.locator('kbd')).toHaveText(['X']);
