@@ -66,7 +66,7 @@ test('KI läuft: Leiste mit Status, Balken und «Abbrechen», auch wenn etwas an
   await expect(live(page)).toHaveText(/^Modell wird geladen, einmalig ca\. \d+ MB$/);
   await sameLive(page);
   await expect(page.getByRole('status').filter({ hasText: 'Modell wird geladen' })).toHaveCount(1);
-  await expect(bar.locator('.context-bar-progress')).toBeVisible();
+  await expect(bar.locator('.context-bar-items .context-bar-progress')).toBeVisible();
   await select(page, 'e1');
   await only(page, 'Freistellen');
   await select(page);
