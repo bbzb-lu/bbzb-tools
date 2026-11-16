@@ -49,6 +49,11 @@ button:is([role='tab'], [role='menuitem']):is(:hover, :active) { transform: none
 
 /* Schalter (Ja/Nein): dunkler Block rechts = an */
 .kit-switch { width: 3rem; min-width: 3rem; min-height: 1.5rem; height: 1.5rem; padding: 0; display: block; background: var(--paper-shade); color: inherit; }
+/* Schatten an und aus gleich (die Taste verliert ihn sonst bei aria-checked) */
+.kit-switch:not([aria-disabled='true']) { box-shadow: 3px 3px 0 var(--ink); }
+/* Mit Text: ein Label um Text und Schalter, der Text schaltet mit */
+.kit-switch-field { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+.kit-switch-text { flex: 1; display: inline-flex; align-items: center; gap: 0.5rem; }
 .kit-switch .switch-knob { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; background: var(--paper); }
 .kit-switch[aria-checked='true'] .switch-knob { left: 50%; background: var(--ink); }
 

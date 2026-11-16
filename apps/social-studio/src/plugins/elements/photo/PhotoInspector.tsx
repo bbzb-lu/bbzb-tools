@@ -16,7 +16,7 @@ export function PhotoInspector({ el }: { el: Element<PhotoProps> }) {
   const vid = isVideo(el.props);
   return (
     <>
-      <Section heading="Darstellung" collapsible defaultOpen><OpacitySlider el={el} /></Section>
+      <Section heading="Darstellung" id="darstellung-photo" collapsible defaultOpen><OpacitySlider el={el} /></Section>
       {vid && !empty ? <VideoSection el={el} /> : <ImageSection el={el} />}
       {!vid && !empty && <MaskSection el={el} />}
       <PhotoEffects el={el} empty={empty} />

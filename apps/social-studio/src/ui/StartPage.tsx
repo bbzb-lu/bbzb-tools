@@ -14,6 +14,7 @@ import { opfsAssetStore } from '../storage/assets';
 import { deleteProject, listProjects, loadProject, saveProject, type ProjectSummary } from '../storage/db';
 import { collectGarbage } from '../storage/gc';
 import { errorText } from './errors';
+import { HelpDialog } from './HelpDialog';
 import { LicensesDialog } from './LicensesDialog';
 import { copyRules, fontsLoaded } from './layoutActions';
 
@@ -41,7 +42,8 @@ export function StartPage() {
   useEffect(() => void refresh(), [refresh]);
 
   const [creating, setCreating] = useState(false);
-  const creatingNow = useRef(false); // Doppelklick: kein zweites Projekt, auch vor dem nächsten Render
+  const [opening, setOpening] = useState<string>();
+  const creatingNow = useRef(false); // Doppelklick: kein zweites Projekt und kein zweites Öffnen, auch vor dem nächsten Render; sperrt die ganze Seite (creating)
   const create = async (formatId: string) => {
     if (creatingNow.current) return;
     creatingNow.current = true;
@@ -60,6 +62,10 @@ export function StartPage() {
   };
 
   const open = async (id: string) => {
+    if (creatingNow.current) return;
+    creatingNow.current = true;
+    setCreating(true);
+    setOpening(id);
     try {
       const p = await loadProject(id);
       if (p) {
@@ -73,6 +79,10 @@ export function StartPage() {
     } catch (e) {
       fail(e, 'Das Projekt konnte nicht geöffnet werden.');
     }
+    // Geöffnet ist die Seite weg; sonst (nicht gefunden, Fehler) wieder bedienbar
+    creatingNow.current = false;
+    setCreating(false);
+    setOpening(undefined);
   };
 
   // Link von der Startseite («Zuletzt»): /social-studio/?projekt=<id> öffnet direkt, der Parameter verschwindet
@@ -214,7 +224,7 @@ export function StartPage() {
                   <span className="row-actions">
                     <button type="button" aria-label={`«${p.name}» öffnen`} aria-disabled={creating} onClick={() => !creating && open(p.id)}>
                       <IconFolderOpen aria-hidden="true" />
-                      Öffnen
+                      {opening === p.id ? 'Wird geöffnet …' : 'Öffnen'}
                     </button>
                     <button type="button" className="icon-btn" aria-label={`«${p.name}» duplizieren`} aria-disabled={creating} data-tip="Duplizieren" onClick={() => !creating && duplicate(p.id)}>
                       <IconCopy aria-hidden="true" />
@@ -246,6 +256,7 @@ export function StartPage() {
         </section>
 
         <footer>
+          <HelpDialog />
           <LicensesDialog />
         </footer>
 

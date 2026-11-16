@@ -36,7 +36,7 @@ export function TextInspector({ el }: { el: Element<TextProps> }) {
   };
 
   return (
-    <Section heading="Darstellung" collapsible defaultOpen>
+    <Section heading="Darstellung" id="darstellung-text" collapsible defaultOpen>
       <p className="muted hint">Doppelklick auf der Leinwand bearbeitet den Text.</p>
       <OpacitySlider el={el} />
       <Swatches legend="Farbe" accent={accent} value={props.color} onChange={(color) => setProps(id, { color })} />

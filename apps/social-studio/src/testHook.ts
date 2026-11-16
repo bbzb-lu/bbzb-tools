@@ -1,17 +1,14 @@
-import { unzipSync } from 'fflate';
 import Konva from 'konva';
 import { createElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { BRUSH_RING_NODE, getContentLayer, MASK_VEIL_NODE } from './canvas/contentLayer';
-import { EFFECT_PENDING_NODE, previewStats } from './canvas/effects';
+import { BRUSH_RING_NODE, MASK_VEIL_NODE } from './canvas/contentLayer';
+import { EFFECT_PENDING_NODE } from './canvas/effects';
 import { editorContext } from './canvas/editorContext';
 import { loadBrandAssets } from './brand/manifest';
 import { ensureDoodles } from './brand/doodles';
 import { ensureTabler } from './brand/tabler';
-import { aiTools, assetPacks, elementTypes, exporters } from './core/registries';
+import { aiTools, assetPacks, elementTypes } from './core/registries';
 import { fakeSegment, type FakeMode } from './ai/fakeSegment';
-import { videoExportStats } from './export/exportVideoSlide';
-import { exportZip, renderSlide } from './export/exportZip';
 import { apply, endGesture, gestureOpen, startGesture, useDoc } from './store/document';
 import { useUi, type AiRun } from './store/ui';
 import { updateElement } from './model/elements';
@@ -24,17 +21,7 @@ import { applyLayout } from './model/layout';
 import { contentRules, fontsLoaded } from './ui/layoutActions';
 import { Section } from './ui/Section';
 import { SliderLab } from './ui/kit/SliderLab';
-
-type VideoProbe = { pixels: number[][]; duration: number; width: number; height: number; frames: number; audio: string | null; audioDuration: number | null };
-
-/** RGB eines 5 × 5-Flecks je Punkt (relativ zur Canvas). */
-const patches = (c: HTMLCanvasElement, pts: [number, number][]) => {
-  const ctx = c.getContext('2d')!;
-  return pts.map(([x, y]) => {
-    const d = ctx.getImageData(Math.round(x * c.width) - 2, Math.round(y * c.height) - 2, 5, 5).data;
-    return Array.from(d).filter((_, i) => i % 4 !== 3);
-  });
-};
+import { exportHooks, type VideoProbe } from './testHookExport';
 
 declare global {
   interface Window {
@@ -76,6 +63,10 @@ declare global {
       /** Bildschirmpunkt eines Transformer-Anfassers (z. B. «bottom-right») und Skalierung des Knotens eines Elements. */
       anchorScreen(name: string): { x: number; y: number };
       nodeScale(id: string): { x: number; y: number };
+      /** Gezeichnete Skalierung (ohne Zoom) des ersten Rects im Element: 1, wenn der Inhalt unverzerrt bleibt. */
+      contentScale(id: string): { x: number; y: number };
+      /** Höhe, die der Elementtyp (Text: measureTextHeight) für das Element bei seiner Breite misst. */
+      textHeight(id: string): number;
       /** Sichtbare Randbreite des Fotorahmens (links, oben, rechts, unten) in Slide-Pixeln (Rechteck, Kontur oder alter Innenrahmen), null ohne Rahmen. */
       frameInset(id: string): { left: number; top: number; right: number; bottom: number } | null;
       hintFill(): string | null;
@@ -92,6 +83,14 @@ declare global {
       videoProbe(b64: string, t: number, pts: [number, number][], width?: number): Promise<VideoProbe>;
       /** Export wie der Dialog, ohne Download; bricht ab, sobald ein Video-Slide `abortAt` Prozent erreicht. */
       runExport(format: string, abortAt?: number): Promise<{ files?: string[]; error?: string; progress: number }>;
+      /** Ordner-Export: ersetzt den Ordnerdialog durch einen OPFS-Ordner, einen mit AbortError oder einen mit SecurityError. */
+      fakePicker(mode: 'opfs' | 'abort' | 'security'): void;
+      /** Dateien im OPFS-Ersatzordner (Pfad relativ, Unterordner = Projektname) mit SHA-256; `clear` löscht den Ordner. */
+      folderFiles(clear?: boolean): Promise<Record<string, string>>;
+      /** Hält die Wartezeit auf Effekte im Export offen (ein Platzhalterknoten in der Ebene), bis `holdEffects(false)`. */
+      holdEffects(on: boolean): void;
+      /** Verzögert die volle Korn-Rechnung (nicht die Vorschau) um `ms`; 0 hebt auf. */
+      slowGrain(ms: number): void;
       /** Offene Video-Exporte (Decoder, Encoder, Canvases); nach Ende oder Abbruch 0. */
       videoExportOpen(): number;
       /** Maske malen, in OPFS speichern, wieder lesen: Pixelwerte vorher und nachher. */
@@ -118,6 +117,7 @@ let kitRoot: Root | undefined;
 
 export function installTestHook(): void {
   window.__bbzbTest = {
+    ...exportHooks,
     mountSliders: (on) => {
       kitRoot?.unmount();
       kitRoot = undefined;
@@ -219,6 +219,10 @@ export function installTestHook(): void {
     },
     /** Wie die Brand Library (Task 9): Tag-Variante (schul, ort, cta) einfügen. */
     insertTag: (variant, at) => elementTypes.get('tag').insertVariant!(variant, editorContext(), at),
+    textHeight: (id) => {
+      const e = useDoc.getState().project!.elements[id]!;
+      return elementTypes.get(e.type).afterTransform(e, e).height ?? e.height;
+    },
     anchorScreen: (name) => {
       const s = Konva.stages[0]!;
       const r = s.container().getBoundingClientRect();
@@ -228,6 +232,11 @@ export function installTestHook(): void {
     nodeScale: (id) => {
       const n = Konva.stages[0]!.findOne((x: Konva.Node) => x.id() === id)!;
       return { x: n.scaleX(), y: n.scaleY() };
+    },
+    contentScale: (id) => {
+      const stage = Konva.stages[0]!;
+      const a = stage.findOne<Konva.Group>((x: Konva.Node) => x.id() === id)!.findOne('Rect')!.getAbsoluteScale();
+      return { x: a.x / stage.scaleX(), y: a.y / stage.scaleY() };
     },
     frameInset: (id) => {
       const stage = Konva.stages[0]!;
@@ -265,50 +274,6 @@ export function installTestHook(): void {
       apply((d) => void (ids = applyLayout(d, preset, at, contentRules)));
       return ids;
     },
-    preview: () => ({ ...previewStats }),
-    slidePixels: (index, pts) => {
-      const c = renderSlide(getContentLayer()!, useDoc.getState().project!, index);
-      try {
-        return patches(c, pts);
-      } finally {
-        Konva.Util.releaseCanvas(c);
-      }
-    },
-    videoProbe: async (b64, t, pts, width) => {
-      const m = await import('mediabunny');
-      const bytes = Uint8Array.from(atob(b64), (ch) => ch.charCodeAt(0));
-      const input = new m.Input({ source: new m.BufferSource(bytes), formats: [m.MP4, m.QTFF] });
-      try {
-        const v = (await input.getPrimaryVideoTrack())!;
-        const a = await input.getPrimaryAudioTrack();
-        const w = (await new m.CanvasSink(v, width ? { width } : {}).getCanvas(Math.max(t, await v.getFirstTimestamp())))!;
-        return {
-          pixels: patches(w.canvas as HTMLCanvasElement, pts),
-          duration: await input.computeDuration(),
-          width: v.displayWidth,
-          height: v.displayHeight,
-          frames: (await v.computePacketStats()).packetCount,
-          audio: a?.codec ?? null,
-          audioDuration: a ? await a.computeDuration() : null,
-        };
-      } finally {
-        input.dispose();
-      }
-    },
-    runExport: async (format, abortAt) => {
-      const ctl = new AbortController();
-      let progress = 0;
-      try {
-        const zip = await exportZip(getContentLayer()!, useDoc.getState().project!, exporters.get(format), (_, __, percent) => {
-          progress++;
-          if (abortAt !== undefined && (percent ?? 0) >= abortAt) ctl.abort();
-        }, ctl.signal);
-        return { files: Object.keys(unzipSync(new Uint8Array(await zip.arrayBuffer()))), progress };
-      } catch (e) {
-        return { error: e instanceof Error ? `${e.name}: ${e.message}` : String(e), progress };
-      }
-    },
-    videoExportOpen: () => videoExportStats.open,
     putMask: async (width, height, split) => {
       const m = newMask(width, height);
       for (let i = 0; i < m.data.length; i++) if (i % width >= split) m.data[i] = 0;

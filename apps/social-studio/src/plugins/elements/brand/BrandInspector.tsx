@@ -24,7 +24,7 @@ export function BrandLayerActions({ el }: { el: Element<BrandProps> }) {
 export function BrandInspector({ el }: { el: Element<BrandProps> }) {
   const accent = useAccentTile(el);
   return (
-    <Section heading="Darstellung" collapsible defaultOpen>
+    <Section heading="Darstellung" id="darstellung-brand" collapsible defaultOpen>
       <OpacitySlider el={el} />
       <Swatches legend="Farbe" accent={accent} value={el.props.color} onChange={(color) => setProps(el.id, { color })} />
     </Section>

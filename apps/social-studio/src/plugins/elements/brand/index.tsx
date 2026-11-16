@@ -35,7 +35,7 @@ export const brandType: ElementType<BrandProps> = {
     const scale = Math.min(1, (W * insertWidth.maxSide) / (side * Math.max(Math.sqrt(ratio), 1 / Math.sqrt(ratio))));
     const width = Math.round(side * Math.sqrt(ratio) * scale);
     const height = Math.round(side / Math.sqrt(ratio) * scale);
-    const center = at ?? { x: ctx.currentSlide * W + W / 2, y: H / 2 };
+    const center = (typeof at === 'function' ? at() : at) ?? { x: ctx.currentSlide * W + W / 2, y: H / 2 };
     const id = crypto.randomUUID();
     ctx.apply((d) =>
       addElement(d, {

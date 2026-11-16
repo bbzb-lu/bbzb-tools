@@ -32,7 +32,7 @@ for (const size of [{ width: 1536, height: 864 }, { width: 1280, height: 720 }])
       const png = PNG.sync.read(await page.screenshot({ clip: { x: x0, y: box.y + 60, width: x1 - x0 + 1, height: 1 } }));
       const px = (x: number) => Array.from(png.data.subarray(x * 4, x * 4 + 3));
       const unterlage = await cssRgb(page, `--unterlage-${key}`);
-      const paper = await cssRgb(page, '--paper');
+      const paper = await cssRgb(page, '--table'); // rechts beginnt der Rand um die Inspector-Karte in Tischfarbe
       for (const x of [0, 1, x1 - x0 - 2, x1 - x0 - 1]) expect(px(x), `${name}: Spalte ${x}`).toEqual(unterlage);
       expect(px(x1 - x0), `${name}: erste Spalte des rechten Panels`).toEqual(paper);
     }

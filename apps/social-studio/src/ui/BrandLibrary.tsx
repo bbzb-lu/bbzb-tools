@@ -69,6 +69,7 @@ export function BrandLibrary() {
           </button>
         ))}
       </div>
+      <p className="muted hint">Klicken oder auf die Slide ziehen.</p>
       <div className="library-panel" role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-${active}`}>
         {active === 'tag' ? <TagList /> : active === 'doodle' ? <DoodleSearch /> : active === 'icon' ? <IconSearch><AssetGrid category="icon" /></IconSearch> : <AssetGrid category={active} />}
       </div>

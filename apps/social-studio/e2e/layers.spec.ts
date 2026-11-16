@@ -158,15 +158,14 @@ test('Zustandswechsel ohne Überblendung: nie dunkle Schrift auf dunklem Grund',
   expect(bg).not.toBe(dark);
 });
 
-test('Strg- und Shift-Klick auf Zeilen schaltet um, gewöhnlicher Klick wählt eine, Ziehen bewegt nur die gezogene', async ({ page }) => {
+test('Strg-Klick auf Zeilen schaltet um, Umschalt-Klick wählt den Bereich, gewöhnlicher Klick wählt eine, Ziehen bewegt nur die gezogene', async ({ page }) => {
   await withTexts(page, 3);
   const [a, b, c] = (await elements(page)).map((e) => e.name);
   const btn = (n: string) => row(page, n).getByRole('button', { name: n, exact: true });
   const marked = page.locator('.layer-name[aria-pressed="true"]');
   await btn(a!).click();
   await expect(marked).toHaveCount(1);
-  await btn(b!).click({ modifiers: ['ControlOrMeta'] });
-  await btn(c!).click({ modifiers: ['Shift'] });
+  await btn(c!).click({ modifiers: ['Shift'] }); // Bereich von a bis c
   await expect(marked).toHaveCount(3);
   await page.screenshot({ path: '.superpowers/sdd/2026-10-27-phase-2-10-bedienung/screens/task-7-layers.png' });
   await btn(b!).click({ modifiers: ['ControlOrMeta'] });
@@ -185,4 +184,40 @@ test('Strg- und Shift-Klick auf Zeilen schaltet um, gewöhnlicher Klick wählt e
   await btn(a!).dragTo(btn(c!));
   await expect.poll(async () => (await orderNames(page)).indexOf(a!)).toBe(2);
   expect((await orderNames(page)).slice(0, 2)).toEqual([b, c]);
+});
+
+test('Pfeile im Ebenen-Panel wählen die Nachbarzeile, Umschalt erweitert, Umschalt-Klick wählt den Bereich', async ({ page }) => {
+  await withTexts(page, 4);
+  const ids = (await elements(page)).map((e) => e.id).reverse(); // Zeilenreihenfolge, oberste zuerst
+  const btn = (i: number) => page.locator(`[data-layer="${ids[i]}"]`);
+  const selected = () => page.evaluate(() => window.__bbzbTest.ui().selectedIds);
+  await btn(0).click();
+  await page.keyboard.press('ArrowDown');
+  await expect(btn(1)).toBeFocused();
+  expect(await selected()).toEqual([ids[1]]);
+  await page.keyboard.press('ArrowUp');
+  expect(await selected()).toEqual([ids[0]]);
+  await page.keyboard.press('Shift+ArrowDown');
+  await page.keyboard.press('Shift+ArrowDown');
+  expect(new Set(await selected())).toEqual(new Set([ids[0], ids[1], ids[2]]));
+  await btn(3).click({ modifiers: ['Shift'] });
+  expect(new Set(await selected())).toEqual(new Set(ids));
+  await btn(1).click();
+  await btn(3).click({ modifiers: ['Shift'] });
+  expect(new Set(await selected())).toEqual(new Set([ids[1], ids[2], ids[3]]));
+});
+
+test('Umschalt-Klick ohne Anker: Auswahl von der Leinwand zählt als Anker, Umschalt + Pfeil beginnt nach Auswahl von aussen neu', async ({ page }) => {
+  await withTexts(page, 4);
+  const ids = (await elements(page)).map((e) => e.id).reverse();
+  const btn = (i: number) => page.locator(`[data-layer="${ids[i]}"]`);
+  const selected = () => page.evaluate(() => window.__bbzbTest.ui().selectedIds);
+  await page.evaluate((id) => window.__bbzbTest.select(id), ids[1]!); // wie ein Klick auf der Leinwand
+  await btn(3).click({ modifiers: ['Shift'] });
+  expect(new Set(await selected())).toEqual(new Set([ids[1], ids[2], ids[3]]));
+  await btn(0).click(); // Anker oben
+  await page.evaluate((id) => (document.activeElement as HTMLElement).blur() ?? window.__bbzbTest.select(id), ids[2]!); // Klick auf die Leinwand: Fokus weg, andere Auswahl
+  await btn(2).focus();
+  await page.keyboard.press('Shift+ArrowDown');
+  expect(new Set(await selected())).toEqual(new Set([ids[2], ids[3]]));
 });

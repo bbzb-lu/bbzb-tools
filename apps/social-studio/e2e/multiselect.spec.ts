@@ -283,3 +283,18 @@ test('Pfeile auf dem Deckkraft-Regler bedienen den Regler, nicht das Element', a
   await page.keyboard.press('ArrowRight');
   expect((await pos(page, a!)).x).toBe(before.x + 1);
 });
+
+test('Sperren in der Mehrfachauswahl sperrt beide, der Knopf zeigt danach «Entsperren»', async ({ page }) => {
+  const [a, b] = await threeTexts(page);
+  await page.evaluate((ids) => window.__bbzbTest.selectIds(ids), [a!, b!]);
+  const props = page.getByLabel('Eigenschaften');
+  const lock = props.getByRole('button', { name: 'Sperren', exact: true });
+  await page.screenshot({ path: '.superpowers/sdd/2026-11-13-phase-5-sammelrunde/screens/task-9-multi-lock.png' });
+  await expect(lock).toHaveAttribute('aria-pressed', 'false');
+  await lock.click();
+  await expect.poll(async () => (await elements(page)).filter((e) => e.locked).map((e) => e.id)).toEqual([a, b]);
+  const unlock = props.getByRole('button', { name: 'Entsperren', exact: true });
+  await expect(unlock).toHaveAttribute('aria-pressed', 'true');
+  await unlock.click();
+  await expect.poll(async () => (await elements(page)).filter((e) => e.locked)).toHaveLength(0);
+});

@@ -12,7 +12,7 @@ for (const size of [{ width: 1536, height: 864 }, { width: 1280, height: 720 }])
     await page.evaluate((i) => window.__bbzbTest.select(i), id);
     await expect(page.getByRole('heading', { name: 'Maske', level: 3 })).toBeVisible();
     const gaps = await page.locator('.inspector').evaluate((root) => {
-      const sections = [...root.querySelectorAll<HTMLElement>(':scope > .section')];
+      const sections = [...root.querySelectorAll<HTMLElement>(':scope > .section, :scope > .inspector-body > .section')];
       return sections.slice(1).map((s, i) => {
         const prev = sections[i]!;
         const last = Math.max(...[...prev.children].filter((c) => !(c as HTMLElement).hidden).map((c) => c.getBoundingClientRect().bottom));

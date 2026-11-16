@@ -1,9 +1,9 @@
-import { IconCopy, IconCopyPlus, IconStackBack, IconStackFront, IconTrash } from '@tabler/icons-react';
+import { IconCopy, IconCopyPlus, IconLock, IconLockOpen, IconStackBack, IconStackFront, IconTrash } from '@tabler/icons-react';
 import { useDoc } from '../store/document';
-import { duplicateMany, removeMany, restackMany } from './actions';
+import { duplicateMany, patchMany, removeMany, restackMany } from './actions';
 import { KEYS, keysAttr } from './keys';
 
-/** Ebene-Aktionen für mehrere Elemente (Inspector und Kontextleiste): Duplizieren, an gleicher Stelle, Nach vorne, Nach hinten, Löschen. */
+/** Ebene-Aktionen für mehrere Elemente (Inspector und Kontextleiste): Duplizieren, an gleicher Stelle, Nach vorne, Nach hinten, Sperren, Löschen. */
 export function MultiActions({ ids }: { ids: string[] }) {
   const els = useDoc((s) => s.project?.elements);
   const all = ids.filter((id) => els?.[id]);
@@ -21,6 +21,9 @@ export function MultiActions({ ids }: { ids: string[] }) {
       </button>
       <button type="button" className="icon-btn" aria-label="Nach hinten" data-tip="Nach hinten" onClick={() => restackMany(all, -1)}>
         <IconStackBack aria-hidden="true" />
+      </button>
+      <button type="button" className="icon-btn" aria-pressed={allLocked} aria-label={allLocked ? 'Entsperren' : 'Sperren'} data-tip={allLocked ? 'Entsperren' : 'Sperren'} onClick={() => patchMany(all, { locked: !allLocked })}>
+        {allLocked ? <IconLock aria-hidden="true" /> : <IconLockOpen aria-hidden="true" />}
       </button>
       <button type="button" data-tip="Löschen" data-keys={keysAttr(KEYS.remove)} disabled={allLocked} onClick={() => removeMany(all)}>
         <IconTrash aria-hidden="true" />

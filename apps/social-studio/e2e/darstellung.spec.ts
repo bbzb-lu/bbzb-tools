@@ -55,3 +55,40 @@ test('Standort-Tag: «Fachbereich zeigen» ist ein Schalter und lässt sich mit 
   await page.keyboard.press('Enter');
   await expect(sw).toHaveAttribute('aria-checked', 'false');
 });
+
+test('Darstellung klappt pro Elementart: Text zu, Foto bleibt offen, Text bleibt zu', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await page.getByRole('button', { name: 'Text hinzufügen' }).click();
+  const head = panel(page).getByRole('button', { name: 'Darstellung', exact: true });
+  await head.click();
+  await expect(head).toHaveAttribute('aria-expanded', 'false');
+  await addPhoto(page, png(1200, 1500));
+  await expect.poll(async () => (await elements(page)).at(-1)?.type).toBe('photo');
+  await expect(head).toHaveAttribute('aria-expanded', 'true');
+  const text = (await elements(page)).find((e) => e.type === 'text')!;
+  await page.evaluate((id) => window.__bbzbTest.select(id), text.id);
+  await expect(head).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('Gesperrt: Zeile «Gesperrt.» mit «Entsperren», Regler nicht erreichbar, nach dem Entsperren bedienbar', async ({ page }) => {
+  await newProject(page, 'Post 4:5');
+  await addPhoto(page, png(1200, 1500));
+  await expect.poll(async () => (await elements(page)).length).toBe(1);
+  const [photo] = await elements(page);
+  await page.evaluate((id) => window.__bbzbTest.patch(id, { locked: true }), photo!.id);
+  await expect(panel(page).getByText('Gesperrt.')).toBeVisible();
+  await expect(panel(page).getByRole('heading', { level: 2 })).toHaveText(photo!.name);
+  const inert = () => opacity(page).evaluate((e) => !!e.closest('[inert]'));
+  expect(await inert()).toBe(true);
+  await expect(panel(page).locator('[inert] button').first()).toHaveCSS('color', 'rgb(100, 100, 100)'); // ink-disabled: gesperrt sieht gedimmt aus
+  await opacity(page).focus({ timeout: 500 }).catch(() => {});
+  expect(await page.evaluate(() => document.activeElement?.getAttribute('aria-label'))).not.toBe('Deckkraft');
+  await page.keyboard.press('Tab');
+  await panel(page).getByRole('button', { name: 'Entsperren' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(panel(page).getByText('Gesperrt.')).toHaveCount(0);
+  expect(await inert()).toBe(false);
+  await opacity(page).focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect.poll(async () => (await elements(page))[0]!.opacity).toBeCloseTo(0.99);
+});

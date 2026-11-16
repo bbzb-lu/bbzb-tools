@@ -7,6 +7,7 @@ import { Section } from '../../../ui/Section';
 import { switchChannel } from '../../../ui/layoutActions';
 import { channelLabels, channels, departments, tagFills, type Location } from '../../../tokens';
 import { Segmented, Switch } from '@bbzb/ui';
+import { colorNames } from '../../../ui/Swatches';
 import { blurIntoMenu } from '../../../ui/ContextMenu';
 import { tagBoxWidth, tagHeightOf } from './layout';
 import { measureLabel } from './measure';
@@ -28,7 +29,7 @@ export function TagInspector({ el }: { el: Element<TagProps> }) {
   // Tippen = eine Geste = ein Undo-Schritt; auch wenn die Auswahl wechselt, ohne dass das Feld den Fokus verliert.
   useEffect(() => endGesture, []);
   return (
-    <Section heading="Darstellung" collapsible defaultOpen>
+    <Section heading="Darstellung" id="darstellung-tag" collapsible defaultOpen>
       <OpacitySlider el={el} />
       {el.props.variant === 'schul' ? <LocationPicker el={el} /> : el.props.variant === 'fach' ? <Dept el={el} /> : <Label el={el} />}
       {el.props.variant === 'frei' && <Fill el={el} />}
@@ -57,23 +58,21 @@ function LocationPicker({ el }: { el: Element<TagProps> }) {
           })}
         >
           {[...new Set<string>([...locations, text])].map((l) => (
-            <option key={l} value={l}>{l === 'BBZB' ? 'BBZB (ohne Standort)' : l}</option>
+            <option key={l} value={l}>{l === 'BBZB' ? 'Ohne Standort' : l}</option>
           ))}
         </select>
       </fieldset>
       {list.length > 0 && (
-        <div className="switch-row">
-          <span aria-hidden="true">Fachbereich zeigen</span>
+        <Switch
+          checked={shown}
+          onChange={(on) => change(el.id, (p) => {
+            if (on) p.dept = dept && list.includes(dept) ? dept : list[0];
+            else delete p.dept;
+          })}
+        >
+          Fachbereich zeigen
           <span aria-hidden="true" className="switch-state">{shown ? 'Ja' : 'Nein'}</span>
-          <Switch
-            label="Fachbereich zeigen"
-            checked={shown}
-            onChange={(on) => change(el.id, (p) => {
-              if (on) p.dept = dept && list.includes(dept) ? dept : list[0];
-              else delete p.dept;
-            })}
-          />
-        </div>
+        </Switch>
       )}
       {shown && (
         <fieldset className="choice">
@@ -128,7 +127,7 @@ function Fill({ el }: { el: Element<TagProps> }) {
       <legend>Farbe</legend>
       <select aria-label="Farbe" value={el.props.color ?? 'blau'} onChange={(e) => change(el.id, (p) => void (p.color = e.target.value as TagProps['color']))}>
         {tagFills.map((f) => (
-          <option key={f} value={f}>{f[0]!.toUpperCase() + f.slice(1)}</option>
+          <option key={f} value={f}>{colorNames[f as keyof typeof colorNames] ?? f}</option>
         ))}
       </select>
     </fieldset>

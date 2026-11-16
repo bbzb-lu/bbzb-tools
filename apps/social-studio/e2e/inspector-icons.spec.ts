@@ -85,8 +85,12 @@ test('Sperren und Ausblenden nur einmal, im Ebenen-Panel', async ({ page }) => {
   // Seit den Abschnitten (Task 14) liegt der Regler unterhalb: erst hinscrollen, denn Scrollen schliesst den Tooltip
   await page.getByRole('slider', { name: 'Reichweite' }).scrollIntoViewIfNeeded();
   await frames(page);
-  await page.getByRole('slider', { name: 'Reichweite' }).hover();
-  await expect.poll(() => tip(page).evaluate((e) => e.matches(':popover-open'))).toBe(true);
+  // Ein spätes Scroll-Ereignis schliesst den Tooltip nach dem Hover (der Tooltip schliesst bei jedem Scrollen): Hover wiederholen, bis er offen bleibt.
+  await expect(async () => {
+    await page.mouse.move(0, 0);
+    await page.getByRole('slider', { name: 'Reichweite' }).hover();
+    await expect.poll(() => tip(page).evaluate((e) => e.matches(':popover-open')), { timeout: 1500 }).toBe(true);
+  }).toPass({ timeout: 15_000 });
   await expect(tip(page)).toContainText('Wie weit der Verlauf hineinreicht.');
   await shot(page, `task-5-${page.viewportSize()!.width}-foto-ebenen.png`);
 });

@@ -1,7 +1,9 @@
 import { useId } from 'react';
 import { akzent, colors, type ColorToken, type PaletteColor } from '../tokens';
 
-const names: Record<ColorToken, string> = {
+/** Deutsche Farbnamen für Auswahl und Tooltip. */
+export const colorNames: Record<ColorToken | typeof akzent, string> = {
+  akzent: 'Akzent',
   blau: 'Blau',
   orange: 'Orange',
   warmweiss: 'Warmweiss',
@@ -24,13 +26,13 @@ export function Swatches({ legend, value, accent, onChange }: {
       <legend>{legend}</legend>
       <div className="swatches">
         {accent !== undefined && (
-          <label className="swatch swatch-accent" style={{ background: accent }} data-tip="Akzent">
-            <input type="radio" name={name} aria-label="Akzent" checked={value === akzent} onChange={() => onChange(akzent)} />
+          <label className="swatch swatch-accent" style={{ background: accent }} data-tip={colorNames.akzent}>
+            <input type="radio" name={name} aria-label={colorNames.akzent} checked={value === akzent} onChange={() => onChange(akzent)} />
           </label>
         )}
         {(Object.keys(colors) as ColorToken[]).map((c) => (
-          <label key={c} className="swatch" style={{ background: colors[c] }} data-tip={names[c]}>
-            <input type="radio" name={name} aria-label={names[c]} checked={value === c || (c === 'orange' && value === akzent && accent === undefined)} onChange={() => onChange(c)} />
+          <label key={c} className="swatch" style={{ background: colors[c] }} data-tip={colorNames[c]}>
+            <input type="radio" name={name} aria-label={colorNames[c]} checked={value === c || (c === 'orange' && value === akzent && accent === undefined)} onChange={() => onChange(c)} />
           </label>
         ))}
       </div>

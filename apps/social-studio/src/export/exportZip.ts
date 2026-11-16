@@ -64,14 +64,15 @@ function checkPlaceholders(content: Konva.Layer): void {
   if (content.findOne(`.${MISSING_BRAND_NODE}`)) throw new ExportError(MISSING_BRAND);
 }
 
-/** Alle Slides nacheinander in ein ZIP: Video-Slides als MP4, die übrigen als Bild. Hält nie mehr als ein Slide-Canvas im Speicher. */
-export async function exportZip(
+/** Alle Slides nacheinander an `sink`: Video-Slides als MP4, die übrigen als Bild. Hält nie mehr als ein Slide-Canvas im Speicher. */
+export async function exportSlides(
   content: Konva.Layer,
   p: Project,
   exporter: Exporter,
-  onProgress: (slide: number, total: number, percent?: number) => void = () => {},
-  signal?: AbortSignal,
-): Promise<Blob> {
+  onProgress: (slide: number, total: number, percent?: number) => void,
+  signal: AbortSignal | undefined,
+  sink: (name: string, data: Uint8Array) => Promise<void>,
+): Promise<void> {
   const ui = useUi.getState();
   // Ausschnitt-Geist und Textfeld gehören nicht ins Bild. Den Text hat der Blur beim Klick auf «Exportieren» schon übernommen.
   ui.setCropEditId(null);
@@ -79,7 +80,9 @@ export async function exportZip(
   ui.setTextEditId(null);
   // Regler-Vorschau gehört nicht in den Export: volle Auflösung erzwingen, die Knoten warten dann als «effect-pending»
   ui.setSliding(false);
+  onProgress(0, p.slides.length);
   await document.fonts.ready;
+  signal?.throwIfAborted();
   const missing = useUi.getState().missingFonts;
   if (missing.length > 0) throw new ExportError(missingFontsText(missing));
   // Bilder und Videos der sichtbaren Elemente. Videos nur auf Vorhandensein prüfen, nie als Bild laden.
@@ -89,18 +92,23 @@ export async function exportZip(
     .filter((id) => id !== undefined);
   const isVideo = (id: string) => p.assets[id]?.mime.startsWith('video/') ?? false;
   if ((await Promise.all(ids.filter(isVideo).map(videoStored))).includes(false)) throw new ExportError(MISSING_VIDEO);
+  signal?.throwIfAborted();
   const assetIds = ids.filter((id) => !isVideo(id));
   // gescheitert: die Knoten zeigen den Platzhalter, MISSING_BRAND_NODE unten bricht ab
   await Promise.all([ensureTablerFor(p).catch(() => undefined), ensureDoodlesFor(p).catch(() => undefined)]);
+  signal?.throwIfAborted();
   await Promise.allSettled(assetIds.map(loadAssetImage));
   await allImagesLoaded();
+  signal?.throwIfAborted();
   if (assetIds.some(imageFailed)) throw new ExportError(MISSING_IMAGE);
   // shortcut: zwei Frames, bis React geladene Bilder gezeichnet hat; nicht garantiert. Bei Fehlexporten auf ein Signal der Knoten umstellen.
   await frame();
   await frame();
+  signal?.throwIfAborted();
   checkPlaceholders(content);
   // Effekt-Canvas (Korn) fertig rechnen lassen, sonst fehlt der Effekt im Bild.
   for (const t = performance.now(); content.findOne(`.${EFFECT_PENDING_NODE}`); await frame()) {
+    signal?.throwIfAborted();
     if (performance.now() - t > 15000) throw new ExportError('Die Effekte sind nicht fertig berechnet. Versuch es nochmals.');
   }
   // Noch einmal: ein Video kann erst während des Wartens scheitern (Datei da, aber nicht dekodierbar)
@@ -112,7 +120,6 @@ export async function exportZip(
   signal?.throwIfAborted();
 
   const base = safeFileName(p.name);
-  const files: Record<string, Uint8Array> = {};
   for (let i = 0; i < p.slides.length; i++) {
     signal?.throwIfAborted();
     const total = p.slides.length;
@@ -120,20 +127,31 @@ export async function exportZip(
     if (videoSlides.includes(i)) {
       onProgress(i + 1, total, 0);
       const render = (frames: Map<string, HTMLCanvasElement>) => renderSlide(content, p, i, frames);
-      files[`${name}.${mp4.extension}`] = await mp4.encode({ project: p, index: i, render, onProgress: (pc) => onProgress(i + 1, total, pc), signal });
+      await sink(`${name}.${mp4.extension}`, await mp4.encode({ project: p, index: i, render, onProgress: (pc) => onProgress(i + 1, total, pc), signal }));
       continue;
     }
     onProgress(i + 1, total);
     const canvas = renderSlide(content, p, i);
     try {
       const blob = await exporter.encode(canvas, exportQuality[p.exportQuality ?? 'standard'].jpeg);
-      files[`${name}.${exporter.extension}`] = new Uint8Array(await blob.arrayBuffer());
+      await sink(`${name}.${exporter.extension}`, new Uint8Array(await blob.arrayBuffer()));
     } finally {
       Konva.Util.releaseCanvas(canvas);
     }
     await frame(); // Oberfläche bleibt bedienbar
   }
   signal?.throwIfAborted();
-  // Bilder sind schon komprimiert.
+}
+
+/** Alle Slides in ein ZIP (Bilder sind schon komprimiert). */
+export async function exportZip(
+  content: Konva.Layer,
+  p: Project,
+  exporter: Exporter,
+  onProgress: (slide: number, total: number, percent?: number) => void = () => {},
+  signal?: AbortSignal,
+): Promise<Blob> {
+  const files: Record<string, Uint8Array> = {};
+  await exportSlides(content, p, exporter, onProgress, signal, async (name, data) => void (files[name] = data));
   return new Blob([zipSync(files, { level: 0 }) as BlobPart], { type: 'application/zip' });
 }

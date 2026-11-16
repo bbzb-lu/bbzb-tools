@@ -1,10 +1,11 @@
-import { IconDownload, IconInfoCircle, IconMovie, IconPhoto, IconX } from '@tabler/icons-react';
+import { IconDownload, IconFolder, IconInfoCircle, IconMovie, IconPhoto, IconX } from '@tabler/icons-react';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { getContentLayer } from '../canvas/contentLayer';
 import { exporters } from '../core/registries';
 import { download } from '../export/download';
 import { isVideoSlide } from '../export/exportVideoSlide';
-import { ExportError, exportZip, missingFontsText } from '../export/exportZip';
+import { ExportError, exportSlides, exportZip, missingFontsText } from '../export/exportZip';
+import { saveToFolder } from '../export/saveToFolder';
 import { safeFileName } from '../export/fileName';
 import { useDoc } from '../store/document';
 import { useUi } from '../store/ui';
@@ -60,25 +61,38 @@ export function ExportDialog() {
     }
   });
 
-  const run = async () => {
+  const run = async (toFolder: boolean) => {
     const p = useDoc.getState().project!;
     const content = getContentLayer();
     setError(null);
     setNotice(null);
-    const ctl = (abort.current = new AbortController());
-    setProgress('Export wird vorbereitet …');
-    setFraction(0);
     try {
-      if (!content) throw new Error('Leinwand fehlt');
-      const zip = await exportZip(content, p, exporters.get(format), (i, n, percent) => {
+      // Der Ordnerdialog braucht den Klick, darum vor allem anderen
+      const target = toFolder ? await saveToFolder(() => window.showDirectoryPicker({ mode: 'readwrite' }), p.name) : undefined;
+      if (target === null) return; // Dialog abgebrochen: keine Meldung
+      const ctl = (abort.current = new AbortController());
+      setProgress('Export wird vorbereitet …');
+      setFraction(0);
+      const onProgress = (i: number, n: number, percent?: number) => {
+        if (i === 0) return; // Vorbereitung
         setProgress(`Slide ${i} von ${n}${percent === undefined ? '' : `, ${Math.floor(percent / 5) * 5} %`}`);
         setFraction((i - 1 + (percent ?? 0) / 100) / n);
-      }, ctl.signal);
-      download(zip, `${safeFileName(p.name)}.zip`);
+      };
+      if (!content) throw new Error('Leinwand fehlt');
+      if (target) {
+        await exportSlides(content, p, exporters.get(format), onProgress, ctl.signal, target.sink);
+        setNotice(`Gespeichert in «${target.name}».`);
+      } else {
+        download(await exportZip(content, p, exporters.get(format), onProgress, ctl.signal), `${safeFileName(p.name)}.zip`);
+      }
     } catch (e) {
       if (e instanceof DOMException && e.name === 'AbortError') {
-        setNotice('Export abgebrochen.');
+        setNotice('Export abgebrochen.'); // schon geschriebene Dateien im Ordner bleiben
         return; // finally räumt auf
+      }
+      if (e instanceof DOMException && (e.name === 'SecurityError' || e.name === 'NotAllowedError')) {
+        setError('Edge erlaubt hier keinen Ordnerzugriff. Nimm «ZIP herunterladen».');
+        return;
       }
       if (!(e instanceof ExportError)) console.error(e);
       setError(errorText(e, 'Der Export hat nicht geklappt. Versuch es nochmals.'));
@@ -117,7 +131,7 @@ export function ExportDialog() {
             </li>
           ))}
         </ol>
-        <Segmented legend="Format" value={format} disabled={busy} options={exporters.all().map((x): [string, string] => [x.id, x.label])} onChange={(v) => setFormat((sessionFormat = v))} />
+        <Segmented legend="Format" value={format} disabled={busy} hint={busy ? 'Während des Exports gesperrt.' : undefined} options={exporters.all().map((x): [string, string] => [x.id, x.label])} onChange={(v) => setFormat((sessionFormat = v))} />
         <div className="infos">
           {videoKey.includes('v') && (
             <>
@@ -132,7 +146,7 @@ export function ExportDialog() {
         <div className="export-state">
           <p role="status">{progress ?? notice}</p>
           {busy && (
-            <div className="export-progress" aria-hidden="true">
+            <div className="export-progress" role="progressbar" aria-label="Fortschritt" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(fraction * 100)} aria-valuetext={progress ?? undefined}>
               <span style={{ '--p': fraction } as CSSProperties} />
             </div>
           )}
@@ -147,7 +161,13 @@ export function ExportDialog() {
           <button type="button" disabled={busy} onClick={() => dialog.current?.close()}>
             Schliessen
           </button>
-          <button ref={zipButton} type="button" className="primary" disabled={busy || !fontsReady || blocked !== null} onClick={run}>
+          {'showDirectoryPicker' in window && (
+            <button type="button" disabled={busy || !fontsReady || blocked !== null} onClick={() => run(true)}>
+              <IconFolder aria-hidden="true" />
+              In Ordner speichern
+            </button>
+          )}
+          <button ref={zipButton} type="button" className="primary" disabled={busy || !fontsReady || blocked !== null} onClick={() => run(false)}>
             <IconDownload aria-hidden="true" />
             {fontsReady ? 'ZIP herunterladen' : 'Schriften werden geladen …'}
           </button>

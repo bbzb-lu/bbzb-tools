@@ -1,4 +1,4 @@
-import type { EditorContext } from '../../../core/types';
+import type { Anchor, EditorContext } from '../../../core/types';
 import { addElement, channelOf, nextName } from '../../../model/elements';
 import { ctaText, departments, type Channel } from '../../../tokens';
 import { tagBoxWidth, tagHeightOf } from './layout';
@@ -28,7 +28,7 @@ export async function tagWidthReady(p: TagProps): Promise<number> {
 }
 
 /** Tag einfügen: ohne `at` mittig auf die aktuelle Slide, sonst mit der Mitte bei `at` (globale Koordinaten). */
-export async function insertTag(variant: TagProps['variant'], ctx: EditorContext, at?: { x: number; y: number }): Promise<void> {
+export async function insertTag(variant: TagProps['variant'], ctx: EditorContext, at?: Anchor): Promise<void> {
   // Ein neuer Standort-Tag startet mit «BBZB»; nur Layout-Platzhalter nehmen lastTagLocation (fromLayout).
   const props: TagProps =
     variant === 'schul' ? { variant, text: 'BBZB' }
@@ -37,7 +37,7 @@ export async function insertTag(variant: TagProps['variant'], ctx: EditorContext
     : { variant, text: variant === 'cta' ? ctaText[channelOf(ctx.project)] : 'Luzern' };
   const width = await tagWidthReady(props);
   const { width: W, height: H } = ctx.project.format;
-  const center = at ?? { x: ctx.currentSlide * W + W / 2, y: H / 2 };
+  const center = (typeof at === 'function' ? at() : at) ?? { x: ctx.currentSlide * W + W / 2, y: H / 2 };
   const height = tagHeightOf(props);
   const id = crypto.randomUUID();
   ctx.apply((d) =>

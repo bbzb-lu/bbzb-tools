@@ -4,7 +4,7 @@ import { lockedOrHiddenOnSlide } from '../model/selection';
 import { useDoc } from '../store/document';
 import { useUi } from '../store/ui';
 import { duplicateMany, patchMany, removeMany, restackMany } from './actions';
-import { clipboardCommand, hasClipboard, pasteClipboard } from './clipboard';
+import { clipboardCommand, pasteClipboard } from './clipboard';
 import { KEYS, keysAttr } from './keys';
 
 const LOCKED = 'Gesperrte Elemente bleiben. Entsperre sie zuerst.';
@@ -43,7 +43,6 @@ function baseItems(ids: string[]): MenuItem[] {
     id: 'paste',
     label: 'Einfügen',
     keys: keysAttr(KEYS.paste),
-    disabled: hasClipboard() ? undefined : 'Es ist nichts kopiert.',
     run: () => pasteClipboard(),
   };
   if (!sel.length) return [paste];
