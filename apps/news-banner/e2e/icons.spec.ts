@@ -37,14 +37,12 @@ test('Icon unten ist erst nach dem Einschalten im Export', async ({ page }) => {
   expect(strong((await exportPng(page)).png, ...area)).toBeGreaterThan(300);
 });
 
-test('Suche findet über Stichwörter wie auf lucide.dev, Apps-Tab sucht Marken', async ({ page }) => {
+test('Suche findet über Stichwörter wie auf tabler.io, Apps-Tab sucht Marken', async ({ page }) => {
   await page.goto('');
   await choose(page, 'Icons');
   const search = page.getByRole('searchbox');
   await search.fill('wireless');
   await expect(page.getByRole('button', { name: 'wifi', exact: true })).toBeVisible(); // «wireless» steht nur als Stichwort bei wifi
-  await search.fill('alert-circle'); // alter Name (Alias) findet das umbenannte Icon
-  await expect(page.getByRole('button', { name: 'circle-exclamation-point', exact: true })).toBeVisible();
   await search.fill('qqqqzz');
   await expect(page.getByText('Nichts gefunden')).toBeVisible();
   await choose(page, 'Apps');
