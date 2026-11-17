@@ -1,10 +1,10 @@
 import { useId, useMemo, useRef, useState } from 'react';
-import { brandLabel, featuredLucide, iconSvg, searchBrands, searchLucide, type IconRef } from '../icons/catalog';
+import { brandLabel, featuredTabler, iconSvg, searchBrands, searchTabler, type IconRef } from '../icons/catalog';
 import { ImageError, readImage } from '../icons/raster';
 import { Segmented } from '@bbzb/ui';
 
-type Source = 'lucide' | 'brand' | 'image';
-const sources: [Source, string][] = [['lucide', 'Icons'], ['brand', 'Apps'], ['image', 'Bild']];
+type Source = 'tabler' | 'brand' | 'image';
+const sources: [Source, string][] = [['tabler', 'Icons'], ['brand', 'Apps'], ['image', 'Bild']];
 
 /** Eine Kachel mit Vorschau des Icons (SVG aus dem Bündel, nicht aus Nutzereingaben). */
 function Tile({ ref_, label, selected, onPick }: { ref_: Exclude<IconRef, { kind: 'image' }>; label: string; selected: boolean; onPick(): void }) {
@@ -19,13 +19,13 @@ function Tile({ ref_, label, selected, onPick }: { ref_: Exclude<IconRef, { kind
 export function IconPicker({ value, onPick, onError }: { value: IconRef; onPick(r: IconRef): void; onError(msg: string): void }) {
   const [source, setSource] = useState<Source>(value.kind);
   const [query, setQuery] = useState('');
-  const lucide = useMemo(() => (source === 'lucide' ? (query.trim() ? searchLucide(query) : featuredLucide()) : []), [source, query]);
+  const icons = useMemo(() => (source === 'tabler' ? (query.trim() ? searchTabler(query) : featuredTabler()) : []), [source, query]);
   const brands = useMemo(() => (source === 'brand' ? searchBrands(query) : []), [source, query]);
   const file = useRef<HTMLInputElement>(null);
   const id = useId();
   const current = value.kind === 'brand' ? brandLabel(value.name) : value.name;
-  const empty = query.trim() && (source === 'lucide' ? lucide : brands).length === 0;
-  const featured = source === 'lucide' && !query.trim();
+  const empty = query.trim() && (source === 'tabler' ? icons : brands).length === 0;
+  const featured = source === 'tabler' && !query.trim();
 
   async function onFile(f: File | undefined) {
     if (!f) return;
@@ -43,14 +43,14 @@ export function IconPicker({ value, onPick, onError }: { value: IconRef; onPick(
       {source !== 'image' && (
         <>
           <label htmlFor={id} className="sr-only">Suche (englisch)</label>
-          <input id={id} type="search" value={query} placeholder={source === 'lucide' ? 'Suche, englisch: wifi, printer, key' : 'Suche: teams, google'} onChange={(e) => setQuery(e.target.value)} />
+          <input id={id} type="search" value={query} placeholder={source === 'tabler' ? 'Suche, englisch: wifi, printer, key' : 'Suche: teams, google'} onChange={(e) => setQuery(e.target.value)} />
           {empty && <p className="hint muted">Nichts gefunden. Versuche einen anderen Begriff.</p>}
         </>
       )}
-      {featured && <p className="hint muted">Häufig gebraucht. Die Suche findet alle Lucide-Icons.</p>}
-      {source === 'lucide' && (
+      {featured && <p className="hint muted">Häufig gebraucht. Die Suche findet alle Tabler-Icons.</p>}
+      {source === 'tabler' && (
         <ul className="icon-grid" aria-label={featured ? 'Häufig gebraucht' : 'Suchergebnisse'}>
-          {lucide.map((n) => <Tile key={n} ref_={{ kind: 'lucide', name: n }} label={n} selected={value.kind === 'lucide' && value.name === n} onPick={() => onPick({ kind: 'lucide', name: n })} />)}
+          {icons.map((n) => <Tile key={n} ref_={{ kind: 'tabler', name: n }} label={n} selected={value.kind === 'tabler' && value.name === n} onPick={() => onPick({ kind: 'tabler', name: n })} />)}
         </ul>
       )}
       {source === 'brand' && (

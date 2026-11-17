@@ -25,7 +25,7 @@ type Doc = BannerState & { icons: Record<Slot, IconRef>; bottomOn: boolean };
 const start: Doc = {
   audience: 'le',
   kind: 'info',
-  icons: { left: { kind: 'lucide', name: 'laptop' }, right: { kind: 'lucide', name: 'user' }, bottom: { kind: 'lucide', name: 'wrench' } },
+  icons: { left: { kind: 'tabler', name: 'device-laptop' }, right: { kind: 'tabler', name: 'user' }, bottom: { kind: 'tabler', name: 'tool' } },
   bottomOn: false,
 };
 
@@ -107,7 +107,7 @@ export function App() {
               <IconPicker key={slot} value={doc.icons[slot]} onError={setError} onPick={(r) => setDoc({ ...doc, icons: { ...doc.icons, [slot]: r }, bottomOn: doc.bottomOn || slot === 'bottom' })} />
             </Section>
             <p className="small muted legal">
-              Lizenzen: <a href={`${import.meta.env.BASE_URL}licenses/lucide-ISC.txt`} target="_blank" rel="noreferrer">Lucide</a>, <a href={`${import.meta.env.BASE_URL}licenses/tabler-MIT.txt`} target="_blank" rel="noreferrer">Tabler</a>, <a href={`${import.meta.env.BASE_URL}licenses/host-grotesk-OFL.txt`} target="_blank" rel="noreferrer">Host Grotesk</a>
+              Lizenzen: <a href={`${import.meta.env.BASE_URL}licenses/tabler-MIT.txt`} target="_blank" rel="noreferrer">Tabler</a>, <a href={`${import.meta.env.BASE_URL}licenses/host-grotesk-OFL.txt`} target="_blank" rel="noreferrer">Host Grotesk</a>
             </p>
           </div>
         </div>

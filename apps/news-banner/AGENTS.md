@@ -15,12 +15,11 @@ Browser-Editor für die SharePoint-News-Thumbnails (1920×1080 PNG) des IT-Suppo
 Test zuerst für Logik (Icon zu SVG, Layout-Slots, Dateiname). Vor jedem Commit zusätzlich den Export selbst öffnen und mit der PSD-Vorschau vergleichen.
 
 ## Architektur
-Eine reine Funktion `renderBanner(ctx, state)` zeichnet Vorschau und Export auf Canvas 2D. State ist ein kleines Objekt in `useState`: Zielgruppe, Art, Icon links, rechts, optional unten. Icons: `lucide` (ISC) für alle Symbole, `@tabler/icons` (MIT) **nur** für Markenicons, eigene Bilder per Datei. Lizenztexte unter `public/licenses/`.
+Eine reine Funktion `renderBanner(ctx, state)` zeichnet Vorschau und Export auf Canvas 2D. State ist ein kleines Objekt in `useState`: Zielgruppe, Art, Icon links, rechts, optional unten. Icons: Tabler Outline (`@tabler/icons`, MIT) für Symbole und Markenicons, eigene Bilder per Datei. Lizenztexte unter `public/licenses/`.
 
-**Icon-Suche:** nutzt `src/icons/lucide-meta.json` (Namen, Stichwörter, Kategorien und Aliase von lucide.dev). Nach einem Update von `lucide` und `lucide-static` (gleiche Version) `npm run build:lucide-meta -w apps/news-banner` ausführen, das braucht Internet. Nur englisch, keine deutschen Synonyme (Entscheid Alexej). Markenicons: handgewählte Liste im Glob in `src/icons/catalog.ts`.
+**Icon-Suche:** nutzt `src/icons/tabler-outline.json` (Pfade, Stichwörter und Kategorie aus `@tabler/icons`), Suchlogik wie im Social Studio. Nach einem Update von `@tabler/icons` `npm run build:tabler -w apps/news-banner` ausführen. Nur englisch, keine deutschen Synonyme (Entscheid Alexej). Markenicons im Tab «Apps»: handgewählte Liste in `src/icons/catalog.ts`.
 
 ## Fallen
-- Lucide-Icons haben viewBox 24 und Strichbreite 2 als Vorgabe. Hier immer 1.5 (PSD-Vorgabe: «WIDTH 1.5px, SIZE 256px»), Linienenden und -ecken rund.
-- Tabler hat kein Authenticator, Outlook, SharePoint, Excel, Word. Dafür Lucide-Symbole nehmen (Schlüssel, Schild, Mail). Keine eigenen Microsoft-Logos einbauen.
+- Tabler-Icons haben viewBox 24 und Strichbreite 2 als Vorgabe. Hier immer 1.5 (PSD-Vorgabe: «WIDTH 1.5px, SIZE 256px»), Linienenden und -ecken rund.
+- Tabler hat kein Authenticator, Outlook, SharePoint, Excel, Word. Dafür allgemeine Symbole nehmen (Schlüssel, Schild, Mail). Keine eigenen Microsoft-Logos einbauen.
 - Effekte (Glow, Relief) per Canvas-Filter prüfen, in Edge gegenprüfen.
-- npm-Workspaces legen Pakete in den Hauptordner: Tabler-Icons kommen über den Alias `@tabler-outline` aus `vite.config.ts`, nie über `/node_modules/…`.

@@ -5,7 +5,7 @@ import { Switch } from '@bbzb/ui';
 const names: Record<Slot, string> = { left: 'Links', right: 'Rechts', bottom: 'Unten' };
 
 function Preview({ icon }: { icon: IconRef }) {
-  const ref = icon.kind === 'image' ? ({ kind: 'lucide', name: 'image' } as const) : icon;
+  const ref = icon.kind === 'image' ? ({ kind: 'tabler', name: 'photo' } as const) : icon;
   return <span className="slot-icon" aria-hidden="true" dangerouslySetInnerHTML={{ __html: iconSvg(ref, 'currentColor', 28) }} />;
 }
 
