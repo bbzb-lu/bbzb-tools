@@ -21,7 +21,7 @@ Arbeite im Ordner des Tools und lies dessen `AGENTS.md`, nicht die anderer Tools
 
 ## Arbeitsweise
 - Code erst nach `packages/`, wenn ein zweites Tool ihn braucht.
-- Vor jedem Commit grün: `npm run typecheck`, `npm run lint`, `npm test`, bei UI oder Export zusätzlich `npm run test:e2e`.
+- Vor jedem PR grün: `npm run check` (typecheck, lint, Unit-Tests, e2e der geänderten Tools). Grosse Änderungen bekommen im PR das Label «e2e», dann läuft e2e auch in der CI.
 - Dateien unter 400 Zeilen, Notizen kurz, `AGENTS.md` je Ordner unter 60 Zeilen.
 - Commits klein und auf Englisch. Arbeit auf Branches, `main` bleibt lauffähig.
 - Issues mit einem Label pro Bereich (Tool oder Paket). Keine echten Fotos, Namen oder Projektdateien anhängen.

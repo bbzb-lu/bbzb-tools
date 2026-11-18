@@ -2,6 +2,7 @@ name: CI
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   push:
     branches: [main]
 
@@ -34,8 +35,10 @@ jobs:
       - name: Braveold nicht im öffentlichen Repo
         run: "! git ls-files | grep -i braveold"
 
-  # Welche Playwright-Projekte laufen: im PR nur geänderte Tools, bei Gemeinsamem und auf main alle
+  # e2e (Windows, ca. 12 Min.) nur für grosse Änderungen: PR mit Label «e2e». Kleine Änderungen prüft `npm run check` lokal.
+  # Welche Playwright-Projekte laufen: nur geänderte Tools, bei Gemeinsamem alle
   changes:
+    if: contains(github.event.pull_request.labels.*.name, 'e2e')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -45,7 +48,7 @@ jobs:
         with:
           fetch-depth: 0
       - id: p
-        run: node scripts/e2e-projects.mjs "${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || '' }}" >> "$GITHUB_OUTPUT"
+        run: node scripts/e2e-projects.mjs "origin/${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
 
   e2e:
     needs: changes
@@ -86,7 +89,7 @@ jobs:
 
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [test, e2e]
+    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
