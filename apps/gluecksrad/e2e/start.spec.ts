@@ -139,3 +139,13 @@ test('Zweites Drehen: Gewinner erscheint erst, wenn das Rad steht', async ({ pag
   await expect(page.locator('.gewinner-karte')).toHaveCount(0);
   await expect(page.locator('.gewinner-karte')).toBeVisible({ timeout: 8000 });
 });
+
+test('Vorlage anklicken füllt die Liste', async ({ page }) => {
+  await page.goto('');
+  await page.getByRole('button', { name: 'Mittagessen' }).click();
+  await expect(liste(page)).toHaveValue(/^Pizza\n/);
+  await expect(page.getByText(/^\d+ von 100$/)).toHaveText('8 von 100');
+  await expect(page.getByRole('button', { name: 'Mittagessen' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Ja nein' }).click();
+  await expect(liste(page)).toHaveValue('Ja\nNein\nVielleicht\nFrag nochmal');
+});

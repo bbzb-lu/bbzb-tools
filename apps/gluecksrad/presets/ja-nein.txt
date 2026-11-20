@@ -1,0 +1,4 @@
+Ja
+Nein
+Vielleicht
+Frag nochmal

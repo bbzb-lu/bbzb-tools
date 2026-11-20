@@ -9,6 +9,9 @@ main.gr { max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: gr
 .gr-liste, .gr-buehne { display: grid; gap: 0.75rem; min-width: 0; }
 .gr-buehne { justify-items: center; }
 .gr-liste textarea { width: 100%; box-sizing: border-box; padding: 0.5rem; font: inherit; border: 1px solid var(--ink); background: var(--table); color: var(--ink); resize: vertical; }
+.gr-vorlagen { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.vorlage { min-height: 2rem; padding: 0 0.75rem; font-size: 0.875rem; }
+.vorlage[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
 .gr-zeile { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
 .gr-zeile input[type='number'] { width: 5rem; min-height: 2.5rem; box-sizing: border-box; padding: 0 0.5rem; font: inherit; border: 1px solid var(--ink); background: var(--table); color: var(--ink); }
 .datei input { position: absolute; opacity: 0; width: 1px; height: 1px; }

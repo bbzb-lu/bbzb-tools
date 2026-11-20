@@ -1,0 +1,8 @@
+Pizza
+Sushi
+Pasta
+Burger
+Salat
+Kebab
+Curry
+Suppe

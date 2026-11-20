@@ -3,6 +3,7 @@ import { Button, Header, Segmented, Switch, reducedMotion } from '@bbzb/ui';
 import { Gewinner } from './Gewinner';
 import { Kacheln } from './Kacheln';
 import { ladeListe, speichereListe } from './liste';
+import { presets } from './presets';
 import { Rad } from './Rad';
 import { MAX_OPTIONEN, parseOptionen, ziehe } from './ziehen';
 
@@ -81,6 +82,13 @@ export function App() {
       <main className="gr">
         <h1>Glücksrad</h1>
         <section className="gr-liste">
+          <div className="gr-vorlagen" role="group" aria-label="Vorlagen">
+            {presets.map((p) => (
+              <button key={p.name} type="button" className="vorlage" disabled={dreht} aria-pressed={parseOptionen(p.text).optionen.join('\n') === optionen.join('\n')} onClick={() => { setGekuerzt(false); aendern(p.text.trim()); }}>
+                {p.name}
+              </button>
+            ))}
+          </div>
           <div className="gr-zeile">
             <label htmlFor="optionen">Optionen</label>
             <span className="muted">{n} von {MAX_OPTIONEN}</span>
