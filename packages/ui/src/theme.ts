@@ -12,6 +12,13 @@ export const theme = {
   'illu-dunkel': 'color-mix(in srgb, var(--illu) 78%, black)', // Stufen von illu: Glücksrad-Segmente
   'illu-mittel': 'color-mix(in srgb, var(--illu) 55%, white)',
   'illu-hell': 'color-mix(in srgb, var(--illu) 25%, white)',
+  // Nur für die Effekte des Wahnsinn-Modus im Glücksrad
+  'fx-rot': '#FF2D55',
+  'fx-orange': '#FF8A00',
+  'fx-gelb': '#FFE600',
+  'fx-gruen': '#00E676',
+  'fx-cyan': '#00E5FF',
+  'fx-magenta': '#FF00E5',
   'ink-disabled': '#646464',
   scrollbar: '14px',
   'font-ui': '"Host Grotesk", "Segoe UI", system-ui, sans-serif',
