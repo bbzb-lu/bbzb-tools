@@ -196,3 +196,61 @@ test.describe('Wahnsinn-Modus', () => {
     await expect(page.getByRole('switch', { name: 'Wahnsinn' })).toHaveCount(0);
   });
 });
+
+test.describe('Wahnsinn-Modus: Nachbesserungen aus dem Review', () => {
+  test('Schalter ist bei offener Karte gesperrt, ein Gewinn feiert höchstens einmal', async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.goto('');
+    await liste(page).fill('Anna\nBen\nCleo');
+    const schalter = page.getByRole('switch', { name: 'Wahnsinn' });
+    // Normaler Gewinn: danach lässt sich Wahnsinn nicht zuschalten, es gibt keine Feier nachträglich
+    await page.getByRole('button', { name: 'Drehen' }).click();
+    await expect(page.locator('.gewinner-karte')).toBeVisible({ timeout: 8000 });
+    await expect(schalter).toHaveAttribute('aria-disabled', 'true');
+    await schalter.click({ force: true });
+    await expect(page.locator('canvas.fx-canvas')).toHaveCount(0);
+    await page.locator('.gewinner-karte').click();
+    // Wilder Gewinn: Schalter bei offener Karte gesperrt, Klicks ändern nichts, höchstens ein Blitz
+    await schalter.click();
+    await page.getByRole('button', { name: 'Drehen' }).click();
+    await expect(page.locator('.gewinner-karte')).toBeVisible({ timeout: 12_000 });
+    await expect(schalter).toHaveAttribute('aria-disabled', 'true');
+    for (let i = 0; i < 5; i++) await schalter.click({ force: true });
+    await expect(schalter).toHaveAttribute('aria-checked', 'true');
+    expect(await page.locator('.fx-blitz').count()).toBeLessThanOrEqual(1);
+  });
+
+  test('Wackeln und Boom erzeugen kein horizontales Scrollen (390 px, über mehrere Frames)', async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('');
+    await liste(page).fill('Anna\nBen\nCleo');
+    await page.getByRole('switch', { name: 'Wahnsinn' }).click();
+    const maxBreite = (ms: number) => page.evaluate((dauer) => new Promise<number>((res) => {
+      let max = 0;
+      const t0 = performance.now();
+      const f = () => {
+        max = Math.max(max, document.documentElement.scrollWidth);
+        if (performance.now() - t0 < dauer) requestAnimationFrame(f); else res(max);
+      };
+      f();
+    }), ms);
+    await page.getByRole('button', { name: 'Drehen' }).click();
+    expect(await maxBreite(1000)).toBeLessThanOrEqual(390);
+    await expect(page.locator('main.gr')).toHaveClass(/wm-sieg/, { timeout: 12_000 });
+    expect(await maxBreite(1000)).toBeLessThanOrEqual(390);
+  });
+
+  test('Ändert sich «weniger Bewegung» während der Sitzung, geht der Wahnsinn aus und bleibt aus', async ({ page }) => {
+    await page.goto('');
+    const schalter = page.getByRole('switch', { name: 'Wahnsinn' });
+    await schalter.click();
+    await expect(schalter).toHaveAttribute('aria-checked', 'true');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(schalter).toHaveAttribute('aria-disabled', 'true');
+    await expect(schalter).toHaveAttribute('aria-checked', 'false');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await expect(schalter).not.toHaveAttribute('aria-disabled', 'true');
+    await expect(schalter).toHaveAttribute('aria-checked', 'false');
+  });
+});

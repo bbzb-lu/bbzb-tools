@@ -51,6 +51,9 @@ function baueMotor(c: HTMLCanvasElement) {
   };
 }
 
+/** Letzte gefeierte Runde über alle Einhängungen von Fx hinweg: schützt die Grenze «ein Blitz je Gewinn». */
+let zuletztGefeiert = -1;
+
 type Wort = { id: number; w: string; x: number; y: number; r: number; c: number };
 
 /**
@@ -119,7 +122,8 @@ export function Fx({ phase, mitTon, box, n, runde }: { phase: 'dreht' | 'sieg'; 
 
   // Gewinn: je Runde einmal alles auf einmal
   useEffect(() => {
-    if (phase !== 'sieg' || !box) return;
+    if (phase !== 'sieg' || !box || zuletztGefeiert === runde) return;
+    zuletztGefeiert = runde; // je Gewinn einmal, auch wenn die Ebene neu eingehängt wird
     const farben = farbenAusTheme();
     const r = box.getBoundingClientRect();
     const [w, h] = [window.innerWidth, window.innerHeight];

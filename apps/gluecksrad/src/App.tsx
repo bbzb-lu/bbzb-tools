@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Header, Segmented, Switch, reducedMotion } from '@bbzb/ui';
 import { Fx } from './fx/Fx';
 import { ton } from './fx/ton';
@@ -27,13 +27,25 @@ export function App() {
   const [mitTon, setMitTon] = useState(true);
   const [box, setBox] = useState<HTMLDivElement | null>(null);
   const [runde, setRunde] = useState(0);
+  const [feier, setFeier] = useState(-1); // Runde, die im Wahnsinn gedreht wurde: nur sie wird gefeiert
+  const [ruhig, setRuhig] = useState(reducedMotion);
+
+  // «Weniger Bewegung» kann sich während der Sitzung ändern: Wahnsinn geht dann aus und bleibt aus
+  useEffect(() => {
+    const mq = matchMedia('(prefers-reduced-motion: reduce)');
+    const f = (e: MediaQueryListEvent) => {
+      setRuhig(e.matches);
+      if (e.matches) setWahnsinn(false);
+    };
+    mq.addEventListener('change', f);
+    return () => mq.removeEventListener('change', f);
+  }, []);
 
   const { optionen } = parseOptionen(text);
   const n = optionen.length;
   const rest = n - (offen ? 1 : 0);
-  const ruhig = reducedMotion();
   const an = wahnsinn && modus === 'rad' && !ruhig;
-  const phase = !an ? null : dreht ? 'dreht' : ergebnis ? 'sieg' : null;
+  const phase = !an ? null : dreht ? 'dreht' : ergebnis && feier === runde ? 'sieg' : null;
   const k = Math.min(Math.max(1, anzahl || 1), Math.max(n, 1));
 
   const aendern = (neu: string) => {
@@ -57,6 +69,7 @@ export function App() {
     setErgebnis(o);
     setOffen(entfernen ? o : null);
     setRunde((r) => r + 1);
+    setFeier(an ? runde + 1 : -1);
   };
 
   const drehen = () => {
@@ -129,7 +142,7 @@ export function App() {
             <>
               <div className="gr-zeile">
                 <span>Wahnsinn</span>
-                <Switch label="Wahnsinn" checked={wahnsinn} disabled={dreht || ruhig} onChange={setWahnsinn} />
+                <Switch label="Wahnsinn" checked={wahnsinn} disabled={dreht || ruhig || !!ergebnis} onChange={setWahnsinn} />
               </div>
               {ruhig && <p className="hint">Dein System ist auf weniger Bewegung gestellt, darum ist der Wahnsinn gesperrt.</p>}
               {wahnsinn && !ruhig && (

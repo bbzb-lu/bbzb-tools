@@ -71,4 +71,5 @@ main.gr { max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: gr
   .gr h1 { order: -2; }
   .gr-buehne { order: -1; }
   .rad-box { width: min(100%, 28rem); }
+  .gewinner { overflow: clip; } /* Konfetti der Karte fliegt sonst über den Rand und macht die Seite breiter */
 }
