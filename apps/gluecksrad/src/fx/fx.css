@@ -1,0 +1,38 @@
+/* Wahnsinn-Modus: nur während Drehung und Gewinnerkarte. Farben aus den fx-Tokens und dem Theme. */
+main.wm-dreht { animation: wackeln 0.24s steps(1, end) infinite; }
+main.wm-sieg { animation: boom 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 1; }
+.wm-dreht .rad-box, .wm-sieg .rad-box { animation: regenbogen 1.6s linear infinite; }
+.wm-dreht .rad { filter: drop-shadow(-4px 0 var(--fx-cyan)) drop-shadow(4px 0 var(--fx-magenta)); }
+@keyframes wackeln { 0% { transform: translate(0, 0) rotate(0); } 25% { transform: translate(-5px, 3px) rotate(-0.3deg); } 50% { transform: translate(5px, -4px) rotate(0.3deg); } 75% { transform: translate(-3px, -3px) rotate(0); } }
+@keyframes boom { 0% { transform: none; } 10% { transform: translate(-14px, 10px) rotate(-1deg); } 20% { transform: translate(12px, -10px) rotate(1deg); } 35% { transform: translate(-8px, 6px); } 55% { transform: translate(5px, -4px); } 100% { transform: none; } }
+@keyframes regenbogen { to { filter: hue-rotate(360deg); } }
+
+.fx { position: fixed; inset: 0; z-index: 50; pointer-events: none; overflow: clip; }
+.fx-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fx-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, color-mix(in srgb, var(--ink) 50%, transparent) 100%); transition: opacity 600ms ease-out; }
+.fx-scan { position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, transparent 0 3px, color-mix(in srgb, var(--ink) 9%, transparent) 3px 4px); animation: scan 1.2s linear infinite; }
+.fx-flare { position: absolute; left: 50%; top: 40%; width: 45vmin; height: 45vmin; margin: -22vmin 0 0 -22vmin; background: radial-gradient(circle, color-mix(in srgb, var(--fx-gelb) 65%, transparent), transparent 65%); animation: flare 2.2s ease-in-out infinite alternate; }
+.fx[data-phase='sieg'] :is(.fx-scan, .fx-flare) { display: none; }
+.fx[data-phase='sieg'] .fx-vignette { opacity: 0.35; }
+@keyframes scan { to { background-position: 0 4px; } }
+@keyframes flare { from { transform: translateX(-30vw); } to { transform: translateX(30vw); } }
+/* Ein einziger Blitz je Gewinn, weit unter 3 pro Sekunde */
+.fx-blitz { position: absolute; inset: 0; background: var(--on-accent); animation: blitz 350ms ease-out both; }
+@keyframes blitz { from { opacity: 0.7; } to { opacity: 0; } }
+
+.fx-hit { position: fixed; width: 3.5rem; height: 3.5rem; transform: translate(-50%, -50%); animation: hit 280ms ease-out both; }
+.fx-hit path { fill: none; stroke: var(--on-accent); stroke-width: 3; paint-order: stroke; }
+@keyframes hit { from { opacity: 1; transform: translate(-50%, -50%) scale(1.8); } to { opacity: 0; transform: translate(-50%, -50%) scale(1); } }
+
+.fx-wort { position: fixed; font-family: var(--font-ui); font-weight: 800; font-size: clamp(2rem, 7vw, 5rem); -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; animation: wort 1000ms cubic-bezier(0.16, 1, 0.3, 1) both; white-space: nowrap; }
+.fx-wort.c0 { color: var(--fx-rot); } .fx-wort.c1 { color: var(--fx-orange); } .fx-wort.c2 { color: var(--fx-gelb); }
+.fx-wort.c3 { color: var(--fx-gruen); } .fx-wort.c4 { color: var(--fx-cyan); } .fx-wort.c5 { color: var(--fx-magenta); }
+@keyframes wort { from { opacity: 1; transform: translate(-50%, -50%) rotate(var(--r)) scale(0); } 25% { transform: translate(-50%, -50%) rotate(var(--r)) scale(1.3); } to { opacity: 0; transform: translate(-50%, -90%) rotate(var(--r)) scale(1); } }
+
+/* Sonnenbrille und Schriftzug auf der Gewinnerkarte */
+.brille { position: absolute; left: 50%; top: -3rem; width: min(85%, 17rem); height: auto; transform: translate(-50%, 0); animation: brille-fall 700ms cubic-bezier(0.3, 1.6, 0.5, 1) 500ms both; }
+.brille rect { fill: var(--ink); }
+.brille .glanz { fill: var(--on-accent); opacity: 0.8; }
+.deal { position: absolute; left: 50%; bottom: -1.9rem; transform: translateX(-50%); padding: 0.1rem 0.6rem; background: var(--ink); color: var(--on-accent); font-size: 0.875rem; font-weight: 800; letter-spacing: 0.08em; white-space: nowrap; animation: deal 300ms ease-out 1.2s both; }
+@keyframes brille-fall { from { opacity: 0; transform: translate(-50%, -400%); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes deal { from { opacity: 0; } to { opacity: 1; } }

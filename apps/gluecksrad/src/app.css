@@ -24,7 +24,7 @@ main.gr { max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: gr
 /* Rad: Ring und Schatten in Tinte, Segmente mit Verlauf wie die Kachel-Illustrationen */
 .rad-box { position: relative; width: min(100%, calc(100svh - 14rem), 44rem); }
 .rad { display: block; width: 100%; height: auto; aspect-ratio: 1; overflow: visible; }
-.rad-dreh { transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
+.rad-dreh { transition: transform var(--dauer, 4s) cubic-bezier(0.1, 0.7, 0.1, 1); }
 .rad-schatten, .rad-ring, .rad-nabe { fill: var(--ink); }
 .rad-nabe-punkt, .rad-lampe { fill: var(--paper); }
 .seg { stroke: var(--paper); stroke-width: 1.2; transition: opacity 300ms ease-out; }

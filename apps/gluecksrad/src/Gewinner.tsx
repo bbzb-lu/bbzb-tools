@@ -10,7 +10,7 @@ const stuecke = Array.from({ length: STUECKE }, (_, i) => {
 });
 
 /** Karte über dem Rad: der Name springt auf, Konfetti fliegt weg. Klick oder Esc schliesst. Der Name steht in `.ergebnis`. */
-export function Gewinner({ name, onClose }: { name: string; onClose(): void }) {
+export function Gewinner({ name, onClose, brille }: { name: string; onClose(): void; brille?: boolean }) {
   useEffect(() => {
     const zu = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', zu);
@@ -25,6 +25,16 @@ export function Gewinner({ name, onClose }: { name: string; onClose(): void }) {
       </div>
       <button type="button" className="gewinner-karte" onClick={onClose} aria-label={`Gewinner ${name}, Schliessen`}>
         <span className="ergebnis" aria-hidden="true">{name}</span>
+        {brille && (
+          <>
+            <svg className="brille" viewBox="0 0 120 40" aria-hidden="true">
+              <rect x="0" y="8" width="6" height="6" /><rect x="114" y="8" width="6" height="6" />
+              <rect x="4" y="8" width="50" height="24" /><rect x="66" y="8" width="50" height="24" /><rect x="54" y="12" width="12" height="6" />
+              <rect className="glanz" x="10" y="12" width="16" height="4" /><rect className="glanz" x="72" y="12" width="16" height="4" />
+            </svg>
+            <span className="deal" aria-hidden="true">DEAL WITH IT</span>
+          </>
+        )}
       </button>
     </div>
   );

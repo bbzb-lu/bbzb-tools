@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Button, Header, Segmented, Switch, reducedMotion } from '@bbzb/ui';
+import { Fx } from './fx/Fx';
+import { ton } from './fx/ton';
 import { Gewinner } from './Gewinner';
 import { Kacheln } from './Kacheln';
 import { ladeListe, speichereListe } from './liste';
@@ -21,10 +23,17 @@ export function App() {
   const [gekuerzt, setGekuerzt] = useState(false);
   const [offen, setOffen] = useState<string | null>(null); // Gewinner, der beim nächsten Drehen aus der Liste fliegt
   const [gewinnerIdx, setGewinnerIdx] = useState(-1);
+  const [wahnsinn, setWahnsinn] = useState(false);
+  const [mitTon, setMitTon] = useState(true);
+  const [box, setBox] = useState<HTMLDivElement | null>(null);
+  const [runde, setRunde] = useState(0);
 
   const { optionen } = parseOptionen(text);
   const n = optionen.length;
   const rest = n - (offen ? 1 : 0);
+  const ruhig = reducedMotion();
+  const an = wahnsinn && modus === 'rad' && !ruhig;
+  const phase = !an ? null : dreht ? 'dreht' : ergebnis ? 'sieg' : null;
   const k = Math.min(Math.max(1, anzahl || 1), Math.max(n, 1));
 
   const aendern = (neu: string) => {
@@ -47,6 +56,7 @@ export function App() {
     const o = liste[i] ?? null;
     setErgebnis(o);
     setOffen(entfernen ? o : null);
+    setRunde((r) => r + 1);
   };
 
   const drehen = () => {
@@ -63,7 +73,8 @@ export function App() {
     const mitte = (i + 0.5 + (Math.random() - 0.5) * 0.6) * (360 / liste.length); // Versatz bleibt im Segment
     setGewinnerIdx(i);
     setErgebnis(null);
-    setDrehung((d) => Math.ceil(d / 360) * 360 + 4 * 360 + 360 - mitte);
+    if (an) ton.frei();
+    setDrehung((d) => Math.ceil(d / 360) * 360 + (an ? 8 : 4) * 360 + 360 - mitte);
     if (reducedMotion()) fertig(liste, i);
     else setDreht(true);
   };
@@ -79,7 +90,7 @@ export function App() {
   return (
     <>
       <Header tool="Glücksrad" />
-      <main className="gr">
+      <main className={`gr${phase === 'dreht' ? ' wm-dreht' : phase === 'sieg' ? ' wm-sieg' : ''}`}>
         <h1>Glücksrad</h1>
         <section className="gr-liste">
           <div className="gr-vorlagen" role="group" aria-label="Vorlagen">
@@ -114,13 +125,31 @@ export function App() {
               <input id="anzahl" type="number" min={1} max={Math.max(n, 1)} value={anzahl} onChange={(e) => setAnzahl(Number(e.target.value))} />
             </div>
           )}
+          {modus === 'rad' && (
+            <>
+              <div className="gr-zeile">
+                <span>Wahnsinn</span>
+                <Switch label="Wahnsinn" checked={wahnsinn} disabled={dreht || ruhig} onChange={setWahnsinn} />
+              </div>
+              {ruhig && <p className="hint">Dein System ist auf weniger Bewegung gestellt, darum ist der Wahnsinn gesperrt.</p>}
+              {wahnsinn && !ruhig && (
+                <>
+                  <div className="gr-zeile">
+                    <span>Ton</span>
+                    <Switch label="Ton" checked={mitTon} onChange={setMitTon} />
+                  </div>
+                  <p className="hint">Wackelt, blitzt einmal und kann laut sein.</p>
+                </>
+              )}
+            </>
+          )}
         </section>
         <section className="gr-buehne">
           {modus === 'rad' ? (
             <>
-              <div className="rad-box">
+              <div className="rad-box" ref={setBox} style={{ '--dauer': an ? '6.5s' : '4s' } as React.CSSProperties}>
                 <Rad optionen={optionen} drehung={drehung} hervor={ergebnis ? gewinnerIdx : null} onEnde={() => dreht && fertig(optionen, gewinnerIdx)} />
-                {ergebnis && <Gewinner key={drehung} name={ergebnis} onClose={() => setErgebnis(null)} />}
+                {ergebnis && <Gewinner key={drehung} name={ergebnis} brille={an} onClose={() => setErgebnis(null)} />}
               </div>
               <Button variant="primary" onClick={drehen} disabled={rest === 0 || dreht}>Drehen</Button>
             </>
@@ -134,6 +163,7 @@ export function App() {
           {n === 0 && modus === 'mehrere' && <p className="hint">Trag mindestens eine Option ein.</p>}
         </section>
       </main>
+      {phase && <Fx phase={phase} mitTon={mitTon} box={box} n={n} runde={runde} />}
     </>
   );
 }

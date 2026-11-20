@@ -9,6 +9,15 @@ Glücksrad unter `/gluecksrad/`. Optionen tippen oder aus einer `.txt` laden (ei
 - `src/Kacheln.tsx`: Wand für den Modus «Mehrere».
 - `src/liste.ts`: Liste in `localStorage`, Schlüssel `gluecksrad-liste`.
 
+## Vorlagen
+Textdateien in `presets/*.txt` werden beim Build eingelesen und erscheinen als Knöpfe (Beschriftung aus dem Dateinamen, `-` und `_` werden Leerzeichen). Eine Option pro Zeile, 2 bis 100 Optionen (Test prüft das), erfundene Namen, keine echten Personen. Umlaute im Dateinamen sind erlaubt.
+
+## Wahnsinn-Modus (`src/fx/`)
+Schalter nur im Rad-Modus, Standard aus, nicht gespeichert. Wirkt nur beim Drehen und solange die Gewinnerkarte offen ist: `main` bekommt `wm-dreht` oder `wm-sieg`, `Fx.tsx` zeichnet eine feste Ebene ausserhalb von `main` (Canvas, Hitmarker, Schriftzüge). Töne kommen live aus Web Audio (`ton.ts`), keine Dateien.
+- Harte Grenzen: höchstens 3 Blitze pro Sekunde, Vollbild-Blitz nur einmal pro Gewinn, keine rote Vollfläche (WCAG 2.3.1). Bei `prefers-reduced-motion` ist der Schalter gesperrt.
+- Partikel höchstens `MAX` (360), Pixeldichte höchstens 1,5, Schleife stoppt ohne Partikel.
+- Farben der Effekte nur als `fx-*`-Tokens in `packages/ui/src/theme.ts`. Keine fremden Bilder oder Töne (Repo ist öffentlich), alles gezeichnet oder synthetisiert.
+
 ## Regeln
 - Höchstens 100 Optionen (`MAX_OPTIONEN`), Leerzeilen und Doppelte fliegen raus.
 - Bei `prefers-reduced-motion` gibt es keine Drehung, das Ergebnis erscheint sofort.

@@ -149,3 +149,50 @@ test('Vorlage anklicken füllt die Liste', async ({ page }) => {
   await page.getByRole('button', { name: 'Ja nein' }).click();
   await expect(liste(page)).toHaveValue('Ja\nNein\nVielleicht\nFrag nochmal');
 });
+
+test.describe('Wahnsinn-Modus', () => {
+  test('Effekte nur während Drehung und Karte, zweimal hintereinander, ohne Fehler und fremde Requests', async ({ page }) => {
+    test.setTimeout(60_000);
+    const fehler: string[] = [];
+    page.on('pageerror', (e) => fehler.push(e.message));
+    const foreign = foreignRequests(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('');
+    await liste(page).fill('Anna\nBen\nCleo\nDora');
+    await page.getByRole('switch', { name: 'Wahnsinn' }).click();
+    const main = page.locator('main.gr');
+    for (let runde = 0; runde < 2; runde++) {
+      await page.getByRole('button', { name: 'Drehen' }).click();
+      await expect(main).toHaveClass(/wm-dreht/);
+      await expect(page.locator('canvas.fx-canvas')).toHaveCount(1);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      await expect(page.locator('.gewinner-karte')).toBeVisible({ timeout: 12_000 });
+      await expect(main).toHaveClass(/wm-sieg/);
+      await page.locator('.gewinner-karte').click();
+      await expect(main).not.toHaveClass(/wm-/);
+      await expect(page.locator('canvas.fx-canvas')).toHaveCount(0);
+    }
+    expect(fehler).toEqual([]);
+    expect(foreign).toEqual([]);
+  });
+
+  test('Mit «weniger Bewegung» ist der Schalter gesperrt, ohne Modus bleibt die Seite ruhig', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('');
+    await expect(page.getByRole('switch', { name: 'Wahnsinn' })).toHaveAttribute('aria-disabled', 'true');
+    await liste(page).fill('A\nB');
+    await page.getByRole('button', { name: 'Drehen' }).click();
+    await expect(page.locator('.gewinner-karte')).toBeVisible();
+    await expect(page.locator('main.gr')).not.toHaveClass(/wm-/);
+    await expect(page.locator('canvas.fx-canvas')).toHaveCount(0);
+  });
+
+  test('Wahnsinn ändert die normale Seite nicht und fehlt im Modus «Mehrere»', async ({ page }) => {
+    await page.goto('');
+    await expect(page.locator('main.gr')).not.toHaveClass(/wm-/);
+    await page.getByRole('switch', { name: 'Wahnsinn' }).click();
+    await expect(page.getByRole('switch', { name: 'Ton' })).toBeVisible();
+    await page.getByText('Mehrere', { exact: true }).click();
+    await expect(page.getByRole('switch', { name: 'Wahnsinn' })).toHaveCount(0);
+  });
+});
