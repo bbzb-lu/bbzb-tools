@@ -50,15 +50,31 @@ test('Mehrere: genau zwei verschiedene Kacheln leuchten, Anzahl wird begrenzt', 
   await expect(page.locator('.kacheln li.an')).toHaveCount(5);
 });
 
-test('Gewinner entfernen leert die Liste ohne Absturz', async ({ page }) => {
+test('Gewinner entfernen: Ergebnis bleibt sichtbar, Rad springt nicht, Entfernen erst beim nächsten Drehen', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('');
   await liste(page).fill('A\nB');
   await page.getByRole('switch', { name: 'Gewinner entfernen' }).click();
   await page.getByRole('button', { name: 'Drehen' }).click();
+  await expect(page.locator('.ergebnis')).toHaveText(/^(A|B)$/);
+  await expect(liste(page)).toHaveValue(/^A\nB$/);
   await page.getByRole('button', { name: 'Drehen' }).click();
-  await expect(liste(page)).toHaveValue('');
+  await expect(page.locator('.ergebnis')).toHaveText(/^(A|B)$/);
+  await expect(liste(page)).toHaveValue(/^(A|B)$/);
   await expect(page.getByRole('button', { name: 'Drehen' })).toBeDisabled();
+});
+
+test('Während der Drehung sind Liste, Datei, Modus und Schalter gesperrt', async ({ page }) => {
+  await page.goto('');
+  await liste(page).fill('A\nB\nC');
+  await page.getByRole('button', { name: 'Drehen' }).click();
+  await expect(liste(page)).toBeDisabled();
+  await expect(page.locator('input[type=file]')).toBeDisabled();
+  await expect(page.getByRole('radio', { name: 'Mehrere' })).toBeDisabled();
+  await expect(page.getByRole('switch', { name: 'Gewinner entfernen' })).toHaveAttribute('aria-disabled', 'true');
+  await expect(page.locator('.ergebnis')).toHaveText(/\S/, { timeout: 8000 });
+  await expect(liste(page)).toBeEnabled();
+  await expect(page.getByRole('radio', { name: 'Mehrere' })).toBeEnabled();
 });
 
 test('Liste bleibt nach dem Neuladen erhalten', async ({ page }) => {
