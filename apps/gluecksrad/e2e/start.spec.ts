@@ -92,3 +92,38 @@ test('Handy: Rad und Knopf sichtbar, kein horizontales Scrollen', async ({ page 
   await expect(page.getByRole('button', { name: 'Drehen' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
+
+test('Optionen als Textdatei speichern, bei leerer Liste gesperrt', async ({ page }) => {
+  await page.goto('');
+  const speichern = page.getByRole('button', { name: 'Als Textdatei speichern' });
+  await expect(speichern).toBeDisabled();
+  await liste(page).fill('Anna\n\nBen\nAnna');
+  const [datei] = await Promise.all([page.waitForEvent('download'), speichern.click()]);
+  expect(datei.suggestedFilename()).toBe('gluecksrad-optionen.txt');
+  const pfad = await datei.path();
+  expect((await import('node:fs')).readFileSync(pfad, 'utf8')).toBe('Anna\nBen\n');
+});
+
+test('Gewinner erscheint als Karte über dem Rad und lässt sich mit Klick und Esc schliessen', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('');
+  await liste(page).fill('Anna\nBen');
+  await page.getByRole('button', { name: 'Drehen' }).click();
+  const karte = page.locator('.gewinner-karte');
+  await expect(karte).toBeVisible();
+  await expect(karte.locator('.ergebnis')).toHaveText(/^(Anna|Ben)$/);
+  await karte.click();
+  await expect(karte).toHaveCount(0);
+  await page.getByRole('button', { name: 'Drehen' }).click();
+  await expect(karte).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(karte).toHaveCount(0);
+});
+
+test('Leerzustand: Rad zeigt «Optionen eintragen», Drehen gesperrt', async ({ page }) => {
+  await page.goto('');
+  await expect(page.locator('.rad')).toContainText('Optionen eintragen');
+  await expect(page.getByRole('button', { name: 'Drehen' })).toBeDisabled();
+  await liste(page).fill('A\nB');
+  await expect(page.locator('.rad')).not.toContainText('Optionen eintragen');
+});

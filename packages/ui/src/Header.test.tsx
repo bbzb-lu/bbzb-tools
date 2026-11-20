@@ -17,6 +17,7 @@ describe('Header', () => {
   });
   it('zeilen: vor dem letzten Wort, sonst nach dem letzten Bindestrich', () => {
     expect(zeilen('Social Studio')).toEqual(['Social', 'Studio']);
+    expect(zeilen('Glücksrad')).toEqual(['Glücks', 'rad']);
     expect(zeilen('IT-News-Banner')).toEqual(['IT-News-', 'Banner']);
     expect(zeilen('LegicCard Creator')).toEqual(['LegicCard', 'Creator']);
     expect(zeilen('Datenschutz')).toEqual(['Datenschutz']);

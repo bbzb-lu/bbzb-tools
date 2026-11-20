@@ -1,36 +1,66 @@
 /* Tool-eigene Regeln, Farben nur über die Variablen aus packages/ui/src/theme.ts */
+.gr { --rad-a: var(--illu); --rad-b: var(--accent); --rad-c: var(--ink-soft); }
 main.gr { max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1.5rem 2.5rem; grid-template-columns: minmax(16rem, 24rem) 1fr; align-items: start; }
 .gr h1 { grid-column: 1 / -1; margin: 0; }
 .gr-liste, .gr-buehne { display: grid; gap: 0.75rem; min-width: 0; }
 .gr-buehne { justify-items: center; }
 .gr-liste textarea { width: 100%; box-sizing: border-box; padding: 0.5rem; font: inherit; border: 1px solid var(--ink); background: var(--table); color: var(--ink); resize: vertical; }
-.gr-zeile { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.gr-zeile { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
 .gr-zeile input[type='number'] { width: 5rem; min-height: 2.5rem; box-sizing: border-box; padding: 0 0.5rem; font: inherit; border: 1px solid var(--ink); background: var(--table); color: var(--ink); }
 .datei input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.datei span { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 0.75rem; border: 1px solid var(--ink); background: var(--paper-shade); box-shadow: 3px 3px 0 var(--ink); cursor: pointer; }
+.datei span { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 1rem; border: 1px solid var(--ink); background: transparent; box-shadow: 3px 3px 0 var(--ink); cursor: pointer; }
+.datei span:hover { background: var(--paper-shade); }
 .datei:has(input:focus-visible) span { outline: 2px solid var(--ink); outline-offset: 2px; }
+.datei:has(input:disabled) span { box-shadow: none; color: var(--ink-disabled); border-color: var(--ink-disabled); background: var(--paper-shade); cursor: not-allowed; }
 .muted, .hint { color: var(--ink-soft); font-size: 0.875rem; margin: 0; }
 
-.rad { width: min(100%, calc(100svh - 18rem), 44rem); height: auto; aspect-ratio: 1; overflow: visible; }
+/* Rad: Ring und Schatten in Tinte, Segmente mit Verlauf wie die Kachel-Illustrationen */
+.rad-box { position: relative; width: min(100%, calc(100svh - 14rem), 44rem); }
+.rad { display: block; width: 100%; height: auto; aspect-ratio: 1; overflow: visible; }
 .rad-dreh { transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-.rad path, .rad circle { stroke: var(--ink); stroke-width: 0.8; }
-.seg-a { fill: var(--table); }
-.seg-b { fill: var(--paper-shade); }
-.seg-akzent { fill: var(--accent); }
-.rad text { fill: var(--ink); font-family: var(--font-ui); pointer-events: none; }
-.rad text.seg-text-akzent { fill: var(--on-accent); }
-.rad-nabe { fill: var(--ink); }
-.rad-zeiger { fill: var(--ink); stroke: var(--table); }
-.gr-buehne button { min-height: 3rem; min-width: 10rem; font-size: 1.125rem; }
-.ergebnis { margin: 0; min-height: 3rem; font-size: clamp(1.75rem, 5vw, 3.5rem); font-weight: 700; text-align: center; overflow-wrap: anywhere; }
+.rad-schatten, .rad-ring, .rad-nabe { fill: var(--ink); }
+.rad-nabe-punkt, .rad-lampe { fill: var(--paper); }
+.seg { stroke: var(--paper); stroke-width: 1.2; transition: opacity 300ms ease-out; }
+.seg.zurueck { opacity: 0.45; }
+.seg-leer-a, .seg-leer-b { stroke: var(--paper); stroke-width: 1.2; }
+.seg-leer-a { fill: var(--paper-shade); }
+.seg-leer-b { fill: var(--table); }
+.seg-text { fill: var(--on-accent); font-family: var(--font-ui); font-weight: 600; pointer-events: none; transition: opacity 300ms ease-out; }
+.seg-text.zurueck { opacity: 0.45; }
+.rad-zeiger { fill: var(--ink); stroke: var(--paper); stroke-width: 2.5; stroke-linejoin: round; }
+.rad-leer rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
+.rad-leer text { fill: var(--ink); font-family: var(--font-ui); font-weight: 600; }
+.gr-buehne > button { min-height: 3rem; min-width: 10rem; font-size: 1.125rem; }
+
+/* Gewinner: Karte springt auf, Konfetti fliegt weg (nur transform und opacity, einmalig) */
+.gewinner { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.gewinner-karte {
+  pointer-events: auto; position: relative; z-index: 1; max-width: 80%; padding: 1rem 1.75rem;
+  border: 2px solid var(--ink); background: var(--illu); color: var(--on-accent); box-shadow: 8px 8px 0 var(--ink);
+  font: inherit; cursor: pointer; animation: karte-pop 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.gewinner-karte:hover:not(:active) { transform: none; }
+.gewinner-karte:active { transform: translate(4px, 4px); box-shadow: 4px 4px 0 var(--ink); }
+.gewinner-karte:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+.ergebnis { display: block; font-size: clamp(1.75rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.1; text-align: center; overflow-wrap: anywhere; }
+.konfetti { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
+.stueck { position: absolute; left: -0.4rem; top: -0.4rem; width: 0.8rem; height: 0.8rem; border: 1px solid var(--ink); animation: konfetti 1100ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both; }
+.stueck.f0 { background: var(--illu); }
+.stueck.f1 { background: var(--accent); }
+.stueck.f2 { background: var(--ink); }
+.stueck.f3 { background: var(--paper-shade); }
+@keyframes karte-pop { from { opacity: 0; transform: scale(0.4) rotate(-6deg); } 60% { opacity: 1; transform: scale(1.06) rotate(1deg); } to { opacity: 1; transform: none; } }
+@keyframes konfetti { from { opacity: 1; transform: translate(0, 0) scale(0.3); } 80% { opacity: 1; } to { opacity: 0; transform: translate(var(--x), calc(var(--y) + 3rem)) rotate(var(--r)) scale(1); } }
 
 .kacheln { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); }
 .kacheln li { padding: 0.75rem; text-align: center; border: 1px solid var(--ink); background: var(--table); font-size: clamp(1rem, 2vw, 1.5rem); overflow-wrap: anywhere; transition: opacity 200ms ease-out; }
-.kacheln li.an { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+.kacheln li.an { background: var(--illu); color: var(--on-accent); font-weight: 700; box-shadow: 4px 4px 0 var(--ink); animation: kachel-pop 420ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 100ms) both; }
 .kacheln li.aus { opacity: 0.35; }
+@keyframes kachel-pop { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 48rem) {
   main.gr { grid-template-columns: 1fr; padding-top: 1rem; }
+  .gr h1 { order: -2; }
   .gr-buehne { order: -1; }
-  .rad { width: min(100%, 28rem); }
+  .rad-box { width: min(100%, 28rem); }
 }

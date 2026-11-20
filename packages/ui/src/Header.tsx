@@ -3,6 +3,7 @@ import { feedbackUrl } from './feedback';
 
 /** Zweizeilig wie die Schilder im Entwurf: vor dem letzten Wort, sonst nach dem letzten Bindestrich. */
 export function zeilen(name: string): string[] {
+  if (name === 'Glücksrad') return ['Glücks', 'rad']; // ohne Leerzeichen und Bindestrich, sonst einzeilig und zu breit fürs Quadrat
   const i = name.includes(' ') ? name.lastIndexOf(' ') : name.lastIndexOf('-') + 1;
   return i > 0 ? [name.slice(0, i).trimEnd(), name.slice(i).trimStart()] : [name];
 }

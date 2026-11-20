@@ -17,8 +17,9 @@ export function pick(files, ids) {
       continue;
     }
     const m = /^apps\/([^/]+)\//.exec(f);
-    // Gemeinsames (packages, Startseite, e2e, scripts, Konfiguration) trifft jedes Tool
-    if (!m || m[1] === 'startseite') return null;
+    // Gemeinsames (packages, e2e, scripts, Konfiguration) trifft jedes Tool. Die Startseite prüft nur die Suite, kein Tool hängt von ihr ab.
+    if (!m) return null;
+    if (m[1] === 'startseite') continue;
     apps.add(m[1]);
   }
   return ['suite', ...ids.filter((id) => apps.has(id))];

@@ -34,6 +34,25 @@ export function Illustration({ tool }: { tool: string }) {
         <IconHeadset x={176} y={89} width={114} height={114} color="var(--on-accent)" stroke={1.5} />
       </>
     );
+  else if (tool === 'gluecksrad')
+    inhalt = (
+      <>
+        {/* ein Verlauf über das ganze Rad, benachbarte Segmente gegenläufig, sonst bricht jeder Keil seinen eigenen Streifen */}
+        <defs>
+          {['ab', 'auf'].map((k, j) => (
+            <linearGradient key={k} id={`${u}r${k}`} gradientUnits="userSpaceOnUse" x1="0" y1={j ? 295 : 55} x2="0" y2={j ? 55 : 295}>
+              <stop offset="0" stopColor="var(--on-accent)" />
+              <stop offset="1" stopColor="var(--illu)" />
+            </linearGradient>
+          ))}
+        </defs>
+        {Array.from({ length: 8 }, (_, i) => (
+          <path key={i} d={`M242 175 L${242 + 120 * Math.sin((i * Math.PI) / 4)} ${175 - 120 * Math.cos((i * Math.PI) / 4)} A120 120 0 0 1 ${242 + 120 * Math.sin(((i + 1) * Math.PI) / 4)} ${175 - 120 * Math.cos(((i + 1) * Math.PI) / 4)} Z`} fill={`url(#${u}r${i % 2 ? 'auf' : 'ab'})`} stroke="var(--paper)" strokeWidth={3} />
+        ))}
+        <circle cx={242} cy={175} r={14} fill="var(--ink)" stroke="var(--paper)" strokeWidth={3} />
+        <path d="M226 24 H258 L242 62 Z" fill="var(--ink)" stroke="var(--paper)" strokeWidth={3} strokeLinejoin="round" />
+      </>
+    );
   else if (tool === 'legiccard-creator')
     inhalt = (
       <>

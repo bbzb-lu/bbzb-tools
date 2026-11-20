@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Button, Header, Segmented, Switch, reducedMotion } from '@bbzb/ui';
+import { Gewinner } from './Gewinner';
 import { Kacheln } from './Kacheln';
 import { ladeListe, speichereListe } from './liste';
 import { Rad } from './Rad';
@@ -18,7 +19,7 @@ export function App() {
   const [gezogen, setGezogen] = useState<Set<number>>(new Set());
   const [gekuerzt, setGekuerzt] = useState(false);
   const [offen, setOffen] = useState<string | null>(null); // Gewinner, der beim nächsten Drehen aus der Liste fliegt
-  const gewinner = useRef(-1);
+  const [gewinnerIdx, setGewinnerIdx] = useState(-1);
 
   const { optionen } = parseOptionen(text);
   const n = optionen.length;
@@ -59,11 +60,17 @@ export function App() {
     }
     const i = ziehe(liste.length, 1)[0]!;
     const mitte = (i + 0.5 + (Math.random() - 0.5) * 0.6) * (360 / liste.length); // Versatz bleibt im Segment
-    gewinner.current = i;
+    setGewinnerIdx(i);
     setErgebnis(null);
     setDrehung((d) => Math.ceil(d / 360) * 360 + 4 * 360 + 360 - mitte);
     if (reducedMotion()) fertig(liste, i);
     else setDreht(true);
+  };
+
+  const speichern = () => {
+    const url = URL.createObjectURL(new Blob([`${optionen.join('\n')}\n`], { type: 'text/plain;charset=utf-8' }));
+    Object.assign(document.createElement('a'), { href: url, download: 'gluecksrad-optionen.txt' }).click();
+    URL.revokeObjectURL(url);
   };
 
   const mehrere = () => setGezogen(new Set(ziehe(n, k)));
@@ -74,14 +81,17 @@ export function App() {
       <main className="gr">
         <h1>Glücksrad</h1>
         <section className="gr-liste">
-          <label htmlFor="optionen">Optionen</label>
+          <div className="gr-zeile">
+            <label htmlFor="optionen">Optionen</label>
+            <span className="muted">{n} von {MAX_OPTIONEN}</span>
+          </div>
           <textarea id="optionen" value={text} rows={10} disabled={dreht} placeholder="Eine Option pro Zeile" onChange={(e) => aendern(e.target.value)} />
           <div className="gr-zeile">
             <label className="datei">
               <input type="file" accept=".txt,text/plain" disabled={dreht} onChange={(e) => { void laden(e.target.files?.[0]); e.target.value = ''; }} />
               <span>Textdatei laden</span>
             </label>
-            <span className="muted">{n} von {MAX_OPTIONEN}</span>
+            <Button onClick={speichern} disabled={n === 0}>Als Textdatei speichern</Button>
           </div>
           {gekuerzt && <p role="status" className="hint">Die Datei hat mehr als {MAX_OPTIONEN} Zeilen, nur die ersten {MAX_OPTIONEN} sind drin.</p>}
           <Segmented legend="Modus" value={modus} options={[['rad', 'Rad'], ['mehrere', 'Mehrere']]} disabled={dreht} onChange={(m) => { setModus(m); setErgebnis(null); setGezogen(new Set()); }} />
@@ -100,9 +110,11 @@ export function App() {
         <section className="gr-buehne">
           {modus === 'rad' ? (
             <>
-              <Rad optionen={optionen} drehung={drehung} onEnde={() => dreht && fertig(optionen, gewinner.current)} />
+              <div className="rad-box">
+                <Rad optionen={optionen} drehung={drehung} hervor={ergebnis ? gewinnerIdx : null} onEnde={() => dreht && fertig(optionen, gewinnerIdx)} />
+                {ergebnis && <Gewinner key={drehung} name={ergebnis} onClose={() => setErgebnis(null)} />}
+              </div>
               <Button variant="primary" onClick={drehen} disabled={rest === 0 || dreht}>Drehen</Button>
-              <p className="ergebnis" aria-live="polite">{ergebnis}</p>
             </>
           ) : (
             <>
@@ -111,7 +123,7 @@ export function App() {
               <p className="ergebnis" aria-live="polite">{gezogen.size > 0 && optionen.filter((_, i) => gezogen.has(i)).join(', ')}</p>
             </>
           )}
-          {n === 0 && <p className="hint">Trag mindestens eine Option ein.</p>}
+          {n === 0 && modus === 'mehrere' && <p className="hint">Trag mindestens eine Option ein.</p>}
         </section>
       </main>
     </>
