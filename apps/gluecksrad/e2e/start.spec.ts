@@ -127,3 +127,15 @@ test('Leerzustand: Rad zeigt «Optionen eintragen», Drehen gesperrt', async ({ 
   await liste(page).fill('A\nB');
   await expect(page.locator('.rad')).not.toContainText('Optionen eintragen');
 });
+
+test('Zweites Drehen: Gewinner erscheint erst, wenn das Rad steht', async ({ page }) => {
+  await page.goto('');
+  await liste(page).fill('Anna\nBen\nCleo\nDora');
+  await page.getByRole('button', { name: 'Drehen' }).click();
+  await expect(page.locator('.gewinner-karte')).toBeVisible({ timeout: 8000 });
+  await page.getByRole('button', { name: 'Drehen' }).click();
+  // Die Drehung dauert 4 s: nach 1,5 s darf noch keine Karte da sein
+  await page.waitForTimeout(1500);
+  await expect(page.locator('.gewinner-karte')).toHaveCount(0);
+  await expect(page.locator('.gewinner-karte')).toBeVisible({ timeout: 8000 });
+});

@@ -10,7 +10,7 @@ function punkt(winkel: number, r: number): string {
 
 type Ton = 'a' | 'b' | 'c';
 
-/** Violett und Blau im Wechsel, bei ungerader Zahl bekommt das letzte Segment Grau, damit nie zwei gleiche aneinanderstossen. */
+/** Dunkles und helles Violett im Wechsel, bei ungerader Zahl bekommt das letzte Segment die mittlere Stufe, damit nie zwei gleiche aneinanderstossen. */
 function ton(i: number, n: number): Ton {
   if (n > 1 && n % 2 === 1 && i === n - 1) return 'c';
   return i % 2 === 0 ? 'a' : 'b';
@@ -35,14 +35,14 @@ export function Rad({ optionen, drehung, onEnde, hervor }: { optionen: string[];
       <defs>
         {(['a', 'b', 'c'] as const).map((t) => (
           <radialGradient key={t} id={`${u}${t}`} gradientUnits="userSpaceOnUse" cx="0" cy="0" r={R}>
-            <stop offset="0" style={{ stopColor: `var(--rad-${t})` }} />
-            <stop offset="1" style={{ stopColor: `color-mix(in srgb, var(--rad-${t}) 78%, black)` }} />
+            <stop offset="0" style={{ stopColor: `var(--rad-${t}-mitte)` }} />
+            <stop offset="1" style={{ stopColor: `var(--rad-${t}-rand)` }} />
           </radialGradient>
         ))}
       </defs>
       <circle r="100" className="rad-schatten" transform="translate(4 4)" />
       <circle r="100" className="rad-ring" />
-      <g className="rad-dreh" style={{ transform: `rotate(${drehung}deg)` }} onTransitionEnd={onEnde}>
+      <g className="rad-dreh" style={{ transform: `rotate(${drehung}deg)` }} onTransitionEnd={(e) => e.target === e.currentTarget && onEnde()}>
         {n === 0 &&
           Array.from({ length: LEER }, (_, i) => <path key={i} className={i % 2 ? 'seg-leer-b' : 'seg-leer-a'} d={keil(i, 360 / LEER)} />)}
         {n === 1 && <circle r={R} fill={`url(#${u}a)`} className="seg" />}
@@ -51,7 +51,7 @@ export function Rad({ optionen, drehung, onEnde, hervor }: { optionen: string[];
             <path key={i} className={`seg${hervor !== null && hervor !== i ? ' zurueck' : ''}`} fill={`url(#${u}${ton(i, n)})`} d={keil(i, w)} />
           ))}
         {optionen.map((o, i) => (
-          <text key={i} className={`seg-text${hervor !== null && hervor !== i ? ' zurueck' : ''}`} transform={`rotate(${(i + 0.5) * w - 90})`} x={R - 6} y={fs * 0.35} textAnchor="end" fontSize={fs}>
+          <text key={i} className={`seg-text t-${ton(i, n)}${hervor !== null && hervor !== i ? ' zurueck' : ''}`} transform={`rotate(${(i + 0.5) * w - 90})`} x={R - 6} y={fs * 0.35} textAnchor="end" fontSize={fs}>
             {kurz(o)}
           </text>
         ))}

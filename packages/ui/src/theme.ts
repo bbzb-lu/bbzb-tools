@@ -9,6 +9,9 @@ export const theme = {
   accent: '#0077B6',
   'on-accent': '#FFFFFF',
   illu: '#4421DE', // Verläufe der Kachel-Illustrationen auf der Startseite
+  'illu-dunkel': 'color-mix(in srgb, var(--illu) 78%, black)', // Stufen von illu: Glücksrad-Segmente
+  'illu-mittel': 'color-mix(in srgb, var(--illu) 55%, white)',
+  'illu-hell': 'color-mix(in srgb, var(--illu) 25%, white)',
   'ink-disabled': '#646464',
   scrollbar: '14px',
   'font-ui': '"Host Grotesk", "Segoe UI", system-ui, sans-serif',

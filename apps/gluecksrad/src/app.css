@@ -1,5 +1,9 @@
 /* Tool-eigene Regeln, Farben nur über die Variablen aus packages/ui/src/theme.ts */
-.gr { --rad-a: var(--illu); --rad-b: var(--accent); --rad-c: var(--ink-soft); }
+.gr {
+  --rad-a-mitte: var(--illu); --rad-a-rand: var(--illu-dunkel);
+  --rad-b-mitte: var(--on-accent); --rad-b-rand: var(--illu-hell);
+  --rad-c-mitte: var(--illu-hell); --rad-c-rand: var(--illu-mittel);
+}
 main.gr { max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1.5rem 2.5rem; grid-template-columns: minmax(16rem, 24rem) 1fr; align-items: start; }
 .gr h1 { grid-column: 1 / -1; margin: 0; }
 .gr-liste, .gr-buehne { display: grid; gap: 0.75rem; min-width: 0; }
@@ -25,7 +29,8 @@ main.gr { max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: gr
 .seg-leer-a, .seg-leer-b { stroke: var(--paper); stroke-width: 1.2; }
 .seg-leer-a { fill: var(--paper-shade); }
 .seg-leer-b { fill: var(--table); }
-.seg-text { fill: var(--on-accent); font-family: var(--font-ui); font-weight: 600; pointer-events: none; transition: opacity 300ms ease-out; }
+.seg-text { fill: var(--ink); font-family: var(--font-ui); font-weight: 600; pointer-events: none; transition: opacity 300ms ease-out; }
+.seg-text.t-a { fill: var(--on-accent); }
 .seg-text.zurueck { opacity: 0.45; }
 .rad-zeiger { fill: var(--ink); stroke: var(--paper); stroke-width: 2.5; stroke-linejoin: round; }
 .rad-leer rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1; }
@@ -46,7 +51,7 @@ main.gr { max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: gr
 .konfetti { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
 .stueck { position: absolute; left: -0.4rem; top: -0.4rem; width: 0.8rem; height: 0.8rem; border: 1px solid var(--ink); animation: konfetti 1100ms cubic-bezier(0.16, 1, 0.3, 1) 120ms both; }
 .stueck.f0 { background: var(--illu); }
-.stueck.f1 { background: var(--accent); }
+.stueck.f1 { background: var(--illu-mittel); }
 .stueck.f2 { background: var(--ink); }
 .stueck.f3 { background: var(--paper-shade); }
 @keyframes karte-pop { from { opacity: 0; transform: scale(0.4) rotate(-6deg); } 60% { opacity: 1; transform: scale(1.06) rotate(1deg); } to { opacity: 1; transform: none; } }
