@@ -27,6 +27,14 @@ export const tools: readonly Tool[] = [
     vorschau: 'vorschau/sharepoint.png',
     beta: true,
   },
+  {
+    id: 'gluecksrad',
+    name: 'Glücksrad',
+    satz: 'Kurz beschreiben, was das Tool erledigt.',
+    pfad: '/gluecksrad/',
+    vorschau: 'vorschau/gluecksrad.png',
+    beta: true,
+  },
 ];
 
 /** Tools, die es noch nicht im Browser gibt; die Kachel führt zum bestehenden Projekt. */
