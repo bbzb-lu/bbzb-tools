@@ -1,12 +1,17 @@
 # apps/gluecksrad
 
-Glücksrad unter `/gluecksrad/`. Ersetze diesen Absatz: wofür das Tool ist, wer es nutzt, was es nie tun darf.
+Glücksrad unter `/gluecksrad/`. Optionen tippen oder aus einer `.txt` laden (eine pro Zeile), Rad dreht und wählt eine. Zweiter Modus «Mehrere» zieht mehrere Optionen auf einmal ohne Wiederholung. Gedacht für Beamer und Handy. Nichts wird hochgeladen, die Datei wird nur lokal gelesen.
 
-## Erste Schritte
-- In `apps/startseite/src/tools.ts` den Platzhalter-Satz ersetzen (höchstens 90 Zeichen) und `public/vorschau/gluecksrad.png` durch ein echtes Bild ersetzen (960 × 540).
-- `src/App.tsx` ausbauen, Bauteile aus `@bbzb/ui`, Werte nur aus `packages/ui/src/theme.ts` oder einer eigenen `src/tokens.ts`.
-- Braucht das Tool eine fremde Adresse (z. B. KI-Modelle), eine eigene CSP-Regel in `_headers` und ein Satz auf der Seite «Datenschutz».
-- Speichert das Tool etwas, beginnt jeder Schlüssel mit `gluecksrad`.
-- Fallen und Entscheide kurz hier festhalten, Pläne unter `docs/`.
+## Aufbau
+- `src/ziehen.ts`: reine Funktionen `parseOptionen` und `ziehe` (Zufall über `crypto.getRandomValues`). Ein späteres Pixel-Embed kann sie wiederverwenden.
+- `src/Rad.tsx`: SVG-Rad, dreht per CSS-Transition (4 s). Das Ergebnis steht vor der Drehung fest.
+- `src/Kacheln.tsx`: Wand für den Modus «Mehrere».
+- `src/liste.ts`: Liste in `localStorage`, Schlüssel `gluecksrad-liste`.
 
-Starten: `npm run dev -w apps/gluecksrad`. Der e2e-Test in `e2e/` läuft automatisch mit, sobald das Tool in `tools.ts` steht.
+## Regeln
+- Höchstens 100 Optionen (`MAX_OPTIONEN`), Leerzeilen und Doppelte fliegen raus.
+- Bei `prefers-reduced-motion` gibt es keine Drehung, das Ergebnis erscheint sofort.
+- Die Optionenzahl 0 sperrt den Knopf, eine einzige Option ist erlaubt.
+- Segmentfarben nur aus dem Theme: zwei Töne im Wechsel, bei ungerader Zahl bekommt das letzte Segment den Akzent.
+
+Starten: `npm run dev -w apps/gluecksrad`. Tests: `npx vitest --project gluecksrad run`, `npx playwright test --project gluecksrad`.

@@ -31,7 +31,7 @@ describe('ziehe', () => {
   });
   it('ist grob gleichverteilt', () => {
     const n = [0, 0, 0];
-    for (let i = 0; i < 6000; i++) n[ziehe(3, 1)[0]]++;
+    for (let i = 0; i < 6000; i++) n[ziehe(3, 1)[0]!]! += 1;
     for (const c of n) {
       expect(c).toBeGreaterThan(1700);
       expect(c).toBeLessThan(2300);

@@ -10,8 +10,8 @@ export function parseOptionen(text: string): { optionen: string[]; gekuerzt: boo
 function zufallsZahl(max: number): number {
   const grenze = 2 ** 32 - (2 ** 32 % max);
   const buf = new Uint32Array(1);
-  do crypto.getRandomValues(buf); while (buf[0] >= grenze);
-  return buf[0] % max;
+  do crypto.getRandomValues(buf); while (buf[0]! >= grenze);
+  return buf[0]! % max;
 }
 
 /** `anzahl` verschiedene Indizes aus 0..anzahlOptionen-1, in Ziehungsreihenfolge. */
@@ -20,7 +20,7 @@ export function ziehe(anzahlOptionen: number, anzahl: number, zufall: (max: numb
   const n = Math.min(anzahl, anzahlOptionen);
   for (let i = 0; i < n; i++) {
     const j = i + zufall(anzahlOptionen - i);
-    [idx[i], idx[j]] = [idx[j], idx[i]];
+    [idx[i], idx[j]] = [idx[j]!, idx[i]!];
   }
   return idx.slice(0, n);
 }

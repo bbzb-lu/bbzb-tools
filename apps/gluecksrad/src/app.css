@@ -1,2 +1,36 @@
 /* Tool-eigene Regeln, Farben nur über die Variablen aus packages/ui/src/theme.ts */
-main { max-width: 72rem; margin: 0 auto; padding: 3rem 1rem 4rem; }
+main.gr { max-width: 90rem; margin: 0 auto; padding: 2rem 1rem 3rem; display: grid; gap: 1.5rem 2.5rem; grid-template-columns: minmax(16rem, 24rem) 1fr; align-items: start; }
+.gr h1 { grid-column: 1 / -1; margin: 0; }
+.gr-liste, .gr-buehne { display: grid; gap: 0.75rem; min-width: 0; }
+.gr-buehne { justify-items: center; }
+.gr-liste textarea { width: 100%; box-sizing: border-box; padding: 0.5rem; font: inherit; border: 1px solid var(--ink); background: var(--table); color: var(--ink); resize: vertical; }
+.gr-zeile { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.gr-zeile input[type='number'] { width: 5rem; min-height: 2.5rem; box-sizing: border-box; padding: 0 0.5rem; font: inherit; border: 1px solid var(--ink); background: var(--table); color: var(--ink); }
+.datei input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.datei span { display: inline-flex; align-items: center; min-height: 2.5rem; padding: 0 0.75rem; border: 1px solid var(--ink); background: var(--paper-shade); box-shadow: 3px 3px 0 var(--ink); cursor: pointer; }
+.datei:has(input:focus-visible) span { outline: 2px solid var(--ink); outline-offset: 2px; }
+.muted, .hint { color: var(--ink-soft); font-size: 0.875rem; margin: 0; }
+
+.rad { width: min(100%, calc(100svh - 18rem), 44rem); height: auto; aspect-ratio: 1; overflow: visible; }
+.rad-dreh { transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
+.rad path, .rad circle { stroke: var(--ink); stroke-width: 0.8; }
+.seg-a { fill: var(--table); }
+.seg-b { fill: var(--paper-shade); }
+.seg-akzent { fill: var(--accent); }
+.rad text { fill: var(--ink); font-family: var(--font-ui); pointer-events: none; }
+.rad text.seg-text-akzent { fill: var(--on-accent); }
+.rad-nabe { fill: var(--ink); }
+.rad-zeiger { fill: var(--ink); stroke: var(--table); }
+.gr-buehne button { min-height: 3rem; min-width: 10rem; font-size: 1.125rem; }
+.ergebnis { margin: 0; min-height: 3rem; font-size: clamp(1.75rem, 5vw, 3.5rem); font-weight: 700; text-align: center; overflow-wrap: anywhere; }
+
+.kacheln { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); }
+.kacheln li { padding: 0.75rem; text-align: center; border: 1px solid var(--ink); background: var(--table); font-size: clamp(1rem, 2vw, 1.5rem); overflow-wrap: anywhere; transition: opacity 200ms ease-out; }
+.kacheln li.an { background: var(--accent); color: var(--on-accent); font-weight: 700; }
+.kacheln li.aus { opacity: 0.35; }
+
+@media (max-width: 48rem) {
+  main.gr { grid-template-columns: 1fr; padding-top: 1rem; }
+  .gr-buehne { order: -1; }
+  .rad { width: min(100%, 28rem); }
+}

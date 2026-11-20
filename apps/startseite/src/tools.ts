@@ -30,7 +30,7 @@ export const tools: readonly Tool[] = [
   {
     id: 'gluecksrad',
     name: 'Glücksrad',
-    satz: 'Kurz beschreiben, was das Tool erledigt.',
+    satz: 'Zufällige Entscheidung per Glücksrad, auch mehrere Optionen auf einmal.',
     pfad: '/gluecksrad/',
     vorschau: 'vorschau/gluecksrad.png',
     beta: true,
