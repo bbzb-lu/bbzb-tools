@@ -30,6 +30,7 @@ test('zielMontag: Mo bis Do laufende Woche, Fr bis So nächste', () => {
   expect(zielMontag(new Date('2026-11-27T17:00:00Z'))).toBe('2026-11-30');
   expect(zielMontag(new Date('2026-11-29T23:30:00Z'))).toBe('2026-11-30');
   expect(zielMontag(new Date('2026-12-26T05:00:00Z'))).toBe('2026-12-28');
+  expect(zielMontag(new Date('2027-03-28T01:30:00Z'))).toBe('2027-03-29'); // Sommerzeitumstellung
 });
 test('wochentage über Monatsende', () => expect(wochentage('2026-11-30')).toEqual(['2026-11-30', '2026-12-01', '2026-12-02', '2026-12-03', '2026-12-04']));
 const tag = (datum: string, n = 1): Tag => ({ datum, linien: Array.from({ length: n }, () => ({ linie: 'L', gericht: 'G', beilagen: '', preise: { MA: '1.00' } })) });
@@ -41,6 +42,7 @@ test('pruefeWoche', () => {
   expect(pruefeWoche({ ...ok, tage: ok.tage.map((t, i) => (i === 2 ? { ...t, datum: '2026-12-09' } : t)) }, '2026-11-30')).not.toBeNull();
   expect(pruefeWoche({ ...ok, tage: ok.tage.map((t) => tag(t.datum, 0)) }, '2026-11-30')).toBeNull();
   expect(pruefeWoche({ ...ok, tage: [{ datum: '2026-11-30', linien: [{ linie: 'L', gericht: '', beilagen: '', preise: {} }] }, ...ok.tage.slice(1)] }, '2026-11-30')).not.toBeNull();
+  expect(pruefeWoche({ ...ok, tage: [{ datum: '2026-11-30', linien: [{ linie: 'L', gericht: 'G', beilagen: '', preise: {} }] }, ...ok.tage.slice(1)] }, '2026-11-30')).not.toBeNull(); // nur Preis fehlt
 });
 test('gueltig', () => {
   const w = { montag: '2026-11-30', tage: wochentage('2026-11-30').map((d) => tag(d)) };
