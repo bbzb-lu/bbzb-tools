@@ -36,15 +36,14 @@ test('Gericht von heute mit grossem Preis für Mitarbeitende', async ({ page }) 
   await expect(karte.locator('.preis-gross')).toContainText('CHF 14.50');
 });
 
-test('Vegan als Badge an der richtigen Karte, weitere Labels klein', async ({ page }) => {
+test('Alle Labels gebündelt im Kartenkopf, Vegan grün', async ({ page }) => {
   await oeffne(page);
   const [ohne, querbeet] = [page.getByRole('article').nth(0), page.getByRole('article').nth(1)];
   await expect(ohne.getByText('Butternudeln')).toBeVisible(); // Linie ohne Feld labels
   await expect(ohne.locator('.badge')).toHaveCount(0);
-  await expect(querbeet.locator('.badge')).toHaveText('Vegan');
-  await expect(querbeet.locator('.badge svg')).toBeVisible();
-  await expect(querbeet.locator('.labels')).toHaveText('Laktosefrei');
-  await expect(querbeet.locator('.labels svg')).toBeVisible();
+  await expect(querbeet.locator('.badge')).toHaveText(['Vegan', 'Laktosefrei']); // gebündelt, Vegi zuerst
+  await expect(querbeet.locator('.badge.vegi')).toHaveText('Vegan');
+  await expect(querbeet.locator('.badge svg')).toHaveCount(2);
 });
 
 test('?preis=schu hebt Lernende hervor', async ({ page }) => {

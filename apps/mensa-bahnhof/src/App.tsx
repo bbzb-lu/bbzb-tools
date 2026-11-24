@@ -34,7 +34,7 @@ export function App() {
       <main className="mensa">
         {a?.zustand === 'offen' ? (
           <>
-            <h1>{a.titel === 'Heute' ? `Heute, ${tagTitel(a.start)}` : `Am Montag, ${tagTitel(a.start, false)}`}</h1>
+            <h1 className="nur-sr">{a.titel === 'Heute' ? `Heute, ${tagTitel(a.start)}` : `Am Montag, ${tagTitel(a.start, false)}`}</h1>
             <Tag ref={karten} datum={tag ?? a.start} start={a.start} heute={a.titel === 'Heute'}
               linien={a.woche.tage.find((t) => t.datum === (tag ?? a.start))?.linien ?? []} preis={preis} />
             <div className="tagesleiste">
@@ -70,7 +70,7 @@ function Tag({ ref, datum, start, heute, linien, preis }: {
 }) {
   return (
     <section ref={ref} className="tag">
-      <h2 className={datum === start ? 'nur-sr' : undefined}>{tagTitel(datum)}</h2>
+      <h2 className="nur-sr">{tagTitel(datum)}</h2>
       {linien.length === 0 ? (
         <p className="hinweis">{heute && datum === start ? 'Heute kein Mittagsmenü' : 'Kein Mittagsmenü'}</p>
       ) : (
@@ -85,13 +85,12 @@ function Tag({ ref, datum, start, heute, linien, preis }: {
 function Karte({ linie, preis }: { linie: Linie; preis: Preis }) {
   const gross = GRUPPEN.find((g) => g.preis === preis)!;
   const andere = GRUPPEN.filter((g) => g.preis !== preis && linie.preise[g.preis]);
-  const labels = linie.labels ?? []; // ältere menu.json ohne Feld
-  const weitere = labels.filter((l) => !VEGI.includes(l));
+  const labels = [...(linie.labels ?? [])].sort((x, y) => +VEGI.includes(y) - +VEGI.includes(x)); // ältere menu.json ohne Feld; Vegi zuerst
   return (
     <article className="karte">
       <div className="karte-kopf">
         <p className="linie">{linie.linie}</p>
-        {labels.filter((l) => VEGI.includes(l)).map((l) => <p key={l} className="badge"><Icon label={l} />{l}</p>)}
+        {labels.map((l) => <p key={l} className={VEGI.includes(l) ? 'badge vegi' : 'badge'}><Icon label={l} />{l}</p>)}
       </div>
       <h3 className="gericht">{linie.gericht}</h3>
       {linie.beilagen && <p className="beilagen">{linie.beilagen}</p>}
@@ -105,9 +104,6 @@ function Karte({ linie, preis }: { linie: Linie; preis: Preis }) {
           </p>
         )}
       </div>
-      {weitere.length > 0 && (
-        <ul className="labels">{weitere.map((l) => <li key={l}><Icon label={l} />{l}</li>)}</ul>
-      )}
     </article>
   );
 }
