@@ -38,7 +38,7 @@ export const tools: readonly Tool[] = [
   {
     id: 'mensa-bahnhof',
     name: 'Mensa Bahnhof',
-    satz: 'Kurz beschreiben, was das Tool erledigt.',
+    satz: 'Mittagsmenü der Mensa Bahnhof, heute und die ganze Woche.',
     pfad: '/mensa-bahnhof/',
     vorschau: 'vorschau/mensa-bahnhof.png',
     beta: true,
