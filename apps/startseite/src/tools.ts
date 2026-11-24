@@ -35,6 +35,14 @@ export const tools: readonly Tool[] = [
     vorschau: 'vorschau/gluecksrad.png',
     beta: true,
   },
+  {
+    id: 'mensa-bahnhof',
+    name: 'Mensa Bahnhof',
+    satz: 'Kurz beschreiben, was das Tool erledigt.',
+    pfad: '/mensa-bahnhof/',
+    vorschau: 'vorschau/mensa-bahnhof.png',
+    beta: true,
+  },
 ];
 
 /** Tools, die es noch nicht im Browser gibt; die Kachel führt zum bestehenden Projekt. */
