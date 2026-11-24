@@ -6,7 +6,7 @@ import type { Tag } from './menu';
 test('parseLinien liest alle vier Linien des Fixtures', () => {
   const l = parseLinien(readFileSync(new URL('./fixtures/sv-tag.txt', import.meta.url), 'utf8'));
   expect(l).toHaveLength(4);
-  expect(l[0].beilagen).toBe('Kräuterjus, Bratkartoffeln , Butterbohnen');
+  expect(l[0]?.beilagen).toBe('Kräuterjus, Bratkartoffeln , Butterbohnen');
   for (const x of l) { expect(x.linie).not.toBe(''); expect(x.gericht).not.toBe(''); expect(Object.keys(x.preise).length).toBeGreaterThan(0); }
 });
 test('parseLinien: Linie ohne Beilagen und mit nur einem Preis', () => {
@@ -22,7 +22,7 @@ test('isoDatum über den Jahreswechsel', () => {
   expect(isoDatum('1.1.', '2026-12-28')).toBe('2027-01-01');
 });
 test('parseLinien: mehrzeilige Beilagen mit einem Leerzeichen verbunden', () => {
-  expect(parseLinien('Kunterbunt\nSteak\nJus, Reis\nund Gemüse\nMA  CHF 14.50')[0].beilagen).toBe('Jus, Reis und Gemüse');
+  expect(parseLinien('Kunterbunt\nSteak\nJus, Reis\nund Gemüse\nMA  CHF 14.50')[0]?.beilagen).toBe('Jus, Reis und Gemüse');
 });
 test('zielMontag: Mo bis Do laufende Woche, Fr bis So nächste', () => {
   expect(zielMontag(new Date('2026-11-23T04:00:00Z'))).toBe('2026-11-23');
