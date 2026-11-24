@@ -18,6 +18,7 @@ Nie: Anfragen des Browsers an SV, qnips oder Google. Nie eine alte Woche als akt
 
 ## Seite
 - `?preis=ma|schu|ext` hebt einen Preis hervor (Standard `ma`). Logik in `src/ansicht.ts`.
+- Labels: Vegan/Vegetarisch als grünes Badge, weitere klein darunter. Icons (Tabler, MIT) in `src/icons.ts`, unbekannte Labels nur als Text.
 - Der e2e-Test nutzt `e2e/fixture-menu.json` und eine feste Uhr.
 
 ## Betrieb

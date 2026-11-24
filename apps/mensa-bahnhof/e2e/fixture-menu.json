@@ -22,6 +22,10 @@
               "linie": "Querbeet",
               "gericht": "Kichererbsen Dal",
               "beilagen": "Karotten, Naan Brot, Koriander Dip",
+              "labels": [
+                "Vegan",
+                "Laktosefrei"
+              ],
               "preise": {
                 "EXT": "14.50",
                 "MA": "14.50",
@@ -32,6 +36,7 @@
               "linie": "Weekly Spezial",
               "gericht": "Schweins-Cordonbleu",
               "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken und Pommes Frites | Tagessalat oder Suppe",
+              "labels": [],
               "preise": {
                 "EXT": "15.50",
                 "MA": "15.50",
@@ -42,6 +47,9 @@
               "linie": "Alternative",
               "gericht": "Döner Teller",
               "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "labels": [
+                "Laktosefrei"
+              ],
               "preise": {
                 "EXT": "17.00",
                 "MA": "17.00",
@@ -67,6 +75,10 @@
               "linie": "Querbeet",
               "gericht": "Gemüse-Schnitzel",
               "beilagen": "Kräuter-Chili-Dip, Cous-Cous, Zucchetti-Pfanne",
+              "labels": [
+                "Vegan",
+                "Laktosefrei"
+              ],
               "preise": {
                 "EXT": "14.50",
                 "MA": "14.50",
@@ -77,6 +89,7 @@
               "linie": "Weekly Spezial",
               "gericht": "Schweins-Cordonbleu",
               "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken , Pommes Frites und Tagessalat oder Suppe",
+              "labels": [],
               "preise": {
                 "EXT": "15.50",
                 "MA": "15.50",
@@ -87,6 +100,9 @@
               "linie": "Alternative",
               "gericht": "Döner Teller",
               "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "labels": [
+                "Laktosefrei"
+              ],
               "preise": {
                 "EXT": "17.00",
                 "MA": "17.00",
@@ -112,6 +128,9 @@
               "linie": "Querbeet",
               "gericht": "Fregola Sarda",
               "beilagen": "Erbsen, Fenchel, Cherrytomaten",
+              "labels": [
+                "Vegetarisch"
+              ],
               "preise": {
                 "EXT": "14.50",
                 "MA": "14.50",
@@ -122,6 +141,7 @@
               "linie": "Weekly Spezial",
               "gericht": "Schweins-Cordonbleu",
               "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken , Pommes Frites und Tagessalat oder Suppe",
+              "labels": [],
               "preise": {
                 "EXT": "15.50",
                 "MA": "15.50",
@@ -132,6 +152,9 @@
               "linie": "Alternative",
               "gericht": "Döner Teller",
               "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "labels": [
+                "Laktosefrei"
+              ],
               "preise": {
                 "EXT": "17.00",
                 "MA": "17.00",
@@ -157,6 +180,10 @@
               "linie": "Querbeet",
               "gericht": "Maultaschen & Gemüsefeuer",
               "beilagen": "Paprika, Sellerie, Karotten, Lauch, Röstzwiebeln, Kartoffeln, Schnittlauch",
+              "labels": [
+                "Vegetarisch",
+                "Glutenfrei"
+              ],
               "preise": {
                 "EXT": "14.50",
                 "MA": "14.50",
@@ -167,6 +194,7 @@
               "linie": "Weekly Spezial",
               "gericht": "Schweins-Cordonbleu",
               "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken und Pommes Frites | Tagessalat oder Suppe",
+              "labels": [],
               "preise": {
                 "EXT": "15.50",
                 "MA": "15.50",
@@ -177,6 +205,9 @@
               "linie": "Alternative",
               "gericht": "Döner Teller",
               "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "labels": [
+                "Laktosefrei"
+              ],
               "preise": {
                 "EXT": "17.00",
                 "MA": "17.00",
@@ -202,6 +233,10 @@
               "linie": "Querbeet",
               "gericht": "Maultaschen & Gemüsefeuer",
               "beilagen": "Paprika, Sellerie, Karotten, Lauch, Röstzwiebeln, Kartoffeln, Schnittlauch",
+              "labels": [
+                "Vegetarisch",
+                "Glutenfrei"
+              ],
               "preise": {
                 "EXT": "14.50",
                 "MA": "14.50",
@@ -212,6 +247,7 @@
               "linie": "Weekly Spezial",
               "gericht": "Schweins-Cordonbleu",
               "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken , Pommes Frites und Tagessalat oder Suppe",
+              "labels": [],
               "preise": {
                 "EXT": "15.50",
                 "MA": "15.50",
@@ -222,6 +258,9 @@
               "linie": "Alternative",
               "gericht": "Döner Teller",
               "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "labels": [
+                "Laktosefrei"
+              ],
               "preise": {
                 "EXT": "17.00",
                 "MA": "17.00",

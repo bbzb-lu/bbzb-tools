@@ -5,9 +5,12 @@ import { foreignRequests } from '../../../e2e/helpers';
 const fixture = fileURLToPath(new URL('./fixture-menu.json', import.meta.url));
 const SV = 'https://sv-gastronomie.ch/menu/BBZB,%20Luzern/Mittagsmen%C3%BC';
 let foreign: string[];
+let fehler: string[];
 
 async function oeffne(page: Page, { zeit = '2026-11-24T10:00:00', pfad = '', status = 200 } = {}) {
   foreign = foreignRequests(page);
+  fehler = [];
+  page.on('pageerror', (e) => fehler.push(e.message));
   await page.clock.setFixedTime(new Date(zeit));
   await page.route('**/menu.json', (r) => (status === 200 ? r.fulfill({ path: fixture }) : r.fulfill({ status })));
   await page.goto(pfad);
@@ -16,6 +19,7 @@ async function oeffne(page: Page, { zeit = '2026-11-24T10:00:00', pfad = '', sta
 test.afterEach(async ({ page }) => {
   await page.waitForLoadState('networkidle');
   expect(foreign).toEqual([]);
+  expect(fehler).toEqual([]);
 });
 
 test('Kopf und Überschrift für heute', async ({ page }) => {
@@ -30,6 +34,17 @@ test('Gericht von heute mit grossem Preis für Mitarbeitende', async ({ page }) 
   await expect(karte.getByText('Schweins- geschnetzeltes Zürcher Art')).toBeVisible();
   await expect(karte.locator('.preis-gross')).toContainText('Mitarbeitende');
   await expect(karte.locator('.preis-gross')).toContainText('CHF 14.50');
+});
+
+test('Vegan als Badge an der richtigen Karte, weitere Labels klein', async ({ page }) => {
+  await oeffne(page);
+  const [ohne, querbeet] = [page.getByRole('article').nth(0), page.getByRole('article').nth(1)];
+  await expect(ohne.getByText('Butternudeln')).toBeVisible(); // Linie ohne Feld labels
+  await expect(ohne.locator('.badge')).toHaveCount(0);
+  await expect(querbeet.locator('.badge')).toHaveText('Vegan');
+  await expect(querbeet.locator('.badge svg')).toBeVisible();
+  await expect(querbeet.locator('.labels')).toHaveText('Laktosefrei');
+  await expect(querbeet.locator('.labels svg')).toBeVisible();
 });
 
 test('?preis=schu hebt Lernende hervor', async ({ page }) => {
@@ -71,5 +86,6 @@ test.describe('Handy 360 × 740', () => {
   test('erstes Gericht ohne Scrollen sichtbar', async ({ page }) => {
     await oeffne(page);
     await expect(page.getByText('Schweins- geschnetzeltes Zürcher Art')).toBeInViewport();
+    await expect(page.getByRole('article').first().locator('.preis-gross')).toBeInViewport({ ratio: 1 });
   });
 });

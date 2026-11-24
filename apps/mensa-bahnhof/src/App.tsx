@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type Ref } from 'react';
 import { Header, Segmented } from '@bbzb/ui';
 import { GRUPPEN, ansicht, preisAus, tagTitel } from './ansicht';
+import { VEGI, iconFuer } from './icons';
 import { QUELLE, wochentage, type Linie, type MenuDatei, type Preis } from './menu';
 
 const KURZ = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
@@ -84,9 +85,14 @@ function Tag({ ref, datum, start, heute, linien, preis }: {
 function Karte({ linie, preis }: { linie: Linie; preis: Preis }) {
   const gross = GRUPPEN.find((g) => g.preis === preis)!;
   const andere = GRUPPEN.filter((g) => g.preis !== preis && linie.preise[g.preis]);
+  const labels = linie.labels ?? []; // ältere menu.json ohne Feld
+  const weitere = labels.filter((l) => !VEGI.includes(l));
   return (
     <article className="karte">
-      <p className="linie">{linie.linie}</p>
+      <div className="karte-kopf">
+        <p className="linie">{linie.linie}</p>
+        {labels.filter((l) => VEGI.includes(l)).map((l) => <p key={l} className="badge"><Icon label={l} />{l}</p>)}
+      </div>
       <h3 className="gericht">{linie.gericht}</h3>
       {linie.beilagen && <p className="beilagen">{linie.beilagen}</p>}
       <div className="preise">
@@ -95,10 +101,18 @@ function Karte({ linie, preis }: { linie: Linie; preis: Preis }) {
         )}
         {andere.length > 0 && (
           <p className="preise-klein">
-            {andere.map((g) => <span key={g.preis}>{g.name} CHF {linie.preise[g.preis]}</span>)}
+            {andere.map((g) => <span key={g.preis}>{g.name} <b>{linie.preise[g.preis]}</b></span>)}
           </p>
         )}
       </div>
+      {weitere.length > 0 && (
+        <ul className="labels">{weitere.map((l) => <li key={l}><Icon label={l} />{l}</li>)}</ul>
+      )}
     </article>
   );
+}
+
+function Icon({ label }: { label: string }) {
+  const pfade = iconFuer(label);
+  return pfade && <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">{pfade.map((d) => <path key={d} d={d} />)}</svg>;
 }

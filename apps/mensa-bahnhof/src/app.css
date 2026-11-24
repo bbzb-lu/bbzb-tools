@@ -9,14 +9,25 @@ main.mensa { max-width: 60rem; margin: 0 auto; padding: 1.25rem 1rem 0; display:
 
 /* Karten: eine Spalte am Handy, zwei ab Tabletbreite (vier Linien = 2 × 2) */
 .karten { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); }
-.karte { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.875rem 1rem 1rem; border: 1px solid var(--ink); background: var(--table); }
-.linie { font-size: 0.8125rem; color: var(--ink-soft); }
+.karte { display: flex; flex-direction: column; gap: 0.375rem; padding: 0.75rem 1rem 1rem; border: 1px solid var(--ink); background: var(--table); box-shadow: 3px 3px 0 var(--ink); }
+.karte-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 0.375rem; margin-bottom: 0.125rem; }
+.linie { margin-right: auto; padding: 0.125rem 0.5rem; font-size: 0.8125rem; font-weight: 700; color: var(--on-accent); background: var(--illu); }
+/* Linien über die Glücksrad-Stufen unterscheiden, Reihenfolge wie bei SV */
+.karte:nth-child(4n+2) .linie { background: var(--illu-hell); color: var(--ink); }
+.karte:nth-child(4n+3) .linie { background: var(--illu-mittel); color: var(--ink); }
+.karte:nth-child(4n+4) .linie { background: var(--illu-dunkel); }
+.badge, .labels li { display: inline-flex; align-items: center; gap: 0.25rem; }
+.badge { padding: 0.125rem 0.5rem 0.125rem 0.375rem; font-size: 0.875rem; font-weight: 700; color: var(--on-accent); background: var(--vegi); }
+.icon { flex: none; width: 1.125em; height: 1.125em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .gericht { margin: 0; font-size: 1.25rem; line-height: 1.2; font-weight: 700; text-wrap: balance; }
 .beilagen { color: var(--ink-soft); }
-.preise { margin-top: auto; padding-top: 0.625rem; display: grid; gap: 0.125rem; font-variant-numeric: tabular-nums; }
-.preis-gross { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 0.5rem; }
-.preis-gross strong { font-size: 1.5rem; line-height: 1.2; }
-.preise-klein { display: flex; flex-wrap: wrap; gap: 0 1rem; font-size: 0.875rem; color: var(--ink-soft); }
+.preise { margin-top: auto; padding-top: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; font-variant-numeric: tabular-nums; }
+.preis-gross { display: grid; padding: 0.375rem 0.75rem 0.5rem; color: var(--on-accent); background: var(--accent); line-height: 1.15; }
+.preis-gross strong { font-size: 1.75rem; }
+.preis-gross span { font-size: 0.875rem; font-weight: 600; }
+.preise-klein { display: grid; font-size: 0.875rem; color: var(--ink-soft); }
+.preise-klein b { color: var(--ink); }
+.labels { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; margin: 0.25rem 0 0; padding: 0; list-style: none; font-size: 0.875rem; color: var(--ink-soft); }
 
 /* Tagesleiste klebt unten, solange die Karten länger als der Bildschirm sind */
 .tagesleiste { position: sticky; bottom: 0; z-index: 2; margin: 0 -1rem; padding: 0.5rem 1rem 0.75rem; background: var(--table); border-top: 1px solid var(--line); }
