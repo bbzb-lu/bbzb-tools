@@ -37,3 +37,27 @@ export function isoDatum(tagMonat: string, montag: string): string {
   const tage = (Date.parse(iso(jahr)) - Date.parse(montag)) / 864e5;
   return iso(tage < -7 ? jahr + 1 : jahr);
 }
+
+const addTage = (iso: string, n: number) => new Date(Date.parse(iso) + n * 864e5).toISOString().slice(0, 10);
+
+// Mo bis Do: Montag der laufenden Woche, Fr bis So: der nächste. Datum und Wochentag in Zürich.
+export function zielMontag(jetzt: Date): string {
+  const heute = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Zurich', year: 'numeric', month: '2-digit', day: '2-digit' }).format(jetzt);
+  const seitMontag = (new Date(heute).getUTCDay() + 6) % 7;
+  return addTage(heute, seitMontag >= 4 ? 7 - seitMontag : -seitMontag);
+}
+
+export const wochentage = (montag: string): string[] => [0, 1, 2, 3, 4].map((n) => addTage(montag, n));
+
+export function pruefeWoche(w: Woche | undefined, montag: string): string | null {
+  if (!w) return `Woche ${montag} fehlt`;
+  const soll = wochentage(montag);
+  if (w.tage.length !== 5 || w.tage.some((t, i) => t.datum !== soll[i])) return `Woche ${montag}: falsche Anzahl oder falsche Daten`;
+  for (const t of w.tage) {
+    if (t.linien.some((l) => !l.gericht || Object.keys(l.preise).length === 0)) return `Woche ${montag}, ${t.datum}: Linie ohne Gericht oder Preis`;
+  }
+  return null;
+}
+
+export const gueltig = (datei: MenuDatei | undefined, montag: string): boolean =>
+  pruefeWoche(datei?.wochen.find((w) => w.montag === montag), montag) === null;
