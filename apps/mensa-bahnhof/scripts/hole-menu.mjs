@@ -15,23 +15,29 @@ if (gueltig(alt, ziel)) { console.log(`unverändert: ${ziel}`); process.exit(0);
 const browser = await chromium.launch();
 const wochen = [];
 let vorherReiter = '';
-let vorherText = '';
 
-// Inhalt des geklickten Tags: leer nur mit SV-Leermarker (app-menu-no-data), sonst mind. eine Preiszeile.
-// Muss sich vom Vortag unterscheiden (Fallback nach 4 s: Tage dürfen gleich sein) und zweimal gleich gelesen werden. Sonst Fehler.
-async function lies(page, vorher) {
-  let letzter;
-  for (let t = 0; t < 40; t++) {
+// '' = SV-Leermarker (app-menu-no-data), null = noch nichts da
+async function lese(page) {
+  if ((await page.locator('app-menu-no-data').count()) > 0) return '';
+  const wrapper = page.locator('mat-card-content.menu-wrapper');
+  return (await wrapper.count()) ? wrapper.first().innerText() : null;
+}
+
+// Der Inhalt hängt nach dem Klick bis ~1.5 s hinter dem Reiter. Gültig: Leermarker oder Preiszeile, anders als vor dem Klick
+// (Fallback nach 6 s: Tage dürfen gleich sein), dreimal gleich gelesen. Sonst Fehler (exit 1, nichts geschrieben).
+async function lies(page, vor) {
+  let letzter, gleich = 0;
+  for (let t = 0; t < 48; t++) {
     await page.waitForTimeout(250);
-    const leer = (await page.locator('app-menu-no-data').count()) > 0;
-    const wrapper = page.locator('mat-card-content.menu-wrapper');
-    const text = leer ? '' : (await wrapper.count()) ? await wrapper.first().innerText() : null;
-    const ok = text === '' || (text !== null && /CHF\s+[\d.]+/.test(text) && (text !== vorher || t >= 16));
-    if (ok && text === letzter) return text;
+    const text = await lese(page);
+    const ok = text !== null && (text === '' || /CHF\s+[\d.]+/.test(text)) && (text !== vor || t >= 24);
+    gleich = ok && text === letzter ? gleich + 1 : 0;
+    if (gleich >= 2) return text;
     letzter = ok ? text : undefined;
   }
   throw new Error('Tagesinhalt nicht geladen');
 }
+
 try {
   const page = await (await browser.newContext({ locale: 'de-CH' })).newPage(); // sonst liefert SV die englische Seite
   await page.goto(QUELLE, { waitUntil: 'load' }); // networkidle kommt wegen Firestore nie
@@ -51,10 +57,10 @@ try {
     for (let n = 0; n < await reiter.count(); n++) {
       const tab = reiter.nth(n);
       const [, tagMonat] = (await tab.innerText()).split('\n').map((z) => z.trim());
+      const vor = await lese(page);
       await tab.click();
       await page.waitForFunction((t) => document.querySelector('a.mdc-tab--active')?.textContent.includes(t), tagMonat);
-      const text = await lies(page, vorherText);
-      vorherText = text;
+      const text = await lies(page, vor);
       tage.push({ datum: isoDatum(tagMonat, ziel), linien: parseLinien(text) });
     }
     if (tage[0]) wochen.push({ montag: tage[0].datum, tage });
