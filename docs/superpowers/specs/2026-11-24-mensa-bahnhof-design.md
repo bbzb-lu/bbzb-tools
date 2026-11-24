@@ -15,7 +15,7 @@ Hauptpublikum sind Mitarbeitende. Später sollen weitere QR-Codes für andere Gr
 - Die Action prüft selbst, ob die geholte Woche die erwarteten Daten trägt.
 
 ## Nicht-Ziele
-Allergene und Labels (SV zeigt sie im Plan nicht), Öffnungszeiten, Vorbestellung, andere Standorte oder Menükarten (Catering), Sprachen ausser Deutsch, Push oder Offline-Modus.
+Allergene, CO₂-Note und Eco-Score, Öffnungszeiten, Vorbestellung, andere Standorte oder Menükarten (Catering), Sprachen ausser Deutsch, Push oder Offline-Modus.
 
 ## Anti-Ziele
 - Ein veralteter Plan, der als aktuell erscheint. Lieber «noch nicht da» als die falsche Woche.
@@ -68,3 +68,8 @@ Allergene und Labels (SV zeigt sie im Plan nicht), Öffnungszeiten, Vorbestellun
 
 ## Überlassen dem Umsetzer
 Genaues Layout und Abstände (mit `impeccable:impeccable`), Selektoren für Playwright, Wahl des Deploy-Wegs nach dem Commit, Text der Kachel, Vorschaubild, wie der QR-Code erzeugt wird (eine Datei je Preisgruppe in `apps/mensa-bahnhof/docs/` reicht).
+
+## Nachtrag 24.11.2026: Ernährungs-Labels und Auffrischung
+- SV hängt an jedes Gericht Label-Bilder (`.customtag-list img`, Alt-Text z. B. «Vegan», «Laktosefrei»). Das Skript übernimmt nur den Alt-Text als `labels: string[]` je Linie (leer erlaubt), in SV-Reihenfolge. CO₂-Note und Eco-Score werden nicht übernommen (Entscheid Alexej).
+- Die Seite lädt keine Bilder von qnips, sondern zeichnet eigene Icons aus Tabler-Outline (MIT, liegt im News-Banner): Vegan und Vegetarisch `leaf`, Laktosefrei `milk-off`, Glutenfrei `wheat-off`. Unbekannte Labels als Text ohne Icon.
+- Hierarchie ohne Lesen: eigener Preis als Fläche in `accent`, Vegan/Vegetarisch als grünes Badge oben in der Karte (neues Token `vegi` in `theme.ts`), Linien unterscheidbar über die `illu`-Stufen. Bestehende Elemente der Suite (Theme, Kachel-Stil der Startseite, Glücksrad-Farbstufen) haben Vorrang vor Neuem.
