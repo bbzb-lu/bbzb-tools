@@ -1,0 +1,57 @@
+name: Mensa Bahnhof
+
+on:
+  schedule:
+    - cron: '0 17 * * 5'
+    - cron: '0 5 * * 6,0,1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency: mensa-bahnhof
+
+jobs:
+  menu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - id: hole
+        run: |
+          if out=$(node apps/mensa-bahnhof/scripts/hole-menu.mjs 2>&1); then
+            echo "$out"
+            echo "montag=$(echo "$out" | sed -n 's/^geschrieben: //p')" >> "$GITHUB_OUTPUT"
+          else
+            echo "$out"
+            tag=$(TZ=Europe/Zurich date +%u)
+            # Fr bis So: SV veröffentlicht evtl. später, der nächste Lauf versucht es wieder. Mo und manuell: rot.
+            if [ "${{ github.event_name }}" != workflow_dispatch ] && [ "$tag" -ge 5 ]; then
+              echo "::notice::Menü nicht abrufbar (Wochentag $tag), nächster Lauf versucht es wieder"
+            else
+              exit 1
+            fi
+          fi
+      - name: Commit und Deploy
+        if: steps.hole.outputs.montag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MONTAG: ${{ steps.hole.outputs.montag }}
+        run: |
+          git diff --quiet -- apps/mensa-bahnhof/public/menu.json && exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/mensa-bahnhof/public/menu.json
+          git commit -m "chore(mensa-bahnhof): update menu $MONTAG"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          gh workflow run ci.yml --ref main

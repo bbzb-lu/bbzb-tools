@@ -5,6 +5,8 @@ on:
     types: [opened, synchronize, reopened, labeled]
   push:
     branches: [main]
+  # Ein Push mit GITHUB_TOKEN startet keine Workflows, workflow_dispatch schon: so stösst mensa-bahnhof.yml den Deploy an
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -88,7 +90,7 @@ jobs:
           path: playwright-report/
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 10
