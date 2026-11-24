@@ -1,5 +1,5 @@
 export type Preis = 'EXT' | 'MA' | 'SCHU';
-export type Linie = { linie: string; gericht: string; beilagen: string; preise: Partial<Record<Preis, string>> };
+export type Linie = { linie: string; gericht: string; beilagen: string; labels: string[]; preise: Partial<Record<Preis, string>> };
 export type Tag = { datum: string; linien: Linie[] }; // datum ISO 'YYYY-MM-DD'
 export type Woche = { montag: string; tage: Tag[] };
 export type MenuDatei = { geholt: string; quelle: string; wochen: Woche[] };
@@ -16,7 +16,7 @@ export function parseLinien(text: string): Linie[] {
     const m = PREIS.exec(zeile);
     if (m) {
       if (!aktuell) {
-        aktuell = { linie: kopf[0] ?? '', gericht: kopf[1] ?? '', beilagen: kopf.slice(2).join(' '), preise: {} };
+        aktuell = { linie: kopf[0] ?? '', gericht: kopf[1] ?? '', beilagen: kopf.slice(2).join(' '), labels: [], preise: {} };
         linien.push(aktuell);
         kopf = [];
       }
@@ -27,6 +27,12 @@ export function parseLinien(text: string): Linie[] {
     }
   }
   return linien;
+}
+
+// labels[i] gehört zu linien[i] (Reihenfolge der .product-wrapper = Reihenfolge der Linien), getrimmt, leere entfernt.
+export function mitLabels(linien: Linie[], labels: string[][]): Linie[] {
+  if (linien.length !== labels.length) throw new Error(`Labels: ${labels.length} Gerichte statt ${linien.length}`);
+  return linien.map((l, i) => ({ ...l, labels: labels[i]!.map((x) => x.trim()).filter(Boolean) }));
 }
 
 // tagMonat 'TT.MM.' oder 'T.M.', montag ISO. Jahr des Montags, liegt das Datum >7 Tage davor: Folgejahr, >180 Tage danach: Vorjahr.

@@ -1,7 +1,7 @@
 // Liest das SV-Menü mit Playwright und schreibt public/menu.json. Aufruf: node hole-menu.mjs [--ziel YYYY-MM-DD]
 import { readFileSync, writeFileSync } from 'node:fs';
 import { chromium } from '@playwright/test';
-import { QUELLE, gueltig, isoDatum, parseLinien, pruefeWoche, zielMontag } from '../src/menu.ts';
+import { QUELLE, gueltig, isoDatum, mitLabels, parseLinien, pruefeWoche, zielMontag } from '../src/menu.ts';
 
 const DATEI = new URL('../public/menu.json', import.meta.url);
 const i = process.argv.indexOf('--ziel');
@@ -16,11 +16,16 @@ const browser = await chromium.launch();
 const wochen = [];
 let vorherReiter = '';
 
-// '' = SV-Leermarker (app-menu-no-data), null = noch nichts da
+// { text, labels }: text '' = SV-Leermarker (app-menu-no-data), null = noch nichts da. labels je .product-wrapper (nur
+// .customtag-list, nicht CO2/Eco-Score), aus demselben Render wie der Text.
 async function lese(page) {
-  if ((await page.locator('app-menu-no-data').count()) > 0) return '';
+  if ((await page.locator('app-menu-no-data').count()) > 0) return { text: '', labels: [] };
   const wrapper = page.locator('mat-card-content.menu-wrapper');
-  return (await wrapper.count()) ? wrapper.first().innerText() : null;
+  if (!(await wrapper.count())) return { text: null, labels: [] };
+  const w = wrapper.first();
+  const labels = await w.locator('.product-wrapper').evaluateAll((els) =>
+    els.map((e) => [...e.querySelectorAll('.customtag-list img')].map((img) => img.getAttribute('alt') ?? '')));
+  return { text: await w.innerText(), labels };
 }
 
 // Der Inhalt hängt nach dem Klick bis ~1.5 s hinter dem Reiter. Gültig: Leermarker oder Preiszeile, anders als vor dem Klick
@@ -29,11 +34,12 @@ async function lies(page, vor) {
   let letzter, gleich = 0;
   for (let t = 0; t < 48; t++) {
     await page.waitForTimeout(250);
-    const text = await lese(page);
+    const { text, labels } = await lese(page);
     const ok = text !== null && (text === '' || /CHF\s+[\d.]+/.test(text)) && (text !== vor || t >= 24);
-    gleich = ok && text === letzter ? gleich + 1 : 0;
-    if (gleich >= 2) return text;
-    letzter = ok ? text : undefined;
+    const stand = ok ? JSON.stringify([text, labels]) : undefined;
+    gleich = ok && stand === letzter ? gleich + 1 : 0;
+    if (gleich >= 2) return { text, labels };
+    letzter = stand;
   }
   throw new Error('Tagesinhalt nicht geladen');
 }
@@ -57,11 +63,11 @@ try {
     for (let n = 0; n < await reiter.count(); n++) {
       const tab = reiter.nth(n);
       const [, tagMonat] = (await tab.innerText()).split('\n').map((z) => z.trim());
-      const vor = await lese(page);
+      const vor = (await lese(page)).text;
       await tab.click();
       await page.waitForFunction((t) => document.querySelector('a.mdc-tab--active')?.textContent.includes(t), tagMonat);
-      const text = await lies(page, vor);
-      tage.push({ datum: isoDatum(tagMonat, ziel), linien: parseLinien(text) });
+      const { text, labels } = await lies(page, vor);
+      tage.push({ datum: isoDatum(tagMonat, ziel), linien: mitLabels(parseLinien(text), text ? labels : []) });
     }
     if (tage[0]) wochen.push({ montag: tage[0].datum, tage });
   }

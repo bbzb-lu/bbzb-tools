@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ansicht, preisAus, tagTitel } from './ansicht';
 import { wochentage, type MenuDatei, type Tag, type Woche } from './menu';
 
-const linie = { linie: 'Menü 1', gericht: 'Pasta', beilagen: '', preise: { MA: '10.00' } };
+const linie = { linie: 'Menü 1', gericht: 'Pasta', beilagen: '', labels: [], preise: { MA: '10.00' } };
 const woche = (montag: string, leer: number[] = [0, 1, 2, 3, 4]): Woche => ({
   montag,
   tage: wochentage(montag).map((datum, i): Tag => ({ datum, linien: leer.includes(i) ? [] : [linie] })),
