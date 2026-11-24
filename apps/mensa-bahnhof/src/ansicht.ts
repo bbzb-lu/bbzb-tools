@@ -1,4 +1,4 @@
-import { wochentage, type MenuDatei, type Preis, type Woche } from './menu';
+import { type MenuDatei, type Preis, type Woche } from './menu';
 
 export type Gruppe = { preis: Preis; name: string };
 export const GRUPPEN: Gruppe[] = [
@@ -30,12 +30,12 @@ export function ansicht(datei: MenuDatei | undefined, jetzt: Date): Ansicht {
   if (!woche) return { zustand: 'fehlt' };
   if (woche.tage.every((t) => t.linien.length === 0)) return { zustand: 'geschlossen', woche };
   return wochenende
-    ? { zustand: 'offen', woche, start: wochentage(montagIso)[0], titel: 'Am Montag' }
+    ? { zustand: 'offen', woche, start: montagIso, titel: 'Am Montag' }
     : { zustand: 'offen', woche, start: lokalIso(jetzt), titel: 'Heute' };
 }
 
 export function tagTitel(datum: string, wochentag = true): string {
-  const [j, m, t] = datum.split('-').map(Number);
+  const [j, m, t] = datum.split('-').map(Number) as [number, number, number];
   const teile = new Intl.DateTimeFormat('de-CH', { weekday: 'long', day: 'numeric', month: 'long' }).formatToParts(new Date(j, m - 1, t));
   const wert = (typ: string) => teile.find((p) => p.type === typ)?.value;
   const rest = `${wert('day')}. ${wert('month')}`;
