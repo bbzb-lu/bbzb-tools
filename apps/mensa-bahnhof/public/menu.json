@@ -1,5 +1,5 @@
 {
-  "geholt": "2026-11-24T16:31:40.889Z",
+  "geholt": "2026-11-24T16:34:39.626Z",
   "quelle": "https://sv-gastronomie.ch/menu/BBZB,%20Luzern/Mittagsmen%C3%BC",
   "wochen": [
     {
@@ -8,6 +8,46 @@
         {
           "datum": "2026-11-23",
           "linien": [
+            {
+              "linie": "Kunterbunt",
+              "gericht": "Kalbshacksteak",
+              "beilagen": "Kräuterjus, Bratkartoffeln , Butterbohnen",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Querbeet",
+              "gericht": "Fregola Sarda",
+              "beilagen": "Erbsen, Fenchel, Cherrytomaten",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Weekly Spezial",
+              "gericht": "Schweins-Cordonbleu",
+              "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken , Pommes Frites und Tagessalat oder Suppe",
+              "preise": {
+                "EXT": "15.50",
+                "MA": "15.50",
+                "SCHU": "12.50"
+              }
+            },
+            {
+              "linie": "Alternative",
+              "gericht": "Döner Teller",
+              "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "preise": {
+                "EXT": "17.00",
+                "MA": "17.00",
+                "SCHU": "14.00"
+              }
+            },
             {
               "linie": "Kunterbunt",
               "gericht": "Rindfleisch Lasagne",
@@ -55,6 +95,46 @@
           "linien": [
             {
               "linie": "Kunterbunt",
+              "gericht": "Rindfleisch Lasagne",
+              "beilagen": "Rindshackfleisch, Tomatensauce, Käse, Rucola",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Querbeet",
+              "gericht": "Kichererbsen Dal",
+              "beilagen": "Karotten, Naan Brot, Koriander Dip",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Weekly Spezial",
+              "gericht": "Schweins-Cordonbleu",
+              "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken und Pommes Frites | Tagessalat oder Suppe",
+              "preise": {
+                "EXT": "15.50",
+                "MA": "15.50",
+                "SCHU": "12.50"
+              }
+            },
+            {
+              "linie": "Alternative",
+              "gericht": "Döner Teller",
+              "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "preise": {
+                "EXT": "17.00",
+                "MA": "17.00",
+                "SCHU": "14.00"
+              }
+            },
+            {
+              "linie": "Kunterbunt",
               "gericht": "Schweins- geschnetzeltes Zürcher Art",
               "beilagen": "Butternudeln, Broccoli, Parmesan, Mandeln",
               "preise": {
@@ -98,6 +178,46 @@
         {
           "datum": "2026-11-25",
           "linien": [
+            {
+              "linie": "Kunterbunt",
+              "gericht": "Schweins- geschnetzeltes Zürcher Art",
+              "beilagen": "Butternudeln, Broccoli, Parmesan, Mandeln",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Querbeet",
+              "gericht": "Gemüse-Schnitzel",
+              "beilagen": "Kräuter-Chili-Dip, Cous-Cous, Zucchetti-Pfanne",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Weekly Spezial",
+              "gericht": "Schweins-Cordonbleu",
+              "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken , Pommes Frites und Tagessalat oder Suppe",
+              "preise": {
+                "EXT": "15.50",
+                "MA": "15.50",
+                "SCHU": "12.50"
+              }
+            },
+            {
+              "linie": "Alternative",
+              "gericht": "Döner Teller",
+              "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "preise": {
+                "EXT": "17.00",
+                "MA": "17.00",
+                "SCHU": "14.00"
+              }
+            },
             {
               "linie": "Kunterbunt",
               "gericht": "Kalbshacksteak",
@@ -145,6 +265,46 @@
           "linien": [
             {
               "linie": "Kunterbunt",
+              "gericht": "Kalbshacksteak",
+              "beilagen": "Kräuterjus, Bratkartoffeln , Butterbohnen",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Querbeet",
+              "gericht": "Fregola Sarda",
+              "beilagen": "Erbsen, Fenchel, Cherrytomaten",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Weekly Spezial",
+              "gericht": "Schweins-Cordonbleu",
+              "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken , Pommes Frites und Tagessalat oder Suppe",
+              "preise": {
+                "EXT": "15.50",
+                "MA": "15.50",
+                "SCHU": "12.50"
+              }
+            },
+            {
+              "linie": "Alternative",
+              "gericht": "Döner Teller",
+              "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "preise": {
+                "EXT": "17.00",
+                "MA": "17.00",
+                "SCHU": "14.00"
+              }
+            },
+            {
+              "linie": "Kunterbunt",
               "gericht": "Schweins-Stotzen Saltimbocca",
               "beilagen": "Polenta, Madeirajus, Pfälzer, Karotten, Kohlrabi",
               "preise": {
@@ -188,6 +348,46 @@
         {
           "datum": "2026-11-27",
           "linien": [
+            {
+              "linie": "Kunterbunt",
+              "gericht": "Schweins-Stotzen Saltimbocca",
+              "beilagen": "Polenta, Madeirajus, Pfälzer, Karotten, Kohlrabi",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Querbeet",
+              "gericht": "Maultaschen & Gemüsefeuer",
+              "beilagen": "Paprika, Sellerie, Karotten, Lauch, Röstzwiebeln, Kartoffeln, Schnittlauch",
+              "preise": {
+                "EXT": "14.50",
+                "MA": "14.50",
+                "SCHU": "11.50"
+              }
+            },
+            {
+              "linie": "Weekly Spezial",
+              "gericht": "Schweins-Cordonbleu",
+              "beilagen": "Schweins Nierstück gefüllt mit Käse und Schinken und Pommes Frites | Tagessalat oder Suppe",
+              "preise": {
+                "EXT": "15.50",
+                "MA": "15.50",
+                "SCHU": "12.50"
+              }
+            },
+            {
+              "linie": "Alternative",
+              "gericht": "Döner Teller",
+              "beilagen": "Hack-Dönerfleisch, Pommes Frites | Tagessalat",
+              "preise": {
+                "EXT": "17.00",
+                "MA": "17.00",
+                "SCHU": "14.00"
+              }
+            },
             {
               "linie": "Kunterbunt",
               "gericht": "Schweins-Stotzen Saltimbocca",
