@@ -8,6 +8,7 @@ export const theme = {
   line: '#23232340',
   accent: '#0077B6',
   'on-accent': '#FFFFFF',
+  vegi: '#24733A', // Vegan/Vegetarisch-Badge, Text in on-accent (5.85:1)
   illu: '#4421DE', // Verläufe der Kachel-Illustrationen auf der Startseite
   'illu-dunkel': 'color-mix(in srgb, var(--illu) 78%, black)', // Stufen von illu: Glücksrad-Segmente
   'illu-mittel': 'color-mix(in srgb, var(--illu) 55%, white)',

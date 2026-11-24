@@ -16,9 +16,9 @@ export function wann(t: number, jetzt = Date.now()): string {
 }
 
 
-/** Schild mit dem Namen, ragt unten rechts über die Kachel. Lange Namen etwas kleiner. */
+/** Schild mit dem Namen, ragt unten rechts über die Kachel. Namen mit Zeilen über 6 Zeichen etwas kleiner, sonst schneidet das Quadrat ab. */
 const Schild = ({ name }: { name: string }) => (
-  <span className={`schild${name.length > 13 ? ' lang' : ''}`} aria-hidden="true">
+  <span className={`schild${Math.max(...zeilen(name).map((z) => z.length)) > 6 ? ' lang' : ''}`} aria-hidden="true">
     <span>
       <Zeilen name={name} />
     </span>

@@ -63,6 +63,19 @@ export function Illustration({ tool }: { tool: string }) {
         </svg>
       </>
     );
+  else if (tool === 'mensa-bahnhof')
+    inhalt = (
+      <>
+        {/* Teller mit Besteck */}
+        <circle cx={242} cy={156} r={118} fill={`url(#${ab})`} />
+        <circle cx={242} cy={156} r={78} fill={`url(#${auf})`} stroke="var(--paper)" strokeWidth={3} />
+        {[64, 82, 100].map((x) => <rect key={x} x={x} y={46} width={8} height={70} fill={`url(#${ab})`} />)}
+        <rect x={64} y={108} width={44} height={20} fill={`url(#${ab})`} />
+        <rect x={78} y={126} width={16} height={140} fill={`url(#${auf})`} />
+        <path d="M384 46 C412 60 418 120 412 160 H384 Z" fill={`url(#${ab})`} />
+        <rect x={384} y={156} width={16} height={110} fill={`url(#${auf})`} />
+      </>
+    );
   else if (tool === 'sharepoint')
     inhalt = [[18, 110], [170, 15], [215, 137]].map(([x, y]) => (
       <g key={x}>
