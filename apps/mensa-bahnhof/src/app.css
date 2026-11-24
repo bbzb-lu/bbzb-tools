@@ -1,2 +1,28 @@
 /* Tool-eigene Regeln, Farben nur über die Variablen aus packages/ui/src/theme.ts */
-main { max-width: 72rem; margin: 0 auto; padding: 3rem 1rem 4rem; }
+main.mensa { max-width: 60rem; margin: 0 auto; padding: 1.25rem 1rem 0; display: grid; gap: 1rem; }
+.mensa h1 { font-size: clamp(1.375rem, 5vw, 1.75rem); text-wrap: balance; }
+.mensa h2 { margin-bottom: 0.75rem; }
+.mensa a, .mensa-fuss a { color: inherit; text-underline-offset: 0.2em; }
+.mensa a:focus-visible, .mensa-fuss a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.hinweis { font-size: 1.125rem; max-width: 40ch; }
+.hinweis a { display: block; width: fit-content; margin-top: 0.5rem; }
+
+/* Karten: eine Spalte am Handy, zwei ab Tabletbreite (vier Linien = 2 × 2) */
+.karten { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); }
+.karte { display: flex; flex-direction: column; gap: 0.25rem; padding: 0.875rem 1rem 1rem; border: 1px solid var(--ink); background: var(--table); }
+.linie { font-size: 0.8125rem; color: var(--ink-soft); }
+.gericht { margin: 0; font-size: 1.25rem; line-height: 1.2; font-weight: 700; text-wrap: balance; }
+.beilagen { color: var(--ink-soft); }
+.preise { margin-top: auto; padding-top: 0.625rem; display: grid; gap: 0.125rem; font-variant-numeric: tabular-nums; }
+.preis-gross { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 0.5rem; }
+.preis-gross strong { font-size: 1.5rem; line-height: 1.2; }
+.preise-klein { display: flex; flex-wrap: wrap; gap: 0 1rem; font-size: 0.875rem; color: var(--ink-soft); }
+
+/* Tagesleiste klebt unten, solange die Karten länger als der Bildschirm sind */
+.tagesleiste { position: sticky; bottom: 0; z-index: 2; margin: 0 -1rem; padding: 0.5rem 1rem 0.75rem; background: var(--table); border-top: 1px solid var(--line); }
+
+.mensa-fuss { max-width: 60rem; margin: 0 auto; padding: 1rem 1rem 2rem; display: flex; flex-wrap: wrap; gap: 0 1.5rem; font-size: 0.875rem; color: var(--ink-soft); }
+
+@media (min-width: 48rem) {
+  main.mensa { padding-top: 2.5rem; gap: 1.5rem; }
+}
