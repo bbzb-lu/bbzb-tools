@@ -20,6 +20,7 @@ test('isoDatum über den Jahreswechsel', () => {
   expect(isoDatum('28.12.', '2026-12-28')).toBe('2026-12-28');
   expect(isoDatum('01.01.', '2026-12-28')).toBe('2027-01-01');
   expect(isoDatum('1.1.', '2026-12-28')).toBe('2027-01-01');
+  expect(isoDatum('28.12.', '2027-01-04')).toBe('2026-12-28');
 });
 test('parseLinien: mehrzeilige Beilagen mit einem Leerzeichen verbunden', () => {
   expect(parseLinien('Kunterbunt\nSteak\nJus, Reis\nund Gemüse\nMA  CHF 14.50')[0]?.beilagen).toBe('Jus, Reis und Gemüse');

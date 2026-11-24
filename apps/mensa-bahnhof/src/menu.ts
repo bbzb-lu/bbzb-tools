@@ -29,13 +29,13 @@ export function parseLinien(text: string): Linie[] {
   return linien;
 }
 
-// tagMonat 'TT.MM.' oder 'T.M.', montag ISO. Jahr des Montags, liegt das Datum >7 Tage davor: Folgejahr.
+// tagMonat 'TT.MM.' oder 'T.M.', montag ISO. Jahr des Montags, liegt das Datum >7 Tage davor: Folgejahr, >180 Tage danach: Vorjahr.
 export function isoDatum(tagMonat: string, montag: string): string {
   const [t, mo] = tagMonat.split('.').map(Number);
   const jahr = Number(montag.slice(0, 4));
   const iso = (j: number) => `${j}-${String(mo).padStart(2, '0')}-${String(t).padStart(2, '0')}`;
   const tage = (Date.parse(iso(jahr)) - Date.parse(montag)) / 864e5;
-  return iso(tage < -7 ? jahr + 1 : jahr);
+  return iso(tage < -7 ? jahr + 1 : tage > 180 ? jahr - 1 : jahr);
 }
 
 const addTage = (iso: string, n: number) => new Date(Date.parse(iso) + n * 864e5).toISOString().slice(0, 10);

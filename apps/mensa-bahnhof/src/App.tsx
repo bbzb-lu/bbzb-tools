@@ -69,7 +69,7 @@ function Tag({ ref, datum, start, heute, linien, preis }: {
 }) {
   return (
     <section ref={ref} className="tag">
-      {datum !== start && <h2>{tagTitel(datum)}</h2>}
+      <h2 className={datum === start ? 'nur-sr' : undefined}>{tagTitel(datum)}</h2>
       {linien.length === 0 ? (
         <p className="hinweis">{heute && datum === start ? 'Heute kein Mittagsmenü' : 'Kein Mittagsmenü'}</p>
       ) : (

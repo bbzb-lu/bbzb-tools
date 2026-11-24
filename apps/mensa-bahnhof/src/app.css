@@ -26,3 +26,4 @@ main.mensa { max-width: 60rem; margin: 0 auto; padding: 1.25rem 1rem 0; display:
 @media (min-width: 48rem) {
   main.mensa { padding-top: 2.5rem; gap: 1.5rem; }
 }
+.nur-sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

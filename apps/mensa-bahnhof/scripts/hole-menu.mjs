@@ -1,6 +1,6 @@
 // Liest das SV-Menü mit Playwright und schreibt public/menu.json. Aufruf: node hole-menu.mjs [--ziel YYYY-MM-DD]
 import { readFileSync, writeFileSync } from 'node:fs';
-import { chromium } from 'playwright';
+import { chromium } from '@playwright/test';
 import { QUELLE, gueltig, isoDatum, parseLinien, pruefeWoche, zielMontag } from '../src/menu.ts';
 
 const DATEI = new URL('../public/menu.json', import.meta.url);
@@ -73,6 +73,6 @@ wochen.sort((a, b) => a.montag.localeCompare(b.montag));
 const fehler = pruefeWoche(wochen.find((w) => w.montag === ziel), ziel);
 if (fehler) { console.error(fehler); process.exit(1); }
 
-const neu = { geholt: new Date().toISOString(), quelle: QUELLE, wochen };
+const neu = { geholt: new Date().toISOString(), quelle: QUELLE, wochen: wochen.filter((w) => pruefeWoche(w, w.montag) === null) };
 if (JSON.stringify({ ...alt, geholt: 0 }) === JSON.stringify({ ...neu, geholt: 0 })) console.log(`unverändert: ${ziel}`);
 else { writeFileSync(DATEI, JSON.stringify(neu, null, 2) + '\n'); console.log(`geschrieben: ${ziel}`); }
