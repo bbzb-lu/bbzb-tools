@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     outDir: '../../dist/mensa-bahnhof',
     emptyOutDir: false, // das Leeren macht scripts/build.mjs
+    rollupOptions: { input: { main: 'index.html', embed: 'embed/index.html' } }, // embed: SharePoint-Webpart
   },
   test: { exclude: ['e2e/**', 'node_modules/**'] },
 });

@@ -7,18 +7,26 @@ import { QUELLE, wochentage, type Linie, type MenuDatei, type Preis } from './me
 const KURZ = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
 const stand = new Intl.DateTimeFormat('de-CH', { dateStyle: 'medium', timeStyle: 'short' });
 
-export function App() {
+/** Lädt menu.json einmal; `undefined` solange es lädt. Auch für das Embed. */
+export function useDatei() {
   const [datei, setDatei] = useState<MenuDatei | 'fehlt'>();
-  const [tag, setTag] = useState<string>();
-  const karten = useRef<HTMLElement>(null);
-  const preis = preisAus(location.search);
-
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}menu.json`, { cache: 'no-cache' })
       .then((r) => (r.ok ? r.json() : null))
       .then((d: MenuDatei | null) => setDatei(d && Array.isArray(d.wochen) ? d : 'fehlt'))
       .catch(() => setDatei('fehlt'));
   }, []);
+  return datei;
+}
+
+/** «23.11.» aus «2026-11-23». */
+export const kurzDatum = (d: string) => `${d.slice(8)}.${d.slice(5, 7)}.`;
+
+export function App() {
+  const datei = useDatei();
+  const [tag, setTag] = useState<string>();
+  const karten = useRef<HTMLElement>(null);
+  const preis = preisAus(location.search);
 
   const a = datei && ansicht(datei === 'fehlt' ? undefined : datei, new Date());
 
@@ -39,7 +47,7 @@ export function App() {
               linien={a.woche.tage.find((t) => t.datum === (tag ?? a.start))?.linien ?? []} preis={preis} />
             <div className="tagesleiste">
               <Segmented legend="Tag" value={tag ?? a.start} onChange={waehle}
-                options={wochentage(a.woche.montag).map((d, i): [string, string] => [d, KURZ[i]!])} />
+                options={wochentage(a.woche.montag).map((d, i): [string, string] => [d, `${KURZ[i]}\n${kurzDatum(d)}`])} />
             </div>
           </>
         ) : a ? (
@@ -108,7 +116,7 @@ function Karte({ linie, preis }: { linie: Linie; preis: Preis }) {
   );
 }
 
-function Icon({ label }: { label: string }) {
+export function Icon({ label }: { label: string }) {
   const pfade = iconFuer(label);
   return pfade && <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">{pfade.map((d) => <path key={d} d={d} />)}</svg>;
 }

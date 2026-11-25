@@ -4,7 +4,7 @@ import { readdirSync } from 'node:fs';
 import { foreignRequests } from './helpers';
 
 // wie scripts/embeds.mjs embedOrdner: Ordner ohne `_`
-const embeds = readdirSync('embeds', { withFileTypes: true }).filter((e) => e.isDirectory() && !e.name.startsWith('_')).map((e) => `/sharepoint/${e.name}/`);
+const embeds = readdirSync('embeds', { withFileTypes: true }).filter((e) => e.isDirectory() && !e.name.startsWith('_')).map((e) => `/sharepoint/${e.name}/`).concat('/mensa-bahnhof/embed/'); // Mensa-Embed liegt beim Tool
 const seiten = ['/', '/datenschutz/', ...tools.map((t) => t.pfad), ...embeds];
 /** Einzige erlaubte fremde Hosts, je nur auf ihrem Pfad (spec: Sudoku-Rätsel, Radio-Stream). */
 const EXTERN: Record<string, string> = { '/sharepoint/sudoku/': 'https://sudoku-api.vercel.app', '/sharepoint/radio-player/': 'https://stream.streambase.ch' };

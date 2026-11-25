@@ -55,7 +55,7 @@ test('?preis=schu hebt Lernende hervor', async ({ page }) => {
 
 test('Klick auf Do zeigt den Donnerstag, Überschrift bleibt heute', async ({ page }) => {
   await oeffne(page);
-  await page.getByText('Do', { exact: true }).click();
+  await page.getByText(/^Do\s/).click();
   await expect(page.getByText('Schweins-Stotzen Saltimbocca')).toBeVisible();
   await expect(page.getByText('Schweins- geschnetzeltes Zürcher Art')).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 2 })).toHaveText('Donnerstag 26. November');
