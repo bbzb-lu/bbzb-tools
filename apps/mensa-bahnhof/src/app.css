@@ -29,7 +29,22 @@ main.mensa { max-width: 60rem; margin: 0 auto; padding: 1.25rem 1rem 0; display:
 
 .mensa-fuss { max-width: 60rem; margin: 0 auto; padding: 1rem 1rem 2rem; display: flex; flex-wrap: wrap; gap: 0 1.5rem; font-size: 0.875rem; color: var(--ink-soft); }
 
+/* Kürzel mit kleinem Datum darunter (Label «Mo\n23.11.»), fünf gleich breite Tage */
+.mensa .tagesleiste .segmented label { flex: 1 1 0; }
+.mensa .tagesleiste .segmented span { display: block; padding: 0.3125rem 0.25rem; text-align: center; white-space: pre-line; font-size: 0.6875rem; line-height: 1.2; }
+.mensa .tagesleiste .segmented span::first-line { font-size: 1rem; }
+
 @media (min-width: 48rem) {
   main.mensa { padding-top: 2.5rem; gap: 1.5rem; }
+}
+/* Laptop und Desktop (16:9): Tage oben wie Reiter, alle Linien in einer Reihe */
+@media (min-width: 64rem) {
+  main.mensa, .mensa-fuss { max-width: 90rem; padding-left: 2.5rem; padding-right: 2.5rem; }
+  main.mensa { padding-top: 2rem; }
+  .tagesleiste { order: -1; position: static; margin: 0; padding: 0; border: 0; }
+  .karten { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.25rem; }
+  .karte { padding: 1rem 1.25rem 1.25rem; }
+  .gericht { font-size: 1.5rem; }
+  .beilagen { font-size: 1.0625rem; }
 }
 .nur-sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

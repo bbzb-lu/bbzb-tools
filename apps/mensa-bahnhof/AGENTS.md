@@ -27,3 +27,7 @@ Nie: Anfragen des Browsers an SV, qnips oder Google. Nie eine alte Woche als akt
 - QR-Codes in `docs/`: `qr-ma.png`, `qr-schu.png`, `qr-ext.png`.
 
 Starten: `npm run dev -w apps/mensa-bahnhof`.
+
+## SharePoint-Embed
+`embed/index.html` mit `src/einbettung.tsx` und `src/Embed.tsx`: nur der heutige Tag, kompakt für 480 × 350 und 350 × 250. Darf als einzige Seite des Tools in SharePoint (`_headers`, Regel `/mensa-bahnhof/embed/*`). Code für den Webpart «Einbetten»:
+`<iframe src="https://bbzb-tools.pages.dev/mensa-bahnhof/embed/" width="480" height="350" style="border:0;overflow:hidden" title="Mensa Bahnhof"></iframe>`
