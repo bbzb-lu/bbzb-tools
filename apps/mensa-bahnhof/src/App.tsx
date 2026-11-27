@@ -7,15 +7,24 @@ import { QUELLE, wochentage, type Linie, type MenuDatei, type Preis } from './me
 const KURZ = ['Mo', 'Di', 'Mi', 'Do', 'Fr'];
 const stand = new Intl.DateTimeFormat('de-CH', { dateStyle: 'medium', timeStyle: 'short' });
 
-/** Lädt menu.json einmal; `undefined` solange es lädt. Auch für das Embed. */
-export function useDatei() {
+/** Lädt menu.json; `undefined` solange es lädt. Auch für Embed und Infoscreen.
+ *  Mit `neuLadenMs` periodisch neu (neues Objekt = neues Rendern = neuer Tag); Fehler behalten gültige alte Daten. */
+export function useDatei(neuLadenMs?: number) {
   const [datei, setDatei] = useState<MenuDatei | 'fehlt'>();
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}menu.json`, { cache: 'no-cache' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d: MenuDatei | null) => setDatei(d && Array.isArray(d.wochen) ? d : 'fehlt'))
-      .catch(() => setDatei('fehlt'));
-  }, []);
+    const laden = () =>
+      fetch(`${import.meta.env.BASE_URL}menu.json`, { cache: 'no-cache' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d: MenuDatei | null) => {
+          if (!d || !Array.isArray(d.wochen)) throw new Error('menu.json ungültig');
+          setDatei(d);
+        })
+        .catch(() => setDatei((alt) => (alt && alt !== 'fehlt' ? alt : 'fehlt')));
+    void laden();
+    if (!neuLadenMs) return;
+    const id = setInterval(laden, neuLadenMs);
+    return () => clearInterval(id);
+  }, [neuLadenMs]);
   return datei;
 }
 

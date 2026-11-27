@@ -31,3 +31,9 @@ Starten: `npm run dev -w apps/mensa-bahnhof`.
 ## SharePoint-Embed
 `embed/index.html` mit `src/einbettung.tsx` und `src/Embed.tsx`: nur der heutige Tag, kompakt für 480 × 350 und 350 × 250. Darf als einzige Seite des Tools in SharePoint (`_headers`, Regel `/mensa-bahnhof/embed/*`). Code für den Webpart «Einbetten»:
 `<iframe src="https://bbzb-tools.pages.dev/mensa-bahnhof/embed/" width="480" height="350" style="border:0;overflow:hidden" title="Mensa Bahnhof"></iframe>`
+
+## Infoscreen
+`infoscreen/index.html` mit `src/bildschirm.tsx` und `src/Infoscreen.tsx` (Einstieg heisst anders, weil macOS `infoscreen.tsx` und `Infoscreen.tsx` nicht unterscheidet). Für die enlogic-Bildschirme beim Eingang, 1920 × 1080: nur heute, Lernende gross, dann Mitarbeitende, dann Externe. Masse in `vh`.
+- Läuft tagelang ohne Reload: `useDatei(30 * 60_000)` holt `menu.json` neu, bei Fehlern bleibt das letzte Menü stehen.
+- `_headers`: `/mensa-bahnhof/infoscreen/*` mit `frame-ancestors *` (CMS `infoscreen.lu.ch:8800`, der Player kann eine andere Adresse haben). Bei Bedarf auf diese Adressen einschränken.
+- URL im enlogic-CMS: `https://bbzb-tools.pages.dev/mensa-bahnhof/infoscreen/`
