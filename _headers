@@ -24,6 +24,10 @@
 /mensa-bahnhof/embed/*
   ! Content-Security-Policy
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'self' https://sluz.sharepoint.com
+# Mensa-Infoscreen: enlogic beim Eingang (CMS infoscreen.lu.ch:8800, Player evtl. andere Adresse), nur öffentliches Menü ohne Eingaben
+/mensa-bahnhof/infoscreen/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors *
 # Übersicht der Embeds: streng wie die Startseite, nicht einbettbar
 /sharepoint/
   ! Content-Security-Policy
