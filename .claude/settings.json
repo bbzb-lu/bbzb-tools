@@ -1,11 +1,40 @@
 {
   "extraKnownMarketplaces": {
-    "impeccable": { "source": { "source": "github", "repo": "pbakaus/impeccable" } },
-    "ponytail": { "source": { "source": "github", "repo": "DietrichGebert/ponytail" } }
+    "impeccable": {
+      "source": {
+        "source": "github",
+        "repo": "pbakaus/impeccable"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
   },
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true,
     "impeccable@impeccable": true,
     "ponytail@ponytail": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npm test*)",
+      "Bash(npx vitest*)",
+      "Bash(npx playwright*)",
+      "Bash(npx tsc*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(gh pr view*)",
+      "Bash(gh pr checks*)",
+      "Bash(gh run view*)",
+      "Bash(gh run list*)",
+      "Bash(gh issue list*)",
+      "Bash(gh issue view*)",
+      "mcp__pencil"
+    ]
   }
 }
