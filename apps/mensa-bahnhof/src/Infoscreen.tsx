@@ -1,3 +1,4 @@
+import { useEffect, useReducer } from 'react';
 import { GRUPPEN, ansicht, tagTitel } from './ansicht';
 import { Icon, useDatei } from './App';
 import { VEGI } from './icons';
@@ -8,6 +9,12 @@ const name = (p: Preis) => GRUPPEN.find((g) => g.preis === p)!.name;
 /** enlogic-Infoscreen beim Eingang (1920 × 1080): nur heute, Lernende gross. Läuft tagelang, darum Neuladen. */
 export function Infoscreen() {
   const datei = useDatei(30 * 60_000);
+  // Tag jede Minute neu berechnen, auch wenn das Neuladen scheitert (sonst bleibt nach einer Nacht ohne Netz «Heute» von gestern)
+  const [, tick] = useReducer((x: number) => x + 1, 0);
+  useEffect(() => {
+    const id = setInterval(tick, 60_000);
+    return () => clearInterval(id);
+  }, []);
   const a = datei && ansicht(datei === 'fehlt' ? undefined : datei, new Date());
   if (!a) return null;
   const linien = a.zustand === 'offen' ? (a.woche.tage.find((t) => t.datum === a.start)?.linien ?? []) : [];

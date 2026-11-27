@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { foreignRequests } from '../../../e2e/helpers';
 
@@ -45,4 +46,33 @@ test('Infoscreen: heute bildschirmfüllend, Lernende zuerst, frischt sich selbst
 
   expect(foreign).toEqual([]);
   expect(fehler).toEqual([]);
+});
+
+test('Infoscreen: Nacht ohne Netz zeigt am Morgen trotzdem den neuen Tag', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.clock.install({ time: new Date('2026-11-24T18:00:00') });
+  let status = 200;
+  await page.route('**/menu.json', (r) => (status === 200 ? r.fulfill({ path: fixture }) : r.fulfill({ status })));
+  await page.goto('infoscreen/');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Dienstag 24. November');
+  status = 500;
+  await page.clock.setSystemTime(new Date('2026-11-25T07:00:00'));
+  await page.clock.runFor(60_000);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Heute, Mittwoch 25. November');
+  await expect(page.getByRole('article').first()).toContainText('Kalbshacksteak');
+});
+
+test('Infoscreen: sechs Linien mit langen Namen, alle Preise im Bild', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.clock.setFixedTime(new Date('2026-11-24T10:00:00'));
+  const datei = JSON.parse(readFileSync(fixture, 'utf8'));
+  const tag = datei.wochen[0].tage[1];
+  const lang = { ...tag.linien[1], gericht: 'Hausgemachte Kürbis-Ravioli an Salbeibutter mit geröstetem Parmesan und Pinienkernen', beilagen: 'Rucola, Kirschtomaten, Balsamico-Reduktion, Brot, Tagessalat oder Suppe nach Wahl, dazu ein Dessert vom Buffet' };
+  tag.linien = [...tag.linien, lang, lang].map((l: object, i: number) => ({ ...l, linie: `Linie ${i + 1}` }));
+  await page.route('**/menu.json', (r) => r.fulfill({ json: datei }));
+  await page.goto('infoscreen/');
+  await expect(page.getByRole('article')).toHaveCount(6);
+  for (const p of await page.locator('.preis-schu, .preis-ma, .preis-ext').all()) await expect(p).toBeInViewport({ ratio: 1 });
+  const scroll = await page.evaluate(() => [document.documentElement.scrollHeight, document.documentElement.scrollWidth]);
+  expect(scroll).toEqual([1080, 1920]);
 });
