@@ -1,33 +1,40 @@
-/* Infoscreen 1920 × 1080: füllt den Bildschirm ohne Scrollen, alle Masse in vh (1vh = 10,8 px), lesbar aus ein paar Metern */
+/* Infoscreen 1920 × 1080: füllt den Bildschirm ohne Scrollen, lesbar aus ein paar Metern.
+   --u = 1 % der Höhe bei 16:9 (10,8 px), bei schmaleren Flächen (enlogic-Vorschau) richtet es sich nach der Breite. */
 html, body.infoscreen, .infoscreen #root { height: 100%; overflow: hidden; background: var(--table); }
-.info { box-sizing: border-box; height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 3vh; padding: 4vh 3.5vh; font-size: 2.2vh; }
-.info-kopf { display: flex; align-items: baseline; gap: 0.6em; margin: 0; padding-bottom: 1.5vh; font-size: 5vh; line-height: 1.1; border-bottom: 0.3vh solid var(--ink); }
+.infoscreen { --u: min(1vh, 0.5625vw); }
+.info { box-sizing: border-box; height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: calc(3 * var(--u)); padding: calc(4 * var(--u)) calc(3.5 * var(--u)); font-size: calc(2.2 * var(--u)); }
+.info-kopf { display: flex; align-items: baseline; gap: 0.6em; margin: 0; padding-bottom: calc(1.5 * var(--u)); font-size: calc(3.6 * var(--u)); line-height: 1.1; border-bottom: calc(0.3 * var(--u)) solid var(--ink); }
 .info-kopf span { font-weight: 400; color: var(--ink-soft); }
-.info-leer { align-self: center; justify-self: center; margin: 0; font-size: 5vh; font-weight: 700; }
+.info-leer { align-self: center; justify-self: center; margin: 0; font-size: calc(5 * var(--u)); font-weight: 700; }
 
 /* Eine Spalte pro Linie, egal wie viele es sind */
-.info-karten { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 2.5vh; min-height: 0; }
-.info-karte { display: flex; flex-direction: column; gap: 1.5vh; min-height: 0; overflow: hidden; padding: 2.5vh 2.5vh 3vh; border: 0.2vh solid var(--ink); background: var(--table); box-shadow: 0.6vh 0.6vh 0 var(--ink); }
-.info .karte-kopf { gap: 0.8vh; }
-.info .linie { padding: 0.2vh 0.8vh; font-size: 2.2vh; border-width: 0.2vh; }
-.info .badge { gap: 0.5vh; padding: 0.3vh 1vh 0.3vh 0.7vh; font-size: 2.2vh; }
-.info-gericht { margin: 0; font-size: 4.4vh; line-height: 1.15; font-weight: 700; text-wrap: balance; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
-.info-beilagen { margin: 0; font-size: 2.6vh; line-height: 1.3; color: var(--ink-soft); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+.info-karten { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: calc(2.5 * var(--u)); min-height: 0; }
+.info-karte { display: flex; flex-direction: column; gap: calc(1.5 * var(--u)); min-height: 0; overflow: hidden; padding: calc(2.5 * var(--u)) calc(2.5 * var(--u)) calc(3 * var(--u)); border: calc(0.2 * var(--u)) solid var(--ink); background: var(--table); box-shadow: calc(0.6 * var(--u)) calc(0.6 * var(--u)) 0 var(--ink); }
+.info .karte-kopf { gap: calc(0.8 * var(--u)); }
+.info .linie { padding: calc(0.2 * var(--u)) calc(0.8 * var(--u)); font-size: calc(2.2 * var(--u)); border-width: calc(0.2 * var(--u)); }
+.info .badge { gap: calc(0.5 * var(--u)); padding: calc(0.3 * var(--u)) calc(1 * var(--u)) calc(0.3 * var(--u)) calc(0.7 * var(--u)); font-size: calc(2.2 * var(--u)); }
+.info-gericht { margin: 0; font-size: calc(4.4 * var(--u)); line-height: 1.15; font-weight: 700; text-wrap: balance; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
+.info-beilagen { margin: 0; font-size: calc(2.6 * var(--u)); line-height: 1.3; color: var(--ink-soft); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }
 /* Ab fünf Linien werden die Spalten schmal: Text kleiner, damit die Preise im Bild bleiben */
-.info-karten:has(> :nth-child(5)) { gap: 1.8vh; }
-.info-karten:has(> :nth-child(5)) .info-karte { padding: 2vh 1.8vh 2.5vh; }
-.info-karten:has(> :nth-child(5)) .info-gericht { font-size: 3.4vh; }
-.info-karten:has(> :nth-child(5)) .info-beilagen { font-size: 2.2vh; -webkit-line-clamp: 3; }
-.info-karten:has(> :nth-child(5)) .preis-schu strong { font-size: 4.8vh; }
-.info-karten:has(> :nth-child(5)) .preis-ma { font-size: 2.6vh; }
+.info-karten:has(> :nth-child(5)) { gap: calc(1.8 * var(--u)); }
+.info-karten:has(> :nth-child(5)) .info-karte { padding: calc(2 * var(--u)) calc(1.8 * var(--u)) calc(2.5 * var(--u)); }
+.info-karten:has(> :nth-child(5)) .info-gericht { font-size: calc(3.4 * var(--u)); }
+.info-karten:has(> :nth-child(5)) .info-beilagen { font-size: calc(2.2 * var(--u)); -webkit-line-clamp: 3; }
+.info-karten:has(> :nth-child(5)) .preis-schu strong { font-size: calc(4.2 * var(--u)); }
+.info-karten:has(> :nth-child(5)) .preis-ma { font-size: calc(2.3 * var(--u)); }
+.info-karten:has(> :nth-child(5)) .preis-ext { font-size: calc(2 * var(--u)); }
 .info-karte .karte-kopf { flex: none; }
+/* Labels unten, direkt über den Preisen */
+.info-labels { display: flex; flex-wrap: wrap; gap: calc(0.8 * var(--u)); margin-top: auto; }
+.info .info-labels + .preise { margin-top: 0; }
 
 /* Preise: Lernende gross, Mitarbeitende mittel, Externe klein */
-.info .preise { display: grid; gap: 0.6vh; margin-top: auto; padding-top: 2vh; border-top: 0.2vh solid var(--line); font-variant-numeric: tabular-nums; }
+.info .preise { display: grid; gap: calc(0.6 * var(--u)); margin-top: auto; padding-top: calc(2 * var(--u)); border-top: calc(0.2 * var(--u)) solid var(--line); font-variant-numeric: tabular-nums; }
 .info .preise p { margin: 0; }
-.preis-schu { display: grid; line-height: 1.1; margin-bottom: 0.8vh !important; }
-.preis-schu strong { font-size: 6vh; }
-.preis-schu span { font-size: 2.4vh; color: var(--ink-soft); }
-.preis-ma { font-size: 3vh; color: var(--ink-soft); }
+.preis-schu { display: grid; line-height: 1.1; margin-bottom: calc(0.8 * var(--u)) !important; }
+.preis-schu strong, .preis-ma, .preis-ext { white-space: nowrap; }
+.preis-schu strong { font-size: calc(6 * var(--u)); }
+.preis-schu span { font-size: calc(2.4 * var(--u)); color: var(--ink-soft); }
+.preis-ma { font-size: calc(3 * var(--u)); color: var(--ink-soft); }
 .preis-ma b { color: var(--ink); }
-.preis-ext { font-size: 2.3vh; color: var(--ink-soft); }
+.preis-ext { font-size: calc(2.3 * var(--u)); color: var(--ink-soft); }

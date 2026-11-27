@@ -34,12 +34,14 @@ export function Infoscreen() {
             const labels = [...(l.labels ?? [])].sort((x, y) => +VEGI.includes(y) - +VEGI.includes(x));
             return (
               <article key={l.linie + l.gericht} className="info-karte">
-                <div className="karte-kopf">
-                  <p className="linie">{l.linie}</p>
-                  {labels.map((b) => <p key={b} className={VEGI.includes(b) ? 'badge vegi' : 'badge'}><Icon label={b} />{b}</p>)}
-                </div>
+                <div className="karte-kopf"><p className="linie">{l.linie}</p></div>
                 <h2 className="info-gericht">{l.gericht}</h2>
                 {l.beilagen && <p className="info-beilagen">{l.beilagen}</p>}
+                {labels.length > 0 && (
+                  <div className="info-labels">
+                    {labels.map((b) => <p key={b} className={VEGI.includes(b) ? 'badge vegi' : 'badge'}><Icon label={b} />{b}</p>)}
+                  </div>
+                )}
                 <div className="preise">
                   {l.preise.SCHU && <p className="preis-schu"><strong>CHF {l.preise.SCHU}</strong> <span>{name('SCHU')}</span></p>}
                   {(['MA', 'EXT'] as const).map((p) => l.preise[p] && (

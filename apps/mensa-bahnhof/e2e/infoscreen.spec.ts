@@ -73,6 +73,24 @@ test('Infoscreen: sechs Linien mit langen Namen, alle Preise im Bild', async ({ 
   await page.goto('infoscreen/');
   await expect(page.getByRole('article')).toHaveCount(6);
   for (const p of await page.locator('.preis-schu, .preis-ma, .preis-ext').all()) await expect(p).toBeInViewport({ ratio: 1 });
+  // kein Preis ragt über den Rand seiner Karte hinaus (dort schneidet overflow: hidden ab)
+  const ueber = await page.locator('.preise').evaluateAll((ps) =>
+    ps.filter((p) => [...p.querySelectorAll('strong, .preis-ma, .preis-ext')].some((e) => e.scrollWidth > p.clientWidth + 1)).length);
+  expect(ueber).toBe(0);
   const scroll = await page.evaluate(() => [document.documentElement.scrollHeight, document.documentElement.scrollWidth]);
   expect(scroll).toEqual([1080, 1920]);
+});
+
+test('Infoscreen: schmalere Fläche (enlogic-Vorschau), Preise einzeilig und im Bild', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1010 });
+  await page.clock.setFixedTime(new Date('2026-11-24T10:00:00'));
+  await page.route('**/menu.json', (r) => r.fulfill({ path: fixture }));
+  await page.goto('infoscreen/');
+  for (const p of await page.locator('.preis-schu strong, .preis-ma, .preis-ext').all()) {
+    await expect(p).toBeInViewport({ ratio: 1 });
+    const [hoehe, zeile] = await p.evaluate((e) => [e.getBoundingClientRect().height, parseFloat(getComputedStyle(e).fontSize) * 1.6]);
+    expect(hoehe).toBeLessThan(zeile);
+  }
+  // Labels unten, direkt über den Preisen
+  await expect(page.getByRole('article').nth(1).locator('.info-labels + .preise')).toHaveCount(1);
 });
